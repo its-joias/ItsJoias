@@ -1,2 +1,246 @@
-# ItsJoias
-Sistema desenvolvido para facilitar a gestão diária de vendas, clientes e produtos de joias.
+💍 ITS Joias - Sistema de Gestão de Vendas de Joias
+Versão Status Projeto Front-end Backend Banco
+
+Sistema de vendas da marca Leide Farias, "joias com alma baiana"
+
+Sobre • Funcionalidades • Tecnologias • Banco de Dados • Como Executar • Roadmap • Equipe
+
+📖 Sobre o Projeto
+O ITS Joias é um sistema web de organização de vendas desenvolvido para a marca Leide Farias . A vendedora recebe maletas de joias de fornecedores e vende para seus clientes à vista ou parcelado. O sistema controla o estoque de cada maleta, as parcelas, os pagamentos e quem está devendo.
+
+🎓 Projeto de estudo. Este é um projeto pessoal, feito por duas amigas para aprender desenvolvimento full stack na prática. Ele resolveu um problema real, mas o objetivo principal é aprender: modelagem de banco de dados, API REST com Spring Boot e interface com React.
+
+🎯 Problema que resolvemos
+Controle no caderno ou na planilha , sujeito a erro e difícil de consultar
+Não saber de qual maleta saiu em cada peça , o que atrapalha o acerto com o fornecedor
+Parcelas e pagamentos distribuídos , sem visão clara de quem está devendo e há quanto tempo
+Estoque que não bate com o que foi vendido de verdade
+✨ Nossa Solução
+✅ Entrada de maleta com cadastro automático das peças e etiqueta única para cada peça ( C0001-01)
+✅ Venda rápida pela etiqueta da peça , ou só pelo modelo, com escolha automática da peça da maleta mais antiga
+✅ Rastreio peça por peça : de qual maleta veio, para quem foi vendido, se foi perdida ou devolvida
+✅ Parcelamento com cálculo automático e controle de cada pagamento
+✅ Visão de quem deve, quanto e há quantos dias
+✅ Painel por maleta : o que chegou, o que foi vendido, o que foi pago e o que está em aberto
+✅ Banco de dados que recusa sozinho ou que nunca pode acontecer (pagar a mais, estoque negativo, que não fecha a conta)
+🚀 Funcionalidades
+As funcionalidades abaixo estão configuradas . Veja o andamento no Roadmap .
+
+🧳 Malas e Estoque
+Funcionalidade	Descrição
+quadras	Cadastro das lojas e fábricas de onde vêm as maletas
+Entrada de Maleta	Colar a lista da loja e conferir peça por peça antes de gravar
+sistema Automática	O sistema lê a descrição ("GARGANTILHA VENEZIANA...") e sugere a categoria
+Código Próprio	Cada modelo ganha um código da casa ( C0001, A0042)
+Etiqueta por Peça	Cada unidade física ganha sua etiqueta ( C0001-01, C0001-02...), gerada pelo banco
+Modelo Repetido	Um modelo que volta numa maleta nova é reconhecido pelo código da loja e continua a numeração das etiquetas
+Situação da Peça	Disponível, vendido, perdido ou devolvido ao fornecedor, peça por peça
+Histórico de Estoque	Toda entrada, venda, perda ou devolução de cada peça fica registrada e não pode ser apagada
+🛍️ Vendas e Clientes
+Funcionalidade	Descrição
+Clientes	Busca por nome e cadastro rápido com nome e telefone
+Carrinho	Peças adicionadas pela etiqueta da peça ou pelo código do modelo, com aviso se não houver peça disponível
+Prévia da Venda	Total, parcelas e de qual maleta sai cada peça, antes de confirmar
+A aumentar	Opção de valor original ou +10%
+Parcelamento	Divisão automática em parcelas, com os centavos que sobram na última
+Cancelamento	Estorno dos pagamentos e devolução das peças para a maleta de origem
+💰 Financeiro e Painéis
+Funcionalidade	Descrição
+Recebimentos	Registro de pagamento por parcela (PIX, dinheiro, cartão, transferência)
+Estorno	Pagamento lançado errado é atordoado, nunca apagado
+Situação das Parcelas	Pendente, parcial, pagamento ou atrasada, com dias de atraso
+Saldo por Cliente	Total comprado, pago, em aberto e atrasado
+Resumo Geral	Total vendido, recebido, a receber e clientes devendo
+Painel por Maleta	Custo, valor vendido, pago e em aberto de cada remessa
+Cobranças (fase 1.5)	Histórico de contatos e promessas de pagamento
+🛠️ Tecnologias
+Front-end
+Tecnologia	Finalidade
+HTML, CSS e JavaScript	Protótipo atual da interface
+Reagir (planejado)	Interface definitiva
+Backend
+Tecnologia	Finalidade
+Java 21	Linguagem principal
+Spring Boot 4	Framework para API REST
+Spring Data JPA / Hibernate 7	Acesso ao banco de dados
+Validação de Bean	Validação dos dados recebidos
+Banco de Dados
+Tecnologia	Finalidade
+PostgreSQL 18	Banco de dados zandol
+pgAdmin 4	Administração do banco
+🗄️ Banco de Dados
+O banco é criado por um script único , database/its_joias_banco.sql, rodado no pgAdmin. O Spring não cria nem altera tabelas: ele só confere se o código bate com o banco ( ddl-auto=validate).
+
+do desenho
+O banco guarda fatos : o que entrou, o que foi vendido, o que foi pago. Tudo que é calculado (saldo, atraso, estoque por maleta, totais) vem das visualizações e nunca vira coluna.
+
+Visão geral
+Área	Tabelas
+Acesso	usuarios
+Clientes	clientes,cobrancas
+Catálogo	categorias, categoria_palavras_chave, produtos, produto_codigos_fornecedor,produto_codigos_historico
+Maletas	fornecedores, maletas, maleta_itens,pecas
+Vendas	vendas, itens_venda, parcelas,pagamentos
+Estoque	movimentacoes_estoque
+17 tabelas , 10 visualizações e 21 gatilhos .
+
+Produto, peça e maleta
+Conceito	Exemplo	O que é
+Produto	C0001	O modelo: gargantilha veneziana, com nome, categoria e preço
+Peça	C0001-01	Cada unidade física desse modelo, com etiqueta própria
+Maleta	Maleta Janeiro	A remessa de onde a peça veio
+A situação de cada peça (disponível, vendida, perdida, devolvida) vem do histórico de estoque dela.
+
+O que o banco recusa sozinho
+As regras de negócio ficam no back-end. O banco é uma rede de segurança e recusa o que nunca pode acontecer:
+
+🚫 Venda finalizada cuja soma dos itens ou das parcelas não fecha com o total
+🚫 Pagamento acima do saldo da parcela, ou pagamento cancelado ou editado
+🚫 Cancelar uma venda sem antes de estonar os pagamentos e devolver as peças
+🚫 Vender a mesma peça duas vezes, mesmo com duas pessoas vendendo ao mesmo tempo
+🚫 Devolver a mesma peça duas vezes, ou na venda errada
+🚫 Fechar a entrada de uma maleta com etiqueta faltando
+🚫 Alterar o histórico de estoque, remover uma peça ou mudar sua etiqueta
+🚫 Editar o código do produto à mão (ele é gerado pelo banco)
+📁 Estrutura do Projeto
+ItsJoias/
+│
+├── backend/
+│   ├── .mvn/wrapper/
+│   │   └── maven-wrapper.properties
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/br/com/itsjoias/
+│   │   │   │   └── ItsJoiasApplication.java
+│   │   │   └── resources/
+│   │   │       └── application.properties
+│   │   └── test/java/br/com/itsjoias/
+│   │       └── ItsJoiasApplicationTests.java
+│   ├── .gitattributes
+│   ├── .gitignore
+│   ├── mvnw
+│   ├── mvnw.cmd
+│   └── pom.xml
+│
+├── frontend/
+│   ├── index.html
+│   ├── clientes.html
+│   ├── maletas.html
+│   ├── produtos.html
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       └── produtos.js
+│
+├── database/
+│   ├── its_joias_banco.sql
+│   └── README.md
+│
+├── .editorconfig
+├── .gitattributes
+├── .gitignore
+├── CONTRIBUTING.md
+└── README.md
+💻 Como Executar
+Pré-requisitos
+PostgreSQL 18 com pgAdmin 4
+Java 21 (para o back-end)
+Node.js (só quando o front-end em React começar)
+1. Banco de dados
+Clonar onte
+No pgAdmin, chore um banco vazio chamadoits_joias
+Conecte-se nele e abra database/its_joias_banco.sqlna Query Tool
+Execute o arquivo inteiro (F5), sem selecionar trecho
+Em Schemas > public , clique com o botão direito em Atualizar . Devem aparecer 17 tabelas em Tables e 10 visualizações em Views
+Detalhes, conferência e como registrar mudanças no banco: database/README.md.
+
+2. Back-end (em desenvolvimento)
+O banco precisa ser criado (passo 1). A conexão é configurada por variáveis ​​de ambiente ; a senha nunca fica escrita no código.
+
+Variável	padrão	Obrigatória
+DB_PASSWORD	—	Sim
+DB_URL	jdbc:postgresql://localhost:5432/its_joias	Não
+DB_USERNAME	postgres	Não
+No PowerShell (Windows), dentro da massa backend:
+
+$env:DB_PASSWORD = "sua_senha_do_postgres"
+.\mvnw.cmd spring-boot:run
+No Git Bash , Linux ou Mac , dentro da massa backend:
+
+DB_PASSWORD=sua_senha_do_postgres ./mvnw spring-boot:run
+Uma API sobe em http://localhost:8080. Os testes rodam com .\mvnw.cmd test(PowerShell) ou ./mvnw test(Git Bash, Linux, Mac), com a mesma definição variável e o banco no ar.
+
+3. Front-end (em breve)
+Embora o React não exista, o protótipo visual pode ser aberto direto no navegador: abra frontend/index.html. Ele usa apenas dados fictícios.
+
+🗺️ Roteiro
+As tarefas são acompanhadas no GitHub Projects , num quadro com as colunas abaixo:
+
+Coluna	Significado
+Lista de pendências	0s lares
+Pendência	Próximas tarefas
+Em andamento	Em desenvolvimento
+Em análise	Aguardando revisão de outra pessoa
+Feito	Concluídas
+1. 🗄️ Banco de Dados
+Responsável: Maria Clara
+
+Modelagem e criação do banco
+Revisão e testes de vendas, pagamentos e cancelamentos
+Código por peça (etiqueta única por unidade), revisado e testado
+2. ☕ Back-end - Java e Spring Boot
+Responsabilidade compartilhada
+
+Criar como entidades JPA
+Conectar o Spring Boot ao PostgreSQL
+Desenvolver uma API REST
+3. ⚛️ Front-end - React
+Responsável: Flávia
+
+Criar uma interface em React
+Implementar a entrada de maletas
+Implementar vendas e clientes
+Criar as telas de coleta e painéis
+4. 🏁 Finalização
+Login de usuários
+Testes de integração
+Cobranças (fase 1.5)
+🎨 Núcleos e Identidade Visual
+Marca Leide Farias : um sol de traço fino dourado, o nome em letra cursiva, uma onda terracota e a assinatura "JOIAS COM ALMA BAIANA" .
+
+Cor	Código	Uso
+Azul petróleo profundo	#0C334D	Cor principal, cabeçalho, rodapé, textos fortes
+Creme	#FEF6E1	Fundo principal
+Dourado claro	#F0B956	Sol, botões, destaques
+Dourado.	#CD8E2A	Hover, ícones, demais
+Terracota	#BF6E44	Ondas, chamadas, detalhes decorativos
+Creme acinzentado	#DAD0B8	Bordas, fundos secundários, cartões
+Cinza petróleo suave	#535E5D	Textos secundários
+Cinza azulado claro	#929E9F	Legendas, espaços reservados
+📚 O Que Estamos Aprendendo
+Tema	Na prática
+Modelagem de dados	Chaves compostas, constrangimentos, colunas geradas, visualizações
+Integridade no banco	Triggers de proteção e validação no momento do COMMIT
+Concorrência	Travas para duas vendas não pegarão a mesma peça
+API REST	Controladores, serviços e repositórios com Spring Boot
+ORM	Mapear tabelas e visualizações com JPA/Hibernate
+Regras de negócio	Padrão prévio + confirmação, FIFO, arredondamento de parcelas
+Git e GitHub	Trabalho em dupla com branchs e pull requests
+🤝 Como Trabalhamos
+Filial	Para quê
+main	Versão estável. Só recebe código por pull request vindo dedevelop
+develop	Onde o trabalho das duas se junta e é testado
+feature/..., fix/...,docs/...	Uma por tarefa, criada a partir dadevelop
+Crie um galho da tarefa a partir da develop( feature/entrada-maleta)
+Faça não se compromete com nada tipo: descrição( feat: adiciona entrada de maleta)
+Abra um Pull Request para adevelop , e outra revisão antes de juntar
+Regras completas (commits, pull requests, mudanças no banco e segurança): CONTRIBUTING.md.
+
+👥 Equipe
+Nome	‐	GitHub
+Flávia	Frontend e Backend	@b0l4da
+Maria Clara	Banco de Dados e DevOps	@mclarafl
+📄 Licença
+Este projeto não possui licença de uso . Todos os direitos reservados aos autores. O código, a modelagem do banco e a documentação não podem ser copiados, distribuídos ou usados ​​sem autorização.
+
+Leide Farias - Joias com alma baiana
