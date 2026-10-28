@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <div align="center">
 
 # 💍 ITS Joias - Sistema de Gestão de Vendas de Joias
