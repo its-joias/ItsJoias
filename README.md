@@ -584,4 +584,3 @@ Maria Clara	Banco de Dados e DevOps	@mclarafl
 Este projeto não possui licença de uso . Todos os direitos reservados aos autores. O código, a modelagem do banco e a documentação não podem ser copiados, distribuídos ou usados ​​sem autorização.
 
 Leide Farias - Joias com alma baiana
->>>>>>> 3556540f63c66695231e74c71887a6c1b5a0ea5d
