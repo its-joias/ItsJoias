@@ -173,7 +173,7 @@ ItsJoias/
 │   ├── index.html         Painel (visualização geral)
 │   ├── vendas.html        nova venda
 │   ├── clientes.html      cadastro e lista de clientes
-│   ├── maletas.html       maletas ativas
+│   ├── maletas.html       maletas ativas, importação de maleta por PDF e histórico
 │   ├── produtos.html      peças disponíveis
 │   ├── css/style.css
 │   └── js/                config.js (endereço da API), api.js (login e chamadas), uma por tela
@@ -245,6 +245,11 @@ A chave `service_role` do Supabase não é usada.
    ./mvnw spring-boot:run
    ```
    A API sobe em `http://localhost:8080`.
+   Para a **importação de PDF** funcionar na sua máquina, instale também os programas gratuitos de leitura
+   (no servidor eles já vêm no `Dockerfile`):
+   - Linux: `sudo apt install poppler-utils tesseract-ocr tesseract-ocr-por`
+   - Windows: instale o Poppler e o Tesseract (com o idioma português) e, se não estiverem no PATH,
+     defina `OCR_POPPLER_DIR` (pasta `bin` do Poppler) e `OCR_TESSERACT` (caminho do `tesseract.exe`).
 3. **Frontend:** abra a pasta `frontend` com um servidor simples, por exemplo:
    ```bash
    python3 -m http.server 5500
@@ -266,8 +271,10 @@ A chave `service_role` do Supabase não é usada.
 | Login e perfis (Supabase Auth) | ✅ |
 | Clientes: cadastrar, listar, editar, desativar, excluir | ✅ |
 | Nova venda (etiqueta ou modelo, à vista ou parcelado, entrada, +10%) | ✅ |
-| Publicação: back no Render, front na Vercel | 🔄 em andamento |
-| Entrada de maleta pelo sistema (gera as etiquetas) | ⏳ próxima |
+| Publicação: back no Render, front na Vercel | ✅ |
+| Importação de maleta por PDF (digital ou escaneado, com conferência antes de salvar) | ✅ |
+| Meu perfil (nome, e-mail, senha) | ⏳ próxima |
+| Baixa/acerto da maleta antiga (o que voltou e o que ficou) | ⏳ |
 | Registrar pagamentos depois da venda, estorno e cancelamento | ⏳ |
 | Tema claro e escuro | ⏳ |
 | Cobranças (fase 1.5) | ⏳ |
