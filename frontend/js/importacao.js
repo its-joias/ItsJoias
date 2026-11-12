@@ -113,27 +113,51 @@
     }));
     area.addEventListener("drop", (e) => escolher(e.dataTransfer.files[0]));
 
+    const AVISO_DEMORA = "PDF que é foto ou escaneado leva alguns minutos (até uns 8). Pode deixar esta tela aberta.";
+    const pausa = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    /** O servidor lê em segundo plano; a tela pergunta a situação até ficar pronta (ou dar erro). */
+    async function acompanharLeitura(situacao) {
+        let falhasSeguidas = 0;
+        while (situacao.situacao === "NA_FILA" || situacao.situacao === "LENDO") {
+            await pausa(3000);
+            try {
+                situacao = await api("/api/importacoes/leituras/" + encodeURIComponent(situacao.id));
+                falhasSeguidas = 0;
+            } catch (erro) {
+                // internet oscilou: tenta mais algumas vezes antes de desistir (a leitura continua no servidor)
+                if (erro.status === 404 || ++falhasSeguidas >= 5) throw erro;
+            }
+        }
+        if (situacao.situacao === "ERRO") throw new Error(situacao.mensagem);
+        return situacao.previa;
+    }
+
     botaoLer.addEventListener("click", async () => {
         if (!arquivoEscolhido) return;
         esconderMensagem();
         mostrarPasso("carregando");
         const inicio = Date.now();
+        const texto = el("imp-carregando-texto");
+        texto.textContent = AVISO_DEMORA;
         const relogio = setInterval(() => {
             const s = Math.round((Date.now() - inicio) / 1000);
-            el("imp-carregando-texto").textContent = `${s} s. PDFs que são foto ou escaneados podem levar até 2 minutos.`;
+            const tempo = s < 60 ? `${s} s` : `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, "0")} s`;
+            texto.textContent = `${tempo}. ${AVISO_DEMORA}`;
         }, 1000);
         try {
             const dados = new FormData();
             dados.append("arquivo", arquivoEscolhido);
-            const resposta = await api("/api/importacoes/ler", { metodo: "POST", corpo: dados });
-            desenharPrevia(resposta);
+            const inicial = await api("/api/importacoes/ler", { metodo: "POST", corpo: dados });
+            const previaLida = await acompanharLeitura(inicial);
+            desenharPrevia(previaLida);
             mostrarPasso("previa");
         } catch (erro) {
             mostrarPasso("arquivo");
             mostrarMensagem("erro", "Não foi possível ler o PDF.", erro.message);
         } finally {
             clearInterval(relogio);
-            el("imp-carregando-texto").textContent = "PDFs que são foto ou escaneados podem levar até 2 minutos.";
+            texto.textContent = AVISO_DEMORA;
         }
     });
 

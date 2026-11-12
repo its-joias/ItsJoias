@@ -116,4 +116,13 @@ public final class ImportacaoDTO {
 			String metodo) {
 	}
 
+	/** Situação de uma leitura de PDF feita em segundo plano (PDF escaneado pode levar minutos). */
+	public enum SituacaoLeitura {
+		NA_FILA, LENDO, PRONTA, ERRO
+	}
+
+	/** Acompanhamento da leitura: a tela consulta até vir PRONTA (com a prévia) ou ERRO (com a mensagem). */
+	public record LeituraAndamento(String id, SituacaoLeitura situacao, long segundos, Previa previa, String mensagem) {
+	}
+
 }
