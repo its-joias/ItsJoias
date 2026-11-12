@@ -35,7 +35,7 @@ SELECT (SELECT count(*) FROM information_schema.tables
        (SELECT count(*) FROM categoria_palavras_chave)                   AS palavras_chave;
 ```
 
-Resultado esperado: **17 | 10 | 21 | 8 | 30**.
+Resultado esperado: **18 | 10 | 22 | 8 | 32**.
 
 ---
 
