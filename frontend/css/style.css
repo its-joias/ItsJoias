@@ -1048,12 +1048,6 @@ td.acoes-linha button {
     transform: translateY(-50%);
 }
 
-.creditos {
-    margin: 22px 0 0;
-    color: var(--texto-suave);
-    font-size: 11px;
-    text-align: center;
-}
 
 /* --- nova venda ------------------------------------------------------- */
 .venda-grade {
