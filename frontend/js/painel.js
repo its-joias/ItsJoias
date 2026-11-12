@@ -1,8 +1,6 @@
 // Painel da vendedora.
-// Todos os números vêm prontos de GET /api/painel: aqui só se FORMATA e EXIBE.
+// Todos os números vêm prontos de GET /api/painel (via ItsJoias.api, com o login): aqui só se FORMATA e EXIBE.
 // Nenhuma conta de dinheiro é feita no front.
-
-const URL_PAINEL = "http://localhost:8080/api/painel";
 
 const formatoReais = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 const formatoPercentual = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -228,32 +226,11 @@ function preencherMaletas(maletas) {
 
 async function carregarPainel() {
     mostrarCarregando();
-    let resposta;
     try {
-        resposta = await fetch(URL_PAINEL, { headers: { Accept: "application/json" } });
+        mostrarPainel(await window.ItsJoias.api("/api/painel"));
     } catch (erro) {
         console.error(erro);
-        mostrarErro("O servidor não respondeu. Confira se o backend está rodando em localhost:8080 e tente de novo.");
-        return;
-    }
-
-    if (!resposta.ok) {
-        let mensagem = `O servidor respondeu com erro ${resposta.status}.`;
-        try {
-            const corpo = await resposta.json();
-            if (corpo && corpo.mensagem) mensagem = corpo.mensagem;
-        } catch (_) {
-            // corpo sem JSON: fica a mensagem com o código do erro
-        }
-        mostrarErro(mensagem);
-        return;
-    }
-
-    try {
-        mostrarPainel(await resposta.json());
-    } catch (erro) {
-        console.error(erro);
-        mostrarErro("A resposta do servidor veio num formato inesperado.");
+        mostrarErro(erro.message);
     }
 }
 

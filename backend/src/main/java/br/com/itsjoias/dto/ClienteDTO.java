@@ -14,7 +14,8 @@ public final class ClienteDTO {
 	}
 
 	public static final String FORMATO_TELEFONE = "^\\(\\d{2}\\) \\d{4,5}-\\d{4}$";
-	public static final String FORMATO_CPF = "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$";
+	/** Vazio é aceito (CPF é opcional). */
+	public static final String FORMATO_CPF = "^$|^\\s*\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}\\s*$";
 
 	/** Formulário de cadastro/edição. */
 	public record ClienteForm(

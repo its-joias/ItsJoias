@@ -101,6 +101,13 @@ class ApiSegurancaTest {
 	}
 
 	@Test
+	void campoOpcionalVazioEhAceito() throws Exception {
+		mvc.perform(post("/api/clientes").with(como(Perfil.DESENVOLVIMENTO)).contentType(MediaType.APPLICATION_JSON)
+				.content("{\"nome\":\"Bia\",\"telefone\":\"(71) 3333-4444\",\"cpf\":\"\",\"email\":\"\"}"))
+				.andExpect(status().isCreated());
+	}
+
+	@Test
 	void entrarComLoginNaoLiberadoNoItsJoias() throws Exception {
 		UUID login = UUID.randomUUID();
 		given(supabase.entrar("leide@example.com", "segredo"))

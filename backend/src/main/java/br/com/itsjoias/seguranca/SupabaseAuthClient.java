@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
@@ -33,7 +35,10 @@ public class SupabaseAuthClient {
 	public SupabaseAuthClient(@Value("${itsjoias.supabase.url:}") String url,
 			@Value("${itsjoias.supabase.chave-publica:}") String chavePublica) {
 		this.configurado = !url.isBlank() && !chavePublica.isBlank();
-		this.http = RestClient.builder().baseUrl(url.isBlank() ? "http://supabase-nao-configurado" : url + "/auth/v1")
+		// corpo "bufferizado": a requisição sai com Content-Length (alguns servidores recusam envio em pedaços)
+		this.http = RestClient.builder()
+				.requestFactory(new BufferingClientHttpRequestFactory(new JdkClientHttpRequestFactory()))
+				.baseUrl(url.isBlank() ? "http://supabase-nao-configurado" : url + "/auth/v1")
 				.defaultHeader("apikey", chavePublica)
 				.build();
 	}

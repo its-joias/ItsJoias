@@ -8,13 +8,17 @@
 </head>
 <body>
     <header>
-        <h1> Organização Its Joias </h1>
-        <nav>
+        <div class="topo">
+            <h1> Organização Its Joias </h1>
+            <div class="usuario-topo" id="usuario-topo"></div>
+        </div>
+        <nav aria-label="Menu principal">
             <ul>
                 <li><a href="index.html" aria-current="page">Visualização geral</a></li>
+                <li><a href="vendas.html">Nova venda</a></li>
+                <li><a href="clientes.html">Clientes</a></li>
                 <li><a href="maletas.html">Maletas</a></li>
                 <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="clientes.html">Clientes</a></li>
             </ul>
         </nav>
     </header>
@@ -96,10 +100,14 @@
     </main>
 
     <footer>
+        <p>Desenvolvimento: Flavia Fernandes</p>
         <p>Projeto criado por: Flávia Fernandes e Maria Clara para fins de aprendizado.</p>
         <p>&copy; 2026 Organização Its Joias. Todos os direitos reservados.</p>
     </footer>
 
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/sessao.js"></script>
     <script src="js/painel.js"></script>
 </body>
 </html>
