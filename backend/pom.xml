@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
+			<!-- escopo padrão (compile): o tradutor de erros lê o nome da regra recusada pelo banco -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

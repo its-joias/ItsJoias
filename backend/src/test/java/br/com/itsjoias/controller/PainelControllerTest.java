@@ -14,10 +14,13 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import br.com.itsjoias.config.SegurancaConfig;
 import br.com.itsjoias.dto.PainelDTO;
 import br.com.itsjoias.dto.PainelDTO.AReceber;
 import br.com.itsjoias.dto.PainelDTO.Atrasado;
@@ -26,9 +29,13 @@ import br.com.itsjoias.dto.PainelDTO.ProximoDia5;
 import br.com.itsjoias.dto.PainelDTO.Recebido;
 import br.com.itsjoias.dto.PainelDTO.Totais;
 import br.com.itsjoias.dto.PainelDTO.TotalVendido;
+import br.com.itsjoias.repository.UsuarioRepository;
+import br.com.itsjoias.seguranca.Perfil;
 import br.com.itsjoias.service.PainelService;
 
 @WebMvcTest(PainelController.class)
+@Import({ SegurancaConfig.class, ErroHandler.class })
+@TestPropertySource(properties = "itsjoias.supabase.url=https://exemplo.supabase.co")
 class PainelControllerTest {
 
 	@Autowired
@@ -36,6 +43,9 @@ class PainelControllerTest {
 
 	@MockitoBean
 	private PainelService painelService;
+
+	@MockitoBean
+	private UsuarioRepository usuarios;
 
 	@Test
 	void devolveDinheiroComDuasCasasEDatasIso() throws Exception {
@@ -51,7 +61,7 @@ class PainelControllerTest {
 						new ProximoDia5(dia5, new BigDecimal("300.00"), 3)),
 				List.of(), List.of(), List.of()));
 
-		mvc.perform(get("/api/painel"))
+		mvc.perform(get("/api/painel").with(ApiSegurancaTest.como(Perfil.DESENVOLVIMENTO)))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.hoje").value("2026-11-11"))
 				.andExpect(jsonPath("$.totais.proximoDia5.data").value("2026-12-05"))
@@ -63,9 +73,9 @@ class PainelControllerTest {
 	void bancoForaDoArDevolve503ComMensagem() throws Exception {
 		given(painelService.montarPainel()).willThrow(new DataAccessResourceFailureException("conexão recusada"));
 
-		mvc.perform(get("/api/painel"))
+		mvc.perform(get("/api/painel").with(ApiSegurancaTest.como(Perfil.DESENVOLVIMENTO)))
 				.andExpect(status().isServiceUnavailable())
-				.andExpect(jsonPath("$.mensagem").value(Matchers.startsWith("Não foi possível ler os dados")));
+				.andExpect(jsonPath("$.mensagem").value(Matchers.startsWith("Não foi possível falar com o banco")));
 	}
 
 }
