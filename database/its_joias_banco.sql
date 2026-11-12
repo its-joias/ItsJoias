@@ -479,7 +479,7 @@ CREATE INDEX ix_cobrancas_usuario      ON cobrancas (usuario_id);
 -- =====================================================================
 
 -- Busca por qualquer código: interno atual, interno antigo ou da loja
-CREATE VIEW vw_busca_codigo AS
+CREATE VIEW vw_busca_codigo WITH (security_invoker = on) AS
 SELECT p.codigo AS codigo, p.id AS produto_id, 'INTERNO' AS origem, NULL::BIGINT AS fornecedor_id
 FROM produtos p
 UNION ALL
@@ -495,7 +495,7 @@ FROM produto_codigos_fornecedor f;
 -- Vender pelo modelo (FIFO): o back pega a primeira peça
 --   WHERE produto_id = ? AND situacao = 'DISPONIVEL'
 --   ORDER BY maleta_data_entrada, maleta_id, numero
-CREATE VIEW vw_pecas AS
+CREATE VIEW vw_pecas WITH (security_invoker = on) AS
 SELECT  pc.id                                    AS peca_id,
         p.codigo || '-' || lpad(pc.numero::text, greatest(2, length(pc.numero::text)), '0') AS codigo,
         pc.produto_id,
@@ -525,7 +525,7 @@ LEFT JOIN LATERAL (
 
 -- Que peça é essa etiqueta? Aceita o código atual (C0001-02) e o antigo, de antes
 -- de o produto mudar de categoria (INTERNO_ANTIGO).
-CREATE VIEW vw_busca_peca AS
+CREATE VIEW vw_busca_peca WITH (security_invoker = on) AS
 SELECT  b.codigo || '-' || lpad(pc.numero::text, greatest(2, length(pc.numero::text)), '0') AS codigo,
         pc.id          AS peca_id,
         pc.produto_id,
@@ -537,7 +537,7 @@ JOIN (SELECT id AS produto_id, codigo, 'INTERNO' AS origem FROM produtos
   ON b.produto_id = pc.produto_id;
 
 -- Saldo, situação e atraso de cada parcela de venda FINALIZADA
-CREATE VIEW vw_saldo_parcelas AS
+CREATE VIEW vw_saldo_parcelas WITH (security_invoker = on) AS
 SELECT  p.id                                   AS parcela_id,
         p.venda_id,
         v.cliente_id,
@@ -566,7 +566,7 @@ WHERE p.status = 'ATIVA'
   AND v.status = 'FINALIZADA';
 
 -- Posição financeira de cada cliente (alimenta rankings e tela de cobrança)
-CREATE VIEW vw_saldo_clientes AS
+CREATE VIEW vw_saldo_clientes WITH (security_invoker = on) AS
 WITH compras AS (
     SELECT cliente_id, SUM(valor_total) AS total_comprado, COUNT(*) AS qtd_vendas,
            MAX(data_venda) AS ultima_compra
@@ -605,7 +605,7 @@ LEFT JOIN compras co ON co.cliente_id = c.id
 LEFT JOIN fin     f  ON f.cliente_id  = c.id;
 
 -- Números gerais do dashboard (uma linha)
-CREATE VIEW vw_resumo_financeiro AS
+CREATE VIEW vw_resumo_financeiro WITH (security_invoker = on) AS
 SELECT  (SELECT COALESCE(SUM(valor_total), 0) FROM vendas WHERE status = 'FINALIZADA') AS total_vendido,
         COALESCE(SUM(total_pago), 0)                                     AS total_recebido,
         COALESCE(SUM(saldo), 0)                                          AS total_a_receber,
@@ -616,7 +616,7 @@ FROM vw_saldo_parcelas;
 
 -- Estoque por item de maleta (quanto ainda resta de cada remessa).
 -- Para saber QUAIS peças restam, use vw_pecas.
-CREATE VIEW vw_estoque_maleta_itens AS
+CREATE VIEW vw_estoque_maleta_itens WITH (security_invoker = on) AS
 SELECT  mi.id            AS maleta_item_id,
         mi.maleta_id,
         mi.produto_id,
@@ -627,7 +627,7 @@ LEFT JOIN movimentacoes_estoque m ON m.maleta_item_id = mi.id
 GROUP BY mi.id;
 
 -- Produtos com situação de estoque (DISPONIVEL / BAIXO / ESGOTADO calculados)
-CREATE VIEW vw_produtos_estoque AS
+CREATE VIEW vw_produtos_estoque WITH (security_invoker = on) AS
 SELECT  p.id AS produto_id, p.codigo, p.nome, p.categoria_id, p.preco_venda,
         p.quantidade_estoque, p.estoque_minimo,
         CASE WHEN p.quantidade_estoque = 0                THEN 'ESGOTADO'
@@ -640,7 +640,7 @@ WHERE p.status = 'ATIVO';
 -- Pagamento é por parcela (da venda inteira), não por peça. Para atribuir "pago" e
 -- "em aberto" a uma maleta, o valor é RATEADO pela participação do item na venda.
 -- O acréscimo e o desconto entram no rateio porque valor_total já os inclui.
-CREATE VIEW vw_dashboard_maletas AS
+CREATE VIEW vw_dashboard_maletas WITH (security_invoker = on) AS
 WITH venda_fin AS (
     SELECT v.id AS venda_id, v.valor_produtos, v.valor_total,
            COALESCE(SUM(sp.total_pago), 0) AS pago,
@@ -690,7 +690,7 @@ LEFT JOIN custo    c  ON c.maleta_id  = m.id
 LEFT JOIN vendido  vd ON vd.maleta_id = m.id;
 
 -- Auditoria: produtos cujo cache de estoque diverge do histórico (deve vir sempre vazia)
-CREATE VIEW vw_divergencia_estoque AS
+CREATE VIEW vw_divergencia_estoque WITH (security_invoker = on) AS
 SELECT p.id AS produto_id, p.codigo, p.quantidade_estoque AS estoque_cache,
        COALESCE(SUM(m.quantidade), 0) AS estoque_historico
 FROM produtos p
@@ -705,7 +705,8 @@ HAVING p.quantidade_estoque <> COALESCE(SUM(m.quantidade), 0);
 -- =====================================================================
 
 -- 3.1 atualizado_em automático
-CREATE FUNCTION fn_set_atualizado_em() RETURNS trigger LANGUAGE plpgsql AS $$
+CREATE FUNCTION fn_set_atualizado_em() RETURNS trigger LANGUAGE plpgsql
+    SET search_path = public, pg_temp AS $$
 BEGIN
     NEW.atualizado_em := now();
     RETURN NEW;
@@ -720,7 +721,8 @@ CREATE TRIGGER trg_vendas_atualizado       BEFORE UPDATE ON vendas       FOR EAC
 CREATE TRIGGER trg_parcelas_atualizado     BEFORE UPDATE ON parcelas     FOR EACH ROW EXECUTE FUNCTION fn_set_atualizado_em();
 
 -- 3.2 Venda: só rascunho pode ser apagada; status não "volta"
-CREATE FUNCTION fn_vendas_protecao() RETURNS trigger LANGUAGE plpgsql AS $$
+CREATE FUNCTION fn_vendas_protecao() RETURNS trigger LANGUAGE plpgsql
+    SET search_path = public, pg_temp AS $$
 BEGIN
     IF TG_OP = 'DELETE' THEN
         IF OLD.status <> 'RASCUNHO' THEN
@@ -750,7 +752,8 @@ CREATE TRIGGER trg_vendas_protecao BEFORE UPDATE OR DELETE ON vendas
 --       baixa de estoque (VENDA) nesta venda, e vice-versa;
 --     venda CANCELADA não fica com pagamento válido (estorne antes) nem com
 --       peça ainda marcada como vendida por ela (devolva ao estoque).
-CREATE FUNCTION fn_validar_venda(p_venda_id BIGINT) RETURNS void LANGUAGE plpgsql AS $$
+CREATE FUNCTION fn_validar_venda(p_venda_id BIGINT) RETURNS void LANGUAGE plpgsql
+    SET search_path = public, pg_temp AS $$
 DECLARE
     v           vendas%ROWTYPE;
     qtd_itens   INTEGER;
@@ -823,7 +826,8 @@ BEGIN
     END IF;
 END $$;
 
-CREATE FUNCTION fn_trg_validar_venda() RETURNS trigger LANGUAGE plpgsql AS $$
+CREATE FUNCTION fn_trg_validar_venda() RETURNS trigger LANGUAGE plpgsql
+    SET search_path = public, pg_temp AS $$
 BEGIN
     IF TG_TABLE_NAME = 'vendas' THEN
         PERFORM fn_validar_venda(NEW.id);
@@ -845,7 +849,8 @@ CREATE CONSTRAINT TRIGGER trg_mov_validar_venda AFTER INSERT ON movimentacoes_es
     WHEN (NEW.venda_id IS NOT NULL) EXECUTE FUNCTION fn_trg_validar_venda();
 
 -- 3.4 Pagamento: parcela ativa de venda finalizada, sem pagar a mais; nunca apagar
-CREATE FUNCTION fn_pagamentos_protecao() RETURNS trigger LANGUAGE plpgsql AS $$
+CREATE FUNCTION fn_pagamentos_protecao() RETURNS trigger LANGUAGE plpgsql
+    SET search_path = public, pg_temp AS $$
 DECLARE
     p          parcelas%ROWTYPE;
     v_venda_id BIGINT;
@@ -894,7 +899,8 @@ CREATE TRIGGER trg_pagamentos_protecao BEFORE INSERT OR UPDATE OR DELETE ON paga
     FOR EACH ROW EXECUTE FUNCTION fn_pagamentos_protecao();
 
 -- 3.5 Parcela: não cancelar nem reduzir abaixo do que já foi pago
-CREATE FUNCTION fn_parcelas_protecao() RETURNS trigger LANGUAGE plpgsql AS $$
+CREATE FUNCTION fn_parcelas_protecao() RETURNS trigger LANGUAGE plpgsql
+    SET search_path = public, pg_temp AS $$
 DECLARE ja_pago NUMERIC;
 BEGIN
     SELECT COALESCE(SUM(valor), 0) INTO ja_pago
@@ -917,7 +923,8 @@ CREATE TRIGGER trg_parcelas_protecao BEFORE UPDATE OR DELETE ON parcelas
     FOR EACH ROW EXECUTE FUNCTION fn_parcelas_protecao();
 
 -- 3.6 Histórico de estoque é imutável
-CREATE FUNCTION fn_bloquear_alteracao() RETURNS trigger LANGUAGE plpgsql AS $$
+CREATE FUNCTION fn_bloquear_alteracao() RETURNS trigger LANGUAGE plpgsql
+    SET search_path = public, pg_temp AS $$
 BEGIN
     RAISE EXCEPTION 'Registros de % são imutáveis; lance uma movimentação de AJUSTE.', TG_TABLE_NAME;
 END $$;
@@ -939,7 +946,8 @@ CREATE TRIGGER trg_mov_imutavel BEFORE UPDATE OR DELETE ON movimentacoes_estoque
 --      menor que o de quem passou na frente.
 --      Não exige "venda já CANCELADA": o Hibernate grava a movimentação antes
 --      do UPDATE da venda, e isso recusaria um cancelamento correto.
-CREATE FUNCTION fn_mov_validar() RETURNS trigger LANGUAGE plpgsql AS $$
+CREATE FUNCTION fn_mov_validar() RETURNS trigger LANGUAGE plpgsql
+    SET search_path = public, pg_temp AS $$
 DECLARE
     v_tem_ult   BOOLEAN;
     v_ult_tipo  VARCHAR;
@@ -982,7 +990,8 @@ CREATE TRIGGER trg_mov_validar BEFORE INSERT ON movimentacoes_estoque
 -- 3.6c Peças: número da etiqueta gerado pelo banco; peça nunca é apagada nem alterada
 --      INSERT: numero = próximo número daquele produto (o back nunca envia).
 --      Trava o produto: duas entradas simultâneas nunca pegam o mesmo número.
-CREATE FUNCTION fn_pecas_protecao() RETURNS trigger LANGUAGE plpgsql AS $$
+CREATE FUNCTION fn_pecas_protecao() RETURNS trigger LANGUAGE plpgsql
+    SET search_path = public, pg_temp AS $$
 BEGIN
     IF TG_OP = 'DELETE' THEN
         RAISE EXCEPTION 'Peças não são apagadas; registre PERDA ou DEVOLUCAO_FORNECEDOR.';
@@ -1003,7 +1012,8 @@ CREATE TRIGGER trg_pecas_protecao BEFORE INSERT OR UPDATE OR DELETE ON pecas
 
 -- 3.6d Entrada de maleta fecha a conta no COMMIT: cada item de maleta tem
 --      exatamente "quantidade" peças, e cada peça tem a sua ENTRADA.
-CREATE FUNCTION fn_trg_conferir_maleta_item() RETURNS trigger LANGUAGE plpgsql AS $$
+CREATE FUNCTION fn_trg_conferir_maleta_item() RETURNS trigger LANGUAGE plpgsql
+    SET search_path = public, pg_temp AS $$
 DECLARE
     v_id     BIGINT;
     v_qtd    INTEGER;
@@ -1032,7 +1042,8 @@ CREATE CONSTRAINT TRIGGER trg_pecas_conferir AFTER INSERT ON pecas
 --     INSERT: sempre gera (o back nunca envia o código).
 --     UPDATE trocando a categoria: gera código novo e guarda o antigo no histórico.
 --     UPDATE do código "na mão": proibido.
-CREATE FUNCTION fn_produtos_codigo() RETURNS trigger LANGUAGE plpgsql AS $$
+CREATE FUNCTION fn_produtos_codigo() RETURNS trigger LANGUAGE plpgsql
+    SET search_path = public, pg_temp AS $$
 DECLARE
     v_prefixo  VARCHAR;
     v_numero   INTEGER;
@@ -1064,7 +1075,8 @@ CREATE TRIGGER trg_produtos_codigo BEFORE INSERT OR UPDATE ON produtos
 
 -- 3.8 Prefixo da categoria não muda depois que já existem produtos com ele
 --     (senão as etiquetas impressas deixam de bater com o sistema)
-CREATE FUNCTION fn_categorias_protecao() RETURNS trigger LANGUAGE plpgsql AS $$
+CREATE FUNCTION fn_categorias_protecao() RETURNS trigger LANGUAGE plpgsql
+    SET search_path = public, pg_temp AS $$
 BEGIN
     IF NEW.prefixo <> OLD.prefixo AND OLD.proximo_numero > 1 THEN
         RAISE EXCEPTION 'Categoria % já gerou códigos com o prefixo %; ele não pode mudar.', OLD.nome, OLD.prefixo;
