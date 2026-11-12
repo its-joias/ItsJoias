@@ -43,8 +43,8 @@ ALTER TABLE clientes ADD CONSTRAINT ck_clientes_telefone
 ALTER TABLE clientes ADD CONSTRAINT ck_clientes_cpf
     CHECK (cpf IS NULL OR cpf ~ '^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$');
 
--- 5. A view volta, igual a antes.
-CREATE VIEW vw_saldo_clientes AS
+-- 5. A view volta igual, com a proteção security_invoker (ver 2026-11-09_seguranca_views_e_funcoes.sql).
+CREATE VIEW vw_saldo_clientes WITH (security_invoker = on) AS
 WITH compras AS (
     SELECT cliente_id, SUM(valor_total) AS total_comprado, COUNT(*) AS qtd_vendas,
            MAX(data_venda) AS ultima_compra
