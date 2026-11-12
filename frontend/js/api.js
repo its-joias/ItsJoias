@@ -40,13 +40,14 @@
 
     async function chamar(caminho, metodo, corpo, token) {
         const headers = { Accept: "application/json" };
-        if (corpo !== undefined) headers["Content-Type"] = "application/json";
+        const arquivo = corpo instanceof FormData; // envio de arquivo: o navegador monta o cabeçalho sozinho
+        if (corpo !== undefined && !arquivo) headers["Content-Type"] = "application/json";
         if (token) headers.Authorization = "Bearer " + token;
         try {
             return await fetch(API_URL + caminho, {
                 method: metodo,
                 headers,
-                body: corpo === undefined ? undefined : JSON.stringify(corpo),
+                body: corpo === undefined ? undefined : arquivo ? corpo : JSON.stringify(corpo),
             });
         } catch (erro) {
             console.error(erro);

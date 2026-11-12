@@ -24,7 +24,135 @@
     </header>
 
     <main>
-        <h2>Maletas</h2>
+        <div class="cabecalho-pagina">
+            <h2>Maletas</h2>
+            <button type="button" id="botao-importar">Importar maleta</button>
+        </div>
+
+        <!-- ===================== IMPORTAÇÃO ===================== -->
+        <section id="importacao" class="cartao-form" aria-labelledby="titulo-importacao" hidden>
+            <h3 id="titulo-importacao">Importar maleta (PDF)</h3>
+
+            <!-- passo 1: escolher o arquivo -->
+            <div id="imp-passo-arquivo">
+                <p>Escolha o PDF do termo de entrega da maleta. Nada é salvo antes de você conferir e confirmar.</p>
+                <label class="area-arquivo" for="imp-arquivo">
+                    <input type="file" id="imp-arquivo" accept="application/pdf,.pdf">
+                    <strong id="imp-arquivo-nome">Clique para escolher o PDF</strong>
+                    <span class="texto-suave">ou arraste o arquivo para cá (até 15 MB)</span>
+                </label>
+                <div class="acoes">
+                    <button type="button" id="imp-ler" disabled>Ler PDF</button>
+                    <button type="button" class="botao-secundario" data-imp-cancelar>Cancelar</button>
+                </div>
+            </div>
+
+            <!-- carregando -->
+            <div id="imp-carregando" class="carregando" role="status" aria-live="polite" hidden>
+                <span class="girando" aria-hidden="true"></span>
+                <div>
+                    <strong>Lendo o PDF…</strong>
+                    <p id="imp-carregando-texto">PDFs que são foto ou escaneados podem levar até 2 minutos.</p>
+                </div>
+            </div>
+
+            <div id="imp-mensagem" class="mensagem" role="alert" hidden></div>
+
+            <!-- passo 2: conferir -->
+            <div id="imp-previa" hidden>
+                <div id="imp-avisos-gerais"></div>
+
+                <h4 class="subtitulo-secao">Dados da maleta</h4>
+                <div class="form-grade" id="imp-maleta">
+                    <div class="campo">
+                        <label for="imp-fornecedor">Fornecedor</label>
+                        <select id="imp-fornecedor"></select>
+                    </div>
+                    <div class="campo" id="imp-campo-novo-fornecedor" hidden>
+                        <label for="imp-fornecedor-nome">Nome do novo fornecedor</label>
+                        <input type="text" id="imp-fornecedor-nome" maxlength="120">
+                    </div>
+                    <div class="campo" id="imp-campo-cnpj" hidden>
+                        <label for="imp-fornecedor-cnpj">CNPJ do fornecedor <span class="opcional">(opcional)</span></label>
+                        <input type="text" id="imp-fornecedor-cnpj" maxlength="18" placeholder="00.000.000/0000-00">
+                    </div>
+                    <div class="campo">
+                        <label for="imp-maleta-nome">Nome da maleta</label>
+                        <input type="text" id="imp-maleta-nome" maxlength="120">
+                    </div>
+                    <div class="campo">
+                        <label for="imp-maleta-codigo">Código da maleta</label>
+                        <input type="text" id="imp-maleta-codigo" maxlength="20">
+                        <span class="dica">Vem do número do pedido; precisa ser único.</span>
+                    </div>
+                    <div class="campo">
+                        <label for="imp-data-entrada">Data de entrada</label>
+                        <input type="date" id="imp-data-entrada">
+                    </div>
+                    <div class="campo">
+                        <label for="imp-data-acerto">Data de acerto</label>
+                        <input type="date" id="imp-data-acerto">
+                    </div>
+                </div>
+                <ul class="lista-avisos" id="imp-avisos-maleta"></ul>
+
+                <h4 class="subtitulo-secao">Peças encontradas no PDF</h4>
+                <div class="resumo-importacao" id="imp-resumo"></div>
+                <div class="barra-ferramentas">
+                    <label class="opcao"><input type="checkbox" id="imp-so-problemas"> Mostrar só as linhas que precisam de atenção</label>
+                </div>
+                <div class="tabela-rolavel">
+                    <table class="tabela-importacao">
+                        <thead>
+                            <tr>
+                                <th>Importar</th>
+                                <th>Código do fornecedor</th>
+                                <th>Descrição</th>
+                                <th>Categoria</th>
+                                <th class="numero">Qtd.</th>
+                                <th class="numero">Valor unit.</th>
+                                <th class="numero">Total</th>
+                                <th>Conferência</th>
+                            </tr>
+                        </thead>
+                        <tbody id="imp-linhas"></tbody>
+                    </table>
+                </div>
+
+                <label class="opcao" id="imp-campo-reimportar" hidden>
+                    <input type="checkbox" id="imp-reimportar">
+                    Sei que este arquivo já foi importado e quero importar de novo
+                </label>
+
+                <div class="acoes acoes-importacao">
+                    <button type="button" id="imp-confirmar" disabled>Confirmar importação</button>
+                    <button type="button" class="botao-secundario" data-imp-cancelar>Cancelar importação</button>
+                    <span class="texto-suave" id="imp-status-confirmar"></span>
+                </div>
+            </div>
+
+            <!-- passo 3: concluído -->
+            <div id="imp-concluido" hidden>
+                <div id="imp-sucesso" class="mensagem mensagem--sucesso" role="status"></div>
+                <h4 class="subtitulo-secao">Etiquetas geradas</h4>
+                <p class="texto-suave">Cada peça física recebeu uma etiqueta própria. Use estes códigos para etiquetar as peças.</p>
+                <div class="tabela-rolavel">
+                    <table>
+                        <thead>
+                            <tr><th>Etiqueta</th><th>Peça</th><th>Código do fornecedor</th><th class="numero">Preço</th></tr>
+                        </thead>
+                        <tbody id="imp-etiquetas"></tbody>
+                    </table>
+                </div>
+                <div class="acoes">
+                    <button type="button" id="imp-imprimir">Imprimir lista de etiquetas</button>
+                    <button type="button" class="botao-secundario" id="imp-outra">Importar outra maleta</button>
+                    <button type="button" class="botao-secundario" data-imp-cancelar>Fechar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== MALETAS ATIVAS ===================== -->
         <p>Maletas ativas, com as peças recebidas, vendidas e disponíveis, o custo e o total vendido.</p>
 
         <p id="estado" class="texto-suave">Carregando maletas…</p>
@@ -45,7 +173,22 @@
             <tbody id="lista"></tbody>
         </table>
 
-        <p class="texto-suave">A entrada de novas maletas pelo sistema (com a geração das etiquetas) é a próxima etapa do projeto.</p>
+        <!-- ===================== HISTÓRICO ===================== -->
+        <section class="bloco" aria-labelledby="titulo-historico">
+            <h3 id="titulo-historico">Importações realizadas</h3>
+            <p class="texto-suave" id="hist-estado">Carregando…</p>
+            <div class="tabela-rolavel">
+                <table id="hist-tabela" hidden>
+                    <thead>
+                        <tr>
+                            <th>Data</th><th>Arquivo</th><th>Maleta</th><th>Fornecedor</th><th>Quem importou</th>
+                            <th class="numero">Peças</th><th class="numero">Modelos novos</th><th class="numero">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hist-linhas"></tbody>
+                </table>
+            </div>
+        </section>
     </main>
 
     <footer>
@@ -56,6 +199,8 @@
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/sessao.js"></script>
+    <script src="js/mascaras.js"></script>
     <script src="js/maletas.js"></script>
+    <script src="js/importacao.js"></script>
 </body>
 </html>

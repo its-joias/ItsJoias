@@ -1313,3 +1313,312 @@ td.acoes-linha button {
         align-items: flex-start;
     }
 }
+
+/* =====================================================================
+   Importação de maleta por PDF (maletas.html)
+   ===================================================================== */
+.area-arquivo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 14px 0;
+    padding: 28px 16px;
+    border: 2px dashed var(--borda);
+    border-radius: var(--raio);
+    color: var(--creme);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.area-arquivo:hover,
+.area-arquivo--sobre {
+    border-color: var(--dourado);
+    background: var(--superficie-hover);
+}
+
+.area-arquivo input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.area-arquivo:focus-within {
+    outline: 2px solid var(--dourado);
+    outline-offset: 3px;
+}
+
+.carregando {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 12px 0;
+    padding: 18px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+}
+
+.carregando[hidden] {
+    display: none;
+}
+
+.carregando p {
+    margin: 4px 0 0;
+    color: var(--texto-suave);
+}
+
+.girando {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--borda);
+    border-top-color: var(--dourado);
+    border-radius: 50%;
+    animation: girar 0.9s linear infinite;
+}
+
+@keyframes girar {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .girando { animation-duration: 3s; }
+}
+
+.subtitulo-secao {
+    margin: 26px 0 12px;
+    color: var(--creme);
+    font-size: 15px;
+}
+
+.lista-avisos {
+    margin: 10px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lista-avisos:empty {
+    display: none;
+}
+
+.aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 4px 0;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: normal;
+}
+
+.aviso-icone {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.aviso--erro { color: var(--creme); }
+.aviso--erro .aviso-icone { background: var(--vermelho); color: #182238; }
+.aviso--alerta .aviso-icone { background: var(--dourado); color: #182238; }
+.aviso--info { color: var(--texto-suave); }
+.aviso--info .aviso-icone { border: 1px solid var(--texto-suave); }
+
+.resumo-importacao {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.resumo-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.resumo-item strong {
+    color: var(--creme);
+    font-size: 17px;
+}
+
+.resumo-item--erro {
+    border-color: var(--vermelho);
+}
+
+.resumo-item--erro strong {
+    color: var(--vermelho);
+}
+
+.tabela-rolavel {
+    overflow-x: auto;
+}
+
+.tabela-importacao td {
+    padding: 10px 8px;
+    vertical-align: top;
+}
+
+.tabela-importacao input,
+.tabela-importacao select {
+    width: 100%;
+    min-width: 0;
+    padding: 7px 8px;
+    font-size: 13px;
+}
+
+.tabela-importacao .f-importar,
+.tabela-importacao .f-conferido {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--dourado);
+}
+
+.tabela-importacao .f-codigo { min-width: 105px; }
+.tabela-importacao .f-descricao { min-width: 220px; }
+.tabela-importacao .f-categoria { min-width: 120px; }
+.tabela-importacao .f-quantidade { width: 64px; text-align: right; }
+.tabela-importacao .f-valor { width: 92px; text-align: right; }
+.tabela-importacao .f-decisao { margin-top: 6px; }
+.tabela-importacao .f-conferencia { min-width: 230px; }
+
+.tabela-importacao .numero-linha {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+}
+
+.opcao-pequena {
+    margin-top: 6px;
+    font-size: 12px;
+}
+
+.texto-lido {
+    display: block;
+    margin-top: 4px;
+    color: var(--texto-suave);
+    font-size: 11px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.tabela-importacao tr.linha-erro {
+    box-shadow: inset 4px 0 0 var(--vermelho);
+    background: rgba(240, 120, 120, 0.07);
+}
+
+.tabela-importacao tr.linha-alerta {
+    box-shadow: inset 4px 0 0 var(--dourado);
+}
+
+.tabela-importacao tr.linha-ignorada td:not(:first-child) {
+    opacity: 0.45;
+}
+
+.acoes-importacao {
+    align-items: center;
+    margin-top: 18px;
+}
+
+@media (max-width: 768px) {
+    /* no celular, cada linha vira um cartão com rótulos */
+    .tabela-importacao {
+        display: block;
+        white-space: normal;
+    }
+
+    .tabela-importacao thead {
+        display: none;
+    }
+
+    .tabela-importacao tbody,
+    .tabela-importacao td {
+        display: block;
+    }
+
+    .tabela-importacao tr {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-bottom: 12px;
+        border: 1px solid var(--borda);
+        border-radius: 10px;
+    }
+
+    /* quantidade, valor e total lado a lado; o resto ocupa a linha inteira */
+    .tabela-importacao td {
+        grid-column: 1 / -1;
+    }
+
+    .tabela-importacao td.numero {
+        grid-column: auto;
+        padding-top: 4px;
+    }
+
+    .tabela-importacao .f-quantidade,
+    .tabela-importacao .f-valor {
+        width: 100%;
+    }
+
+    .tabela-importacao tr[hidden] {
+        display: none;
+    }
+
+    .tabela-importacao td {
+        border-bottom: none;
+        text-align: left;
+    }
+
+    .tabela-importacao td::before {
+        content: attr(data-rotulo);
+        display: block;
+        margin-bottom: 4px;
+        color: var(--texto-suave);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .tabela-importacao .f-descricao,
+    .tabela-importacao .f-conferencia {
+        min-width: 0;
+    }
+}
+
+@media print {
+    header,
+    footer,
+    nav,
+    .cabecalho-pagina,
+    #imp-concluido .acoes,
+    #imp-concluido > .mensagem,
+    main > :not(#importacao),
+    #importacao > h3 {
+        display: none !important;
+    }
+
+    body,
+    #importacao {
+        border: none;
+        background: #fff;
+        color: #000;
+    }
+
+    #importacao td,
+    #importacao th,
+    #importacao h4,
+    #importacao p {
+        color: #000;
+    }
+}

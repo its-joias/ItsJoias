@@ -30,4 +30,5 @@
     }
 
     carregar();
+    window.ItsJoiasMaletas = { recarregar: carregar };
 })();
