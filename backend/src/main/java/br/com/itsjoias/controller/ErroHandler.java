@@ -57,6 +57,18 @@ public class ErroHandler {
 		return ResponseEntity.badRequest().body(ErroResposta.de("Os dados enviados estão em um formato inválido."));
 	}
 
+	@ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+	public ResponseEntity<ErroResposta> arquivoGrande(Exception erro) {
+		return ResponseEntity.status(HttpStatus.CONTENT_TOO_LARGE)
+				.body(ErroResposta.de("O arquivo é grande demais (máximo 15 MB)."));
+	}
+
+	@ExceptionHandler({ org.springframework.web.multipart.MultipartException.class,
+			org.springframework.web.multipart.support.MissingServletRequestPartException.class })
+	public ResponseEntity<ErroResposta> envioInvalido(Exception erro) {
+		return ResponseEntity.badRequest().body(ErroResposta.de("Não foi possível receber o arquivo. Escolha o PDF de novo."));
+	}
+
 	@ExceptionHandler(RegraNegocioException.class)
 	public ResponseEntity<ErroResposta> regraNegocio(RegraNegocioException erro) {
 		return ResponseEntity.unprocessableContent().body(ErroResposta.de(erro.getMessage()));

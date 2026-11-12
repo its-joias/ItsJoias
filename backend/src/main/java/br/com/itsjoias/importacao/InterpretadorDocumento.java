@@ -34,7 +34,7 @@ public class InterpretadorDocumento {
 	private static final Pattern PEDIDO = Pattern.compile("PEDIDO\\s*N\\S{0,2}\\s*:?\\s*(\\d{3,12})");
 	private static final Pattern DATA_ACERTO = Pattern.compile("DATA\\s*(?:DE\\s*)?ACERTO\\D{0,3}(\\d{2}/\\d{2}/\\d{4})");
 	private static final Pattern DATA_CRIACAO = Pattern.compile("DATA\\s*(?:DE\\s*)?(?:CRIACAO|EMISSAO|ENTREGA)\\D{0,3}(\\d{2}/\\d{2}/\\d{4})");
-	private static final Pattern TOTAL_ITENS = Pattern.compile("VALOR\\s*TOTAL\\s*(?:DOS\\s*)?ITENS\\D{0,4}(\\d[\\d.,]*\\d)");
+	private static final Pattern TOTAL_ITENS = Pattern.compile("VALOR\\s*TOTAL\\s*(?:DOS\\s*)?ITENS\\D{0,8}(\\d[\\d.,]*\\d)");
 	private static final Pattern EMPRESA = Pattern.compile("([A-Z0-9][A-Z0-9 &.\\-]{2,60}?\\b(?:LTDA|EIRELI|S/?A|ME|EPP)\\b\\.?)");
 	/** Referência do fornecedor no começo da descrição, ex.: "TFB4110027 - BRI SJ OURO...". */
 	private static final Pattern REFERENCIA = Pattern.compile("[A-Z]{2,4}\\s?\\d{4,8}\\s*-\\s");
@@ -242,13 +242,20 @@ public class InterpretadorDocumento {
 	String limparDescricao(String texto) {
 		// números longos (códigos de barras repetidos ou da linha vizinha) não fazem parte da descrição
 		String t = texto.replaceAll("(?<![A-Za-z0-9])\\d{6,14}[,.]?(?![A-Za-z0-9])", " ").replaceAll("\\s+", " ").trim();
-		// começo: corta até a primeira palavra de abertura, se ela estiver logo no início
-		String norm = normalizar(t);
-		for (String palavra : palavrasDeAbertura) {
-			Matcher m = Pattern.compile("(?:^|[^A-Z])(" + Pattern.quote(palavra) + ")\\b").matcher(norm);
-			if (m.find() && m.start(1) > 0 && m.start(1) <= 20) {
-				t = t.substring(m.start(1));
-				break;
+		// começo com lixo ("Q/ANEL", "? ) BRINCO"): corta na palavra de abertura MAIS PRÓXIMA do início.
+		// Se a descrição já começa certa (BRINCO..., TFB4110027 - ...), não mexe.
+		String semPontas = t.replaceFirst("^[^A-Za-zÀ-ÿ0-9]+", "");
+		if (!comecaComPalavraDeAbertura(semPontas)) {
+			String norm = normalizar(t);
+			int corte = -1;
+			for (String palavra : palavrasDeAbertura) {
+				Matcher m = Pattern.compile("(?:^|[^A-Z])(" + Pattern.quote(palavra) + ")\\b").matcher(norm);
+				if (m.find() && m.start(1) <= 20 && (corte < 0 || m.start(1) < corte)) {
+					corte = m.start(1);
+				}
+			}
+			if (corte > 0) {
+				t = t.substring(corte);
 			}
 		}
 		// pontas: tokens sem letras/dígitos úteis ou "palavras" curtas com minúsculas (ruído do OCR)
