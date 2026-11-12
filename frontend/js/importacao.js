@@ -2,7 +2,7 @@
 // 1) escolher o PDF  2) o back lê e devolve a prévia  3) conferir/corrigir (o back confere de novo a cada
 // alteração)  4) confirmar (o back grava tudo de uma vez). Nenhuma conta nem regra é decidida aqui.
 (function () {
-    const { api, formato, criar } = window.ItsJoias;
+    const { api, formato, criar, perguntar } = window.ItsJoias;
     const { reaisDigitados } = window.ItsJoiasMascaras;
     const el = (id) => document.getElementById(id);
 
@@ -43,9 +43,12 @@
         secao.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    function fechar() {
-        if (previa && !el("imp-previa").hidden
-            && !confirm("Cancelar a importação? Nada foi salvo e as correções feitas serão perdidas.")) {
+    async function fechar() {
+        if (previa && !el("imp-previa").hidden && !await perguntar({
+            titulo: "Cancelar a importação?",
+            texto: "Nada foi salvo. As correções feitas nesta tela serão perdidas.",
+            sim: "Cancelar importação", nao: "Continuar conferindo", perigo: true,
+        })) {
             return;
         }
         previa = null;
@@ -431,8 +434,12 @@
     botaoConfirmar.addEventListener("click", async () => {
         if (!previa) return;
         const r = previa.resumo;
-        if (!confirm(`Confirmar a importação?\n\n${r.pecas} peças (${formato.reais(r.valorTotal)}) entrarão na maleta `
-            + `"${el("imp-maleta-nome").value}". Cada peça receberá uma etiqueta própria.`)) return;
+        if (!await perguntar({
+            titulo: "Confirmar a importação?",
+            texto: [`${formato.plural(r.pecas, "peça", "peças")} (${formato.reais(r.valorTotal)}) entrarão na maleta `
+                + `"${el("imp-maleta-nome").value}".`, "Cada peça receberá uma etiqueta própria."],
+            sim: "Confirmar importação",
+        })) return;
         botaoConfirmar.disabled = true;
         botaoConfirmar.textContent = "Importando…";
         esconderMensagem();

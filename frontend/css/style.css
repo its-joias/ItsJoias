@@ -1616,3 +1616,36 @@ td.acoes-linha button {
         color: #000;
     }
 }
+
+/* --- janela de confirmação (no lugar do confirm() do navegador) ------- */
+.janela-confirmacao {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    height: fit-content;
+    width: min(440px, calc(100vw - 32px));
+    padding: 22px 24px 16px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    background: var(--superficie);
+    color: var(--texto);
+}
+
+.janela-confirmacao::backdrop {
+    background: rgba(8, 14, 26, 0.7);
+}
+
+.janela-confirmacao h3 {
+    margin: 0 0 10px;
+    color: var(--creme);
+}
+
+.janela-confirmacao p {
+    margin: 0 0 8px;
+    line-height: 1.45;
+}
+
+.janela-confirmacao .acoes {
+    justify-content: flex-end;
+    margin-top: 18px;
+}

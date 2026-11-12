@@ -1,6 +1,6 @@
 // Clientes: lista vinda do banco, cadastro, edição, desativação e exclusão.
 (function () {
-    const { api, formato, criar } = window.ItsJoias;
+    const { api, formato, criar, perguntar } = window.ItsJoias;
     const mascaras = window.ItsJoiasMascaras;
 
     const el = (id) => document.getElementById(id);
@@ -102,7 +102,8 @@
     // ---- lista --------------------------------------------------------------------------
 
     async function excluir(cliente) {
-        if (!confirm(`Excluir ${cliente.nome}? Esta ação não pode ser desfeita.`)) return;
+        if (!await perguntar({ titulo: `Excluir ${cliente.nome}?`, texto: "Esta ação não pode ser desfeita.",
+            sim: "Excluir", perigo: true })) return;
         try {
             await api(`/api/clientes/${cliente.id}`, { metodo: "DELETE" });
             avisar("sucesso", "Cliente excluída.", cliente.nome);

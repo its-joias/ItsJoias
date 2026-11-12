@@ -158,5 +158,35 @@
         return el;
     }
 
-    window.ItsJoias = { api, ErroApi, entrar, sair, lerSessao, irParaLogin, formato, criar };
+    /**
+     * Pergunta de confirmação dentro da página (no lugar do confirm() do navegador, que congela a tela).
+     * opcoes: { titulo, texto, sim: "Confirmar", nao: "Voltar", perigo: false }. Devolve Promise<boolean>.
+     */
+    function perguntar(opcoes) {
+        return new Promise((resolver) => {
+            const janela = criar("dialog", "janela-confirmacao");
+            janela.setAttribute("aria-labelledby", "janela-titulo");
+            const titulo = criar("h3", null, opcoes.titulo);
+            titulo.id = "janela-titulo";
+            janela.append(titulo);
+            (Array.isArray(opcoes.texto) ? opcoes.texto : [opcoes.texto]).filter(Boolean)
+                .forEach((t) => janela.append(criar("p", null, t)));
+            const acoes = criar("div", "acoes");
+            const sim = criar("button", opcoes.perigo ? "botao-perigo" : null, opcoes.sim || "Confirmar");
+            const nao = criar("button", "botao-secundario", opcoes.nao || "Voltar");
+            sim.type = nao.type = "button";
+            acoes.append(sim, nao);
+            janela.append(acoes);
+
+            let resposta = false;
+            sim.addEventListener("click", () => { resposta = true; janela.close(); });
+            nao.addEventListener("click", () => janela.close());
+            janela.addEventListener("close", () => { janela.remove(); resolver(resposta); }); // Esc = Voltar
+            document.body.append(janela);
+            janela.showModal();
+            nao.focus(); // o foco começa no botão seguro
+        });
+    }
+
+    window.ItsJoias = { api, ErroApi, entrar, sair, lerSessao, irParaLogin, formato, criar, perguntar };
 })();

@@ -2,7 +2,7 @@
 // O front só junta o que a vendedora escolheu. Peças, total e parcelas são calculados pelo
 // back-end (POST /api/vendas/previa) e gravados por ele (POST /api/vendas).
 (function () {
-    const { api, formato, criar } = window.ItsJoias;
+    const { api, formato, criar, perguntar } = window.ItsJoias;
     const { reaisDigitados } = window.ItsJoiasMascaras;
     const el = (id) => document.getElementById(id);
 
@@ -220,7 +220,7 @@
         if (!previa) return;
         const dados = pedido();
         const resumo = `${previa.clienteNome}: ${formato.reais(previa.valorTotal)} em ${formato.plural(previa.parcelas.length, "parcela", "parcelas")}`;
-        if (!confirm(`Confirmar a venda?\n\n${resumo}`)) return;
+        if (!await perguntar({ titulo: "Confirmar a venda?", texto: resumo, sim: "Confirmar venda" })) return;
         botaoConfirmar.disabled = true;
         botaoConfirmar.textContent = "Registrando…";
         try {
