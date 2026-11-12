@@ -101,7 +101,8 @@ public class InterpretadorDocumento {
 		for (String l : linhas) {
 			Matcher m = EMPRESA.matcher(normalizar(l));
 			if (m.find()) {
-				empresa = m.group(1).trim();
+				// letra solta no começo é sujeira do OCR ("E IT STORE..."); "A" e "O" podem ser artigo do nome
+				empresa = m.group(1).trim().replaceFirst("^(?:[^AO\\s]\\s+)+", "");
 				break;
 			}
 		}
