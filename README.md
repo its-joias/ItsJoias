@@ -165,3 +165,119 @@ As regras de negócio ficam no back-end. O banco é uma **rede de segurança** e
 ---
 
 ## 📁 Estrutura do Projeto
+
+```
+ItsJoias/
+├── frontend/              telas (HTML, CSS e JavaScript), publicadas na Vercel
+│   ├── login.html         entrada no sistema
+│   ├── index.html         Painel (visualização geral)
+│   ├── vendas.html        nova venda
+│   ├── clientes.html      cadastro e lista de clientes
+│   ├── maletas.html       maletas ativas
+│   ├── produtos.html      peças disponíveis
+│   ├── css/style.css
+│   └── js/                config.js (endereço da API), api.js (login e chamadas), uma por tela
+├── backend/               API REST em Spring Boot, publicada no Render
+│   ├── Dockerfile
+│   └── src/main/java/br/com/itsjoias/
+│       ├── controller/    rotas /api/...
+│       ├── service/       regras de negócio (venda, painel, clientes)
+│       ├── repository/    acesso ao banco
+│       ├── dto/           formatos de entrada e saída
+│       ├── seguranca/     login (Supabase Auth) e perfis
+│       └── config/        segurança, CORS, relógio
+└── database/              script completo do banco e alterações
+```
+
+---
+
+## 🏗️ Arquitetura e publicação
+
+```
+Navegador ──► Vercel (frontend) ──► Render (backend Spring Boot) ──► Supabase (PostgreSQL + Auth)
+```
+
+| Peça | Onde roda | O que faz |
+|------|-----------|-----------|
+| **Frontend** | Vercel (`itsjoias.vercel.app`) | Só exibe e envia dados; nenhuma conta de dinheiro é feita no navegador |
+| **Backend** | Render (Docker, Java 21) | Confere o login, aplica as regras e fala com o banco |
+| **Banco** | Supabase (PostgreSQL) | Guarda os fatos; recusa o que nunca pode acontecer |
+| **Login** | Supabase Auth | Guarda e-mail e senha; o ItsJoias nunca guarda senha |
+
+**Segurança em camadas**
+- O back confere a assinatura do token de login em cada requisição e o perfil de quem está usando.
+- As tabelas do Supabase não aceitam acesso direto pela API pública (RLS ligado, sem políticas, e
+  permissões dos papéis `anon`/`authenticated` retiradas): o único caminho até os dados é o back.
+- O CORS só aceita o site da Vercel e a máquina local.
+
+### Perfis
+
+| Perfil | Pode |
+|--------|------|
+| **Proprietária** (Leide) | Tudo, inclusive excluir |
+| **Desenvolvimento** (Teste) | Consultar, cadastrar e editar; não exclui |
+
+As senhas são criadas no painel do Supabase (*Authentication → Users*); cada login é ligado a um
+perfil na tabela `usuarios` (colunas `auth_user_id` e `perfil`).
+
+### Variáveis de ambiente do backend
+
+| Variável | Exemplo | Segredo? |
+|----------|---------|----------|
+| `DB_URL` | `jdbc:postgresql://<host-do-session-pooler>:5432/postgres?sslmode=require` | não |
+| `DB_USERNAME` | `postgres.<ref-do-projeto>` | não |
+| `DB_PASSWORD` | senha do banco no Supabase | **sim** |
+| `SUPABASE_URL` | `https://<ref-do-projeto>.supabase.co` | não |
+| `SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_...` (chave pública) | não |
+| `SUPABASE_JWT_SECRET` | só se o projeto usar o segredo JWT antigo (HS256) | **sim** |
+| `CORS_ORIGENS` | opcional; padrão: Vercel + localhost | não |
+
+Segredos ficam **só** no painel do Render (ou no seu computador), nunca no GitHub.
+A chave `service_role` do Supabase não é usada.
+
+---
+
+## ▶️ Como executar na sua máquina
+
+1. **Banco:** crie o banco `its_joias` no pgAdmin e rode `database/its_joias_banco.sql` (veja `database/README.md`).
+2. **Backend** (pasta `backend`), com as variáveis da tabela acima definidas:
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+   A API sobe em `http://localhost:8080`.
+3. **Frontend:** abra a pasta `frontend` com um servidor simples, por exemplo:
+   ```bash
+   python3 -m http.server 5500
+   ```
+   e acesse `http://localhost:5500/login.html`. Na máquina local, o front chama `localhost:8080` sozinho.
+4. **Testes** (pasta `backend`), com um banco de teste vazio (`its_joias_teste`):
+   ```bash
+   ./mvnw test
+   ```
+
+---
+
+## 🗺️ Roadmap
+
+| Etapa | Situação |
+|-------|----------|
+| Banco de dados completo (tabelas, views, triggers) | ✅ |
+| Painel da vendedora | ✅ |
+| Login e perfis (Supabase Auth) | ✅ |
+| Clientes: cadastrar, listar, editar, desativar, excluir | ✅ |
+| Nova venda (etiqueta ou modelo, à vista ou parcelado, entrada, +10%) | ✅ |
+| Publicação: back no Render, front na Vercel | 🔄 em andamento |
+| Entrada de maleta pelo sistema (gera as etiquetas) | ⏳ próxima |
+| Registrar pagamentos depois da venda, estorno e cancelamento | ⏳ |
+| Tema claro e escuro | ⏳ |
+| Cobranças (fase 1.5) | ⏳ |
+| Interface em React | ⏳ |
+
+---
+
+## 👩‍💻 Equipe
+
+- **Desenvolvimento: Flavia Fernandes** ([@b0l4da](https://github.com/b0l4da))
+- Maria Clara ([@mclarafl](https://github.com/mclarafl))
+
+Projeto de estudo feito para a marca **Leide Farias**.
