@@ -53,6 +53,23 @@ e o Spring para de subir.
 
 ---
 
+## Banco de teste (para `./mvnw test`)
+
+Os testes do Painel (`PainelCalculoTest`) fazem as contas no Postgres de verdade, porque o cálculo é SQL
+em cima das views e das triggers. Eles precisam de um banco **só para teste, vazio**. Cada teste monta
+o próprio cenário e desfaz tudo no final (rollback), então o banco continua vazio.
+
+1. No pgAdmin, crie um banco vazio chamado **`its_joias_teste`**.
+2. Rode nele o `its_joias_banco.sql` e, em seguida, cada arquivo de `alteracoes/`, em ordem de data.
+3. Se o seu usuário ou senha não forem `postgres` / sem senha, defina as variáveis
+   `TEST_DB_URL`, `TEST_DB_USERNAME` e `TEST_DB_PASSWORD` (padrões em
+   `backend/src/test/resources/application-teste.properties`).
+
+> ⚠️ **Nunca** aponte os testes para o Supabase nem para o banco que você usa no dia a dia: o teste
+> recusa rodar se encontrar vendas ou maletas no banco.
+
+---
+
 ## O que nunca vai para o repositório
 
 - Backups e dumps do banco (`.backup`, `.dump`), com ou sem dados.

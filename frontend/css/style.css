@@ -351,3 +351,350 @@ footer p {
         font-size: 27px;
     }
 }
+/* =====================================================================
+   Painel (index.html)
+   Valores na mesma fonte do texto, com números tabulares (alinham na vertical).
+   Cores da barra validadas para o fundo escuro (daltonismo e contraste).
+   ===================================================================== */
+
+:root {
+    --barra-vendidas: #B98A12;
+    --barra-disponiveis: #5786CC;
+    --barra-perdidas: #C2618C;
+}
+
+.dinheiro,
+.cartao-valor,
+.parcela-valor,
+.maleta-valores dd,
+.maleta-contagem {
+    font-family: inherit;
+    font-variant-numeric: tabular-nums;
+}
+
+.painel-aviso {
+    margin-bottom: 20px;
+    padding: 16px 20px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    background: var(--superficie);
+}
+
+.painel-aviso strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--creme);
+}
+
+.painel-aviso p {
+    margin-bottom: 0;
+}
+
+.painel-aviso--erro {
+    border-color: var(--vermelho);
+}
+
+.painel-aviso--erro p {
+    margin-bottom: 12px;
+}
+
+.painel-aviso--erro button {
+    margin-bottom: 0;
+}
+
+/* --- cartões ---------------------------------------------------------- */
+
+.painel-cartoes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.cartao {
+    padding: 16px 18px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    background: var(--superficie);
+}
+
+.cartao .cartao-rotulo {
+    margin: 0 0 6px;
+    color: var(--texto-suave);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.cartao .cartao-valor {
+    margin: 0 0 4px;
+    color: var(--creme);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.cartao .cartao-nota {
+    margin: 0;
+    font-size: 12px;
+}
+
+.cartao--alerta {
+    border-color: var(--vermelho);
+}
+
+.cartao--alerta .cartao-nota {
+    color: var(--vermelho);
+}
+
+/* --- blocos ----------------------------------------------------------- */
+
+.painel-blocos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.bloco {
+    display: flex;
+    flex-direction: column;
+    padding: 18px 20px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    background: var(--superficie);
+}
+
+#painel-conteudo > .bloco {
+    margin-top: 16px;
+}
+
+.bloco h3 {
+    margin: 0 0 12px;
+}
+
+.bloco-lista,
+.maletas {
+    flex: 1;
+    list-style: none;
+}
+
+.bloco-vazio {
+    flex: 1;
+    margin: 0;
+}
+
+.bloco .bloco-rodape {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 12px 0 0;
+    border-top: 1px solid var(--borda);
+    color: var(--texto-suave);
+    font-size: 13px;
+    text-align: left;
+}
+
+.bloco-rodape strong {
+    color: var(--creme);
+    font-size: 16px;
+}
+
+.parcela {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--borda);
+}
+
+.parcela:last-child {
+    border-bottom: none;
+}
+
+.parcela-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0;
+}
+
+.parcela-cliente {
+    color: var(--creme);
+    font-weight: 700;
+}
+
+.parcela-detalhe {
+    color: var(--texto-suave);
+    font-size: 12px;
+}
+
+.parcela-valor {
+    color: var(--creme);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.chip {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.chip--atraso {
+    border: 1px solid var(--vermelho);
+    background: rgba(240, 120, 120, 0.14);
+    color: var(--vermelho);
+}
+
+/* --- maletas ---------------------------------------------------------- */
+
+.legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin-bottom: 8px;
+    color: var(--texto-suave);
+    font-size: 12px;
+    list-style: none;
+}
+
+.legenda[hidden] {
+    display: none;
+}
+
+.legenda li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legenda-cor {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.cor-vendidas { background: var(--barra-vendidas); }
+.cor-disponiveis { background: var(--barra-disponiveis); }
+.cor-perdidas { background: var(--barra-perdidas); }
+
+.maleta {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--borda);
+}
+
+.maleta:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.maleta-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin-bottom: 8px;
+}
+
+.maleta-nome {
+    display: block;
+    color: var(--creme);
+    font-weight: 700;
+}
+
+.maleta-detalhe {
+    color: var(--texto-suave);
+    font-size: 12px;
+}
+
+/* barra fina: partes separadas por 2px da cor do fundo, pontas arredondadas */
+.barra {
+    display: flex;
+    gap: 2px;
+    height: 8px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--superficie);
+}
+
+.barra-parte {
+    min-width: 4px;
+    flex-basis: 0;
+}
+
+.barra-parte:first-child {
+    border-radius: 999px 0 0 999px;
+}
+
+.barra-parte:last-child {
+    border-radius: 0 999px 999px 0;
+}
+
+.barra-parte:only-child {
+    border-radius: 999px;
+}
+
+.maleta .maleta-contagem {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 16px;
+    margin: 8px 0 6px;
+    color: var(--texto);
+    font-size: 12px;
+}
+
+.maleta-valores {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: start;
+    gap: 2px 12px;
+    font-size: 13px;
+}
+
+.maleta-valores dt {
+    color: var(--texto-suave);
+}
+
+.maleta-valores dd {
+    color: var(--creme);
+    font-weight: 700;
+}
+
+@media (min-width: 1200px) {
+    .painel-cartoes {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .painel-cartoes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .cartao {
+        padding: 12px 14px;
+    }
+
+    .cartao .cartao-valor {
+        font-size: 18px;
+    }
+
+    .painel-blocos {
+        grid-template-columns: 1fr;
+    }
+
+    .bloco {
+        padding: 16px;
+    }
+}
