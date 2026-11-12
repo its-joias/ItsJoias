@@ -53,6 +53,44 @@ e o Spring para de subir.
 
 ---
 
+## Conectar o Spring ao Supabase (pelo Codespaces)
+
+O `application.properties` lê três variáveis de ambiente. No Codespaces, elas são cadastradas como
+**secrets**: no GitHub, *Settings → Codespaces → Secrets → New secret*, liberando para o repositório
+`itsjoias` em *Repository access*.
+
+| Secret | Valor |
+|--------|-------|
+| `DB_URL` | `jdbc:postgresql://<host-do-pooler>:5432/postgres?sslmode=require` |
+| `DB_USERNAME` | `postgres.<ref-do-projeto>` (no pooler, o usuário leva o ref do projeto no final) |
+| `DB_PASSWORD` | a senha do banco do projeto no Supabase |
+
+- O **host** sai de *Connect → Session pooler* no painel do Supabase. O projeto está na região
+  **us-east-2**, então o host tem `us-east-2` no nome. O Supabase mostra a URL como `postgresql://...`:
+  troque o começo por `jdbc:postgresql://`.
+- Use o **Session pooler**, não o Transaction pooler: o `SET TIME ZONE` do `application.properties`
+  só se mantém no modo sessão.
+- Depois de criar ou mudar um secret, **reinicie o Codespace** (os secrets só carregam quando ele inicia).
+- Esqueceu a senha? *Project Settings → Database → Reset database password*, e atualize o secret.
+  Quem mais usa o banco também precisa atualizar.
+
+Para conferir se os secrets carregaram (mostra só se existem, sem mostrar a senha):
+
+```bash
+echo "URL: ${DB_URL:-FALTANDO}"; echo "Usuário: ${DB_USERNAME:-FALTANDO}"; [ -n "$DB_PASSWORD" ] && echo "Senha: ok" || echo "Senha: FALTANDO"
+```
+
+Erros mais comuns ao rodar `./mvnw spring-boot:run` na pasta `backend`:
+
+| Mensagem | Causa |
+|----------|-------|
+| `Connection refused` com `localhost` | os secrets não carregaram (falta reiniciar o Codespace) |
+| `Tenant or user not found` | host com região errada, ou usuário sem o `.<ref-do-projeto>` no final |
+| `password authentication failed` | senha errada, ou o secret não foi atualizado depois de trocar a senha |
+| `UnknownHostException` | erro de digitação no host |
+
+---
+
 ## O que nunca vai para o repositório
 
 - Backups e dumps do banco (`.backup`, `.dump`), com ou sem dados.
