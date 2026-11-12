@@ -21,7 +21,7 @@
             const sair = criar("button", "botao-secundario botao-pequeno", "Sair");
             sair.type = "button";
             sair.addEventListener("click", () => window.ItsJoias.sair());
-            topo.replaceChildren(quem, sair);
+            topo.replaceChildren(window.ItsJoias.botaoTema(), quem, sair);
         }
     });
 })();

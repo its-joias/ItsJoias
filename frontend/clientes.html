@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clientes | Organização Its Joias</title>
+    <meta name="theme-color" content="#0E1728">
+    <script src="js/tema.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -29,10 +31,13 @@
             <button type="button" id="botao-nova">+ Nova cliente</button>
         </div>
 
-        <div id="mensagem" class="mensagem" role="status" aria-live="polite" hidden></div>
-
-        <section id="formulario" class="cartao-form" aria-labelledby="titulo-form" hidden>
-            <h3 id="titulo-form">Nova cliente</h3>
+        <dialog id="formulario" class="modal" aria-labelledby="titulo-form">
+            <div class="modal-cabecalho">
+                <h3 id="titulo-form">Nova cliente</h3>
+                <button type="button" class="botao-fechar" data-fechar-modal aria-label="Fechar">✕</button>
+            </div>
+            <div class="modal-corpo">
+            <div id="form-mensagem" class="mensagem" role="alert" hidden></div>
             <form id="form-cliente" novalidate>
                 <div class="form-grade">
                     <div class="campo campo-largo" data-campo="nome">
@@ -81,17 +86,18 @@
 
                 <div class="acoes">
                     <button type="submit" id="botao-salvar">Salvar cliente</button>
-                    <button type="button" class="botao-secundario" id="botao-cancelar">Cancelar</button>
+                    <button type="button" class="botao-secundario" data-fechar-modal>Cancelar</button>
                 </div>
             </form>
-        </section>
+            </div>
+        </dialog>
 
         <div class="barra-ferramentas">
             <input type="search" id="busca" placeholder="Buscar por nome ou telefone" aria-label="Buscar cliente">
             <label class="opcao"><input type="checkbox" id="mostrar-inativas"> Mostrar desativadas</label>
         </div>
 
-        <p id="lista-estado" class="texto-suave">Carregando clientes…</p>
+        <p id="lista-estado" class="carregando-texto">Carregando clientes…</p>
         <table id="tabela" hidden>
             <thead>
                 <tr>
@@ -113,6 +119,7 @@
 
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/sessao.js"></script>
     <script src="js/mascaras.js"></script>
     <script src="js/clientes.js"></script>

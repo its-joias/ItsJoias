@@ -2,7 +2,7 @@
 // O front só junta o que a vendedora escolheu. Peças, total e parcelas são calculados pelo
 // back-end (POST /api/vendas/previa) e gravados por ele (POST /api/vendas).
 (function () {
-    const { api, formato, criar, perguntar } = window.ItsJoias;
+    const { api, formato, criar, perguntar, notificar } = window.ItsJoias;
     const { reaisDigitados } = window.ItsJoiasMascaras;
     const el = (id) => document.getElementById(id);
 
@@ -219,10 +219,12 @@
     botaoConfirmar.addEventListener("click", async () => {
         if (!previa) return;
         const dados = pedido();
-        const resumo = `${previa.clienteNome}: ${formato.reais(previa.valorTotal)} em ${formato.plural(previa.parcelas.length, "parcela", "parcelas")}`;
-        if (!await perguntar({ titulo: "Confirmar a venda?", texto: resumo, sim: "Confirmar venda" })) return;
+        const detalhes = [["Cliente", previa.clienteNome], ["Total", formato.reais(previa.valorTotal)],
+            ["Parcelas", formato.plural(previa.parcelas.length, "parcela", "parcelas")]];
+        if (!await perguntar({ titulo: "Confirmar a venda?", texto: "Confira os dados antes de registrar.", detalhes,
+            sim: "Confirmar venda" })) return;
         botaoConfirmar.disabled = true;
-        botaoConfirmar.textContent = "Registrando…";
+        botaoConfirmar.classList.add("processando");
         try {
             const criada = await api("/api/vendas", { metodo: "POST", corpo: dados });
             concluir(criada, dados.formaPagamento);
@@ -231,7 +233,7 @@
             botaoConfirmar.disabled = false;
             atualizarPrevia(); // a situação das peças pode ter mudado
         } finally {
-            botaoConfirmar.textContent = "Confirmar venda";
+            botaoConfirmar.classList.remove("processando");
         }
     });
 
@@ -252,6 +254,7 @@
         acoes.append(nova);
         caixa.append(acoes);
         caixa.hidden = false;
+        notificar({ tipo: "sucesso", titulo: `Venda #${criada.vendaId} registrada.`, texto: v.clienteNome });
         el("venda-form").hidden = true;
         window.scrollTo({ top: 0, behavior: "smooth" });
         carregarRecentes();
@@ -286,9 +289,11 @@
             }));
             el("tabela-recentes").hidden = vendas.length === 0;
             estado.hidden = vendas.length > 0;
+            estado.className = "vazio";
             estado.textContent = "Nenhuma venda registrada ainda.";
         } catch (erro) {
             estado.hidden = false;
+            estado.className = "mensagem mensagem--erro";
             estado.textContent = "Não foi possível carregar as vendas recentes. " + erro.message;
         }
     }

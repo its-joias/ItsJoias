@@ -2,7 +2,7 @@
 // 1) escolher o PDF  2) o back lê e devolve a prévia  3) conferir/corrigir (o back confere de novo a cada
 // alteração)  4) confirmar (o back grava tudo de uma vez). Nenhuma conta nem regra é decidida aqui.
 (function () {
-    const { api, formato, criar, perguntar } = window.ItsJoias;
+    const { api, formato, criar, perguntar, notificar } = window.ItsJoias;
     const { reaisDigitados } = window.ItsJoiasMascaras;
     const el = (id) => document.getElementById(id);
 
@@ -73,6 +73,17 @@
 
     function esconderMensagem() {
         el("imp-mensagem").hidden = true;
+    }
+
+    /** Avisos gerais do arquivo (duplicidade, soma diferente, OCR) em caixas de destaque, um por situação. */
+    function caixasDeAviso(avisos) {
+        const TITULOS = { ERRO: "Atenção", ALERTA: "Confira antes de confirmar", INFO: "Para saber" };
+        const TIPOS = { ERRO: "erro", ALERTA: "alerta", INFO: "info" };
+        return avisos.map((a) => {
+            const caixa = criar("div", "mensagem mensagem--" + TIPOS[a.nivel]);
+            caixa.append(criar("strong", null, TITULOS[a.nivel]), criar("p", null, a.mensagem));
+            return caixa;
+        });
     }
 
     function listaAvisos(avisos) {
@@ -289,7 +300,7 @@
     /** Atualiza só o que o servidor conferiu, sem recriar os campos (não perde o foco de quem digita). */
     function atualizar(p) {
         previa = p;
-        el("imp-avisos-gerais").replaceChildren(listaAvisos(p.avisosGerais));
+        el("imp-avisos-gerais").replaceChildren(...caixasDeAviso(p.avisosGerais));
         el("imp-avisos-maleta").replaceChildren(...listaAvisos(p.avisosMaleta).children);
 
         const r = p.resumo;
@@ -434,14 +445,19 @@
     botaoConfirmar.addEventListener("click", async () => {
         if (!previa) return;
         const r = previa.resumo;
+        const reimportando = previa.importacoesDoMesmoArquivo.length > 0;
         if (!await perguntar({
-            titulo: "Confirmar a importação?",
-            texto: [`${formato.plural(r.pecas, "peça", "peças")} (${formato.reais(r.valorTotal)}) entrarão na maleta `
-                + `"${el("imp-maleta-nome").value}".`, "Cada peça receberá uma etiqueta própria."],
-            sim: "Confirmar importação",
+            tipo: reimportando ? "alerta" : "importar",
+            titulo: reimportando ? "Importar este arquivo de novo?" : "Confirmar a importação?",
+            texto: reimportando
+                ? "Este PDF já foi importado antes. As peças serão cadastradas outra vez, com etiquetas novas."
+                : "Cada peça receberá uma etiqueta própria. Depois de confirmar, a importação fica no histórico.",
+            detalhes: [["Maleta", el("imp-maleta-nome").value], ["Peças", String(r.pecas)],
+                ["Modelos novos", String(r.modelosNovos)], ["Valor", formato.reais(r.valorTotal)]],
+            sim: reimportando ? "Importar de novo" : "Confirmar importação",
         })) return;
         botaoConfirmar.disabled = true;
-        botaoConfirmar.textContent = "Importando…";
+        botaoConfirmar.classList.add("processando");
         esconderMensagem();
         try {
             const resultado = await api("/api/importacoes/confirmar", { metodo: "POST", corpo: pedidoAtual() });
@@ -450,7 +466,7 @@
             mostrarMensagem("erro", "A importação não foi feita.", erro.message + " Nada foi salvo.");
             validar();
         } finally {
-            botaoConfirmar.textContent = "Confirmar importação";
+            botaoConfirmar.classList.remove("processando");
         }
     });
 
@@ -470,6 +486,7 @@
             return tr;
         }));
         mostrarPasso("concluido");
+        notificar({ tipo: "sucesso", titulo: "Importação concluída.", texto: `${r.maletaNome}: ${formato.plural(r.pecas, "peça", "peças")}.` });
         secao.scrollIntoView({ behavior: "smooth", block: "start" });
         if (window.ItsJoiasMaletas) window.ItsJoiasMaletas.recarregar();
         carregarHistorico();
@@ -491,9 +508,11 @@
             }));
             el("hist-tabela").hidden = lista.length === 0;
             estado.hidden = lista.length > 0;
+            estado.className = "vazio";
             estado.textContent = "Nenhuma importação feita ainda.";
         } catch (erro) {
             estado.hidden = false;
+            estado.className = "mensagem mensagem--erro";
             estado.textContent = "Não foi possível carregar o histórico. " + erro.message;
         }
     }

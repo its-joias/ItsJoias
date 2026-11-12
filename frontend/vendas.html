@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nova venda | Organização Its Joias</title>
+    <meta name="theme-color" content="#0E1728">
+    <script src="js/tema.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -126,7 +128,7 @@
 
         <section class="bloco" aria-labelledby="titulo-recentes">
             <h3 id="titulo-recentes">Vendas recentes</h3>
-            <p class="texto-suave" id="recentes-estado">Carregando…</p>
+            <p class="carregando-texto" id="recentes-estado">Carregando vendas…</p>
             <table id="tabela-recentes" hidden>
                 <thead>
                     <tr>
@@ -150,6 +152,7 @@
 
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/sessao.js"></script>
     <script src="js/mascaras.js"></script>
     <script src="js/vendas.js"></script>

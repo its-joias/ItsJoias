@@ -1,6 +1,6 @@
 // Clientes: lista vinda do banco, cadastro, edição, desativação e exclusão.
 (function () {
-    const { api, formato, criar, perguntar } = window.ItsJoias;
+    const { api, formato, criar, perguntar, notificar, modal } = window.ItsJoias;
     const mascaras = window.ItsJoiasMascaras;
 
     const el = (id) => document.getElementById(id);
@@ -8,7 +8,7 @@
     const form = el("form-cliente");
     const tituloForm = el("titulo-form");
     const botaoSalvar = el("botao-salvar");
-    const mensagem = el("mensagem");
+    const mensagem = el("form-mensagem");
     const lista = el("lista");
     const tabela = el("tabela");
     const estado = el("lista-estado");
@@ -23,8 +23,9 @@
 
     // ---- mensagens ----------------------------------------------------------------------
 
-    function avisar(tipo, titulo, texto) {
-        mensagem.className = "mensagem mensagem--" + tipo;
+    /** Erro dentro do modal (perto dos campos); sucesso e erros fora do modal viram aviso flutuante. */
+    function erroNoFormulario(titulo, texto) {
+        mensagem.className = "mensagem mensagem--erro";
         mensagem.replaceChildren(criar("strong", null, titulo));
         if (texto) mensagem.append(criar("p", null, texto));
         mensagem.hidden = false;
@@ -62,18 +63,14 @@
             CAMPOS.forEach((c) => { el(c).value = cliente[c] || ""; });
             el("ativa").checked = cliente.ativo;
         }
-        secaoForm.hidden = false;
-        secaoForm.scrollIntoView({ behavior: "smooth", block: "start" });
-        el("nome").focus({ preventScroll: true });
+        mensagem.hidden = true;
+        modal.abrir(secaoForm);
+        el("nome").focus();
     }
 
-    function fecharForm() {
-        secaoForm.hidden = true;
-        editandoId = null;
-    }
+    secaoForm.addEventListener("close", () => { editandoId = null; });
 
-    el("botao-nova").addEventListener("click", () => { mensagem.hidden = true; abrirForm(null); });
-    el("botao-cancelar").addEventListener("click", fecharForm);
+    el("botao-nova").addEventListener("click", () => abrirForm(null));
 
     form.addEventListener("submit", async (evento) => {
         evento.preventDefault();
@@ -82,34 +79,41 @@
         CAMPOS.forEach((c) => { dados[c] = el(c).value.trim() || null; });
         if (editandoId) dados.ativo = el("ativa").checked;
 
+        const editando = editandoId;
         botaoSalvar.disabled = true;
+        botaoSalvar.classList.add("processando");
         try {
-            const salva = editandoId
-                ? await api(`/api/clientes/${editandoId}`, { metodo: "PUT", corpo: dados })
+            const salva = editando
+                ? await api(`/api/clientes/${editando}`, { metodo: "PUT", corpo: dados })
                 : await api("/api/clientes", { metodo: "POST", corpo: dados });
-            fecharForm();
-            avisar("sucesso", editandoId ? "Alterações salvas." : "Cliente cadastrada.", salva.nome);
+            modal.fechar(secaoForm);
+            notificar({ tipo: "sucesso", titulo: editando ? "Alterações salvas." : "Cliente cadastrada.", texto: salva.nome });
             await carregar();
         } catch (erro) {
             mostrarErrosCampos(erro.campos);
-            avisar("erro", "Não foi possível salvar.", erro.message);
+            erroNoFormulario("Não foi possível salvar.", erro.message);
             mensagem.scrollIntoView({ behavior: "smooth", block: "nearest" });
         } finally {
             botaoSalvar.disabled = false;
+            botaoSalvar.classList.remove("processando");
         }
     });
 
     // ---- lista --------------------------------------------------------------------------
 
     async function excluir(cliente) {
-        if (!await perguntar({ titulo: `Excluir ${cliente.nome}?`, texto: "Esta ação não pode ser desfeita.",
-            sim: "Excluir", perigo: true })) return;
+        if (!await perguntar({
+            tipo: "perigo", titulo: `Excluir ${cliente.nome}?`,
+            texto: "A cliente sai do cadastro. Esta ação não pode ser desfeita.",
+            detalhes: [["Telefone", cliente.telefone], ["Compras", String(cliente.quantidadeVendas)]],
+            sim: "Excluir cliente", nao: "Manter",
+        })) return;
         try {
             await api(`/api/clientes/${cliente.id}`, { metodo: "DELETE" });
-            avisar("sucesso", "Cliente excluída.", cliente.nome);
+            notificar({ tipo: "sucesso", titulo: "Cliente excluída.", texto: cliente.nome });
             await carregar();
         } catch (erro) {
-            avisar("erro", "Não foi possível excluir.", erro.message);
+            notificar({ tipo: "erro", titulo: "Não foi possível excluir.", texto: erro.message });
         }
     }
 
@@ -127,7 +131,7 @@
         const acoes = criar("td", "acoes-linha");
         const editar = criar("button", "botao-secundario botao-pequeno", "Editar");
         editar.type = "button";
-        editar.addEventListener("click", () => { mensagem.hidden = true; abrirForm(c); });
+        editar.addEventListener("click", () => abrirForm(c));
         const apagar = criar("button", "botao-perigo botao-pequeno", "Excluir");
         apagar.type = "button";
         apagar.dataset.somente = "PROPRIETARIA";

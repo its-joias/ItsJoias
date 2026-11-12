@@ -45,7 +45,7 @@ function mostrarCarregando() {
     elPainel.setAttribute("aria-busy", "true");
     elData.textContent = "Carregando o painel…";
     elAviso.className = "painel-aviso";
-    elAviso.replaceChildren(criar("p", null, "Buscando os números atualizados…"));
+    elAviso.replaceChildren(criar("p", "carregando-texto", "Buscando os números atualizados…"));
     elAviso.hidden = false;
     elConteudo.hidden = true;
 }

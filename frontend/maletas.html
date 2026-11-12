@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maletas | Organização Its Joias</title>
+    <meta name="theme-color" content="#0E1728">
+    <script src="js/tema.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -119,10 +121,11 @@
                     </table>
                 </div>
 
-                <label class="opcao" id="imp-campo-reimportar" hidden>
-                    <input type="checkbox" id="imp-reimportar">
-                    Sei que este arquivo já foi importado e quero importar de novo
-                </label>
+                <div class="mensagem mensagem--alerta" id="imp-campo-reimportar" hidden>
+                    <strong>Este arquivo já foi importado</strong>
+                    <label class="opcao"><input type="checkbox" id="imp-reimportar">
+                        Sei disso e quero importar de novo</label>
+                </div>
 
                 <div class="acoes acoes-importacao">
                     <button type="button" id="imp-confirmar" disabled>Confirmar importação</button>
@@ -155,7 +158,7 @@
         <!-- ===================== MALETAS ATIVAS ===================== -->
         <p>Maletas ativas, com as peças recebidas, vendidas e disponíveis, o custo e o total vendido.</p>
 
-        <p id="estado" class="texto-suave">Carregando maletas…</p>
+        <p id="estado" class="carregando-texto">Carregando maletas…</p>
         <table id="tabela" hidden>
             <thead>
                 <tr>
@@ -176,7 +179,7 @@
         <!-- ===================== HISTÓRICO ===================== -->
         <section class="bloco" aria-labelledby="titulo-historico">
             <h3 id="titulo-historico">Importações realizadas</h3>
-            <p class="texto-suave" id="hist-estado">Carregando…</p>
+            <p class="carregando-texto" id="hist-estado">Carregando importações…</p>
             <div class="tabela-rolavel">
                 <table id="hist-tabela" hidden>
                     <thead>
@@ -197,6 +200,7 @@
 
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/sessao.js"></script>
     <script src="js/mascaras.js"></script>
     <script src="js/maletas.js"></script>
