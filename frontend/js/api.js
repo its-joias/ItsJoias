@@ -34,8 +34,9 @@
     }
 
     function irParaLogin() {
-        const voltar = encodeURIComponent(location.pathname.split("/").pop() + location.search);
-        location.href = "login.html?voltar=" + voltar;
+        // volta para a página em que a pessoa estava; na página inicial ("/") não precisa
+        const pagina = location.pathname.split("/").pop();
+        location.href = pagina ? "login.html?voltar=" + encodeURIComponent(pagina + location.search) : "login.html";
     }
 
     async function chamar(caminho, metodo, corpo, token) {

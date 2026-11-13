@@ -96,6 +96,9 @@ public class LeitorPdf {
 				if (r.texto().replaceAll("[^A-Za-zÀ-ÿ]", "").length() < MINIMO_DE_LETRAS_POR_PAGINA) {
 					digital = false;
 				} else {
+					if (p > 1) {
+						texto.add(InterpretadorDocumento.QUEBRA_DE_PAGINA);
+					}
 					texto.addAll(r.texto().lines().toList());
 				}
 			}
@@ -115,6 +118,10 @@ public class LeitorPdf {
 		List<String> principal = new ArrayList<>();
 		List<String> secundaria = new ArrayList<>();
 		for (int p = 1; p <= paginas; p++) {
+			if (p > 1) {
+				principal.add(InterpretadorDocumento.QUEBRA_DE_PAGINA);
+				secundaria.add(InterpretadorDocumento.QUEBRA_DE_PAGINA);
+			}
 			principal.addAll(ocr(imagem(arquivo, pasta, p, 300), p));
 			secundaria.addAll(ocr(imagem(arquivo, pasta, p, 200), p));
 		}

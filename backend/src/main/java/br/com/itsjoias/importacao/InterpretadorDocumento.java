@@ -32,9 +32,15 @@ public class InterpretadorDocumento {
 	private static final Pattern CODIGO = Pattern.compile("(?<![\\d.,/])(\\d{6,14})(?![\\d.,/])");
 	private static final Pattern CNPJ = Pattern.compile("(\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2})");
 	private static final Pattern PEDIDO = Pattern.compile("PEDIDO\\s*N\\S{0,2}\\s*:?\\s*(\\d{3,12})");
-	private static final Pattern DATA_ACERTO = Pattern.compile("DATA\\s*(?:DE\\s*)?ACERTO\\D{0,3}(\\d{2}/\\d{2}/\\d{4})");
+	/** "Data Acerto: 01/12/2026", "Data de acerto 01/12/2026" ou só "Acerto: 07/12/2026 17:57". */
+	private static final Pattern DATA_ACERTO = Pattern.compile("(?:DATA\\s*(?:DE\\s*)?)?ACERTO\\D{0,3}(\\d{2}/\\d{2}/\\d{4})");
 	private static final Pattern DATA_CRIACAO = Pattern.compile("DATA\\s*(?:DE\\s*)?(?:CRIACAO|EMISSAO|ENTREGA)\\D{0,3}(\\d{2}/\\d{2}/\\d{4})");
 	private static final Pattern TOTAL_ITENS = Pattern.compile("VALOR\\s*TOTAL\\s*(?:DOS\\s*)?ITENS\\D{0,8}(\\d[\\d.,]*\\d)");
+	/** Resumo no fim de outros modelos: "Valor total — R$ 3.316,00" (só na mesma linha). */
+	private static final Pattern VALOR_TOTAL = Pattern.compile("(?m)^\\s*VALOR\\s*TOTAL[^\\d\\n]{0,200}(\\d[\\d.,]*\\d)");
+
+	/** Marca colocada pelo leitor entre uma página e outra. */
+	public static final String QUEBRA_DE_PAGINA = "\f";
 	private static final Pattern EMPRESA = Pattern.compile("([A-Z0-9][A-Z0-9 &.\\-]{2,60}?\\b(?:LTDA|EIRELI|S/?A|ME|EPP)\\b\\.?)");
 	/** Referência do fornecedor no começo da descrição, ex.: "TFB4110027 - BRI SJ OURO...". */
 	private static final Pattern REFERENCIA = Pattern.compile("[A-Z]{2,4}\\s?\\d{4,8}\\s*-\\s");
@@ -55,22 +61,30 @@ public class InterpretadorDocumento {
 		boolean naTabela = false;
 
 		for (String bruta : linhasTexto) {
+			if (QUEBRA_DE_PAGINA.equals(bruta)) {
+				// texto solto no pé da página ("Página 2", observações) não é descrição da próxima peça
+				pendentes.clear();
+				continue;
+			}
 			String linha = limpar(bruta);
 			String norm = normalizar(linha);
-			if (naTabela && fimDosItens(norm)) {
-				break;
-			}
 			if (marcaDagua(norm)) {
 				linha = linha.replaceAll("(?i)scanned\\s*with.*$", "").trim();
 				norm = normalizar(linha);
 			}
-			if (!naTabela && norm.contains("DESCRI") && (norm.contains("QTD") || norm.contains("VALOR"))) {
-				naTabela = true; // linha de títulos da tabela
+			// linha de títulos da tabela; em PDFs de várias páginas ela se repete no topo de cada página
+			// (e pode conter "Desconto  Total", que NÃO é o rodapé de totais)
+			if (norm.contains("DESCRI") && (norm.contains("QTD") || norm.contains("VALOR"))) {
+				naTabela = true;
+				pendentes.clear();
 				continue;
+			}
+			if (naTabela && fimDosItens(norm)) {
+				break;
 			}
 			Linha item = lerItem(linha, bruta);
 			if (item == null) {
-				if (naTabela) {
+				if (naTabela && !rodapeDePagina(norm)) {
 					String fragmento = limparDescricao(linha);
 					if (fragmento.replaceAll("[^A-Za-zÀ-ÿ]", "").length() >= 3) {
 						pendentes.add(fragmento);
@@ -108,12 +122,18 @@ public class InterpretadorDocumento {
 		}
 		return new Cabecalho(empresa, primeiro(CNPJ, tudo), primeiro(PEDIDO, tudo),
 				data(primeiro(DATA_CRIACAO, tudo)), data(primeiro(DATA_ACERTO, tudo)),
-				dinheiro(primeiro(TOTAL_ITENS, tudo)));
+				dinheiro(primeiro(TOTAL_ITENS, tudo) != null ? primeiro(TOTAL_ITENS, tudo) : primeiro(VALOR_TOTAL, tudo)));
 	}
 
 	private static boolean fimDosItens(String norm) {
-		return norm.contains("TOTAL ITENS") || norm.contains("DESCONTO TOTAL") || norm.contains("SUBCATEG")
-				|| norm.startsWith("TOTAL GERAL");
+		return norm.contains("TOTAL ITENS") || norm.contains("TOTAL DE ITENS") || norm.contains("DESCONTO TOTAL")
+				|| norm.contains("SUBCATEG") || norm.contains("RESUMO DO PEDIDO") || norm.startsWith("TOTAL GERAL")
+				|| norm.startsWith("VALOR TOTAL") || norm.startsWith("CREDITO");
+	}
+
+	/** Rodapé com número de página ("... Página 2", "Pág. 2 de 3"): não é descrição de peça. */
+	private static boolean rodapeDePagina(String norm) {
+		return norm.matches(".*\\bPAG(?:INA|\\.)\\s*\\d*(?:\\s*(?:DE|/)\\s*\\d+)?\\s*$");
 	}
 
 	/** Marca d'água de aplicativos de digitalização: não é conteúdo do documento. */
