@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova venda | Organização Its Joias</title>
+    <meta name="theme-color" content="#0E1728">
+    <script src="js/tema.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="topo">
+            <h1> Organização Its Joias </h1>
+            <div class="usuario-topo" id="usuario-topo"></div>
+        </div>
+        <nav aria-label="Menu principal">
+            <ul>
+                <li><a href="index.html">Visualização geral</a></li>
+                <li><a href="vendas.html" aria-current="page">Nova venda</a></li>
+                <li><a href="clientes.html">Clientes</a></li>
+                <li><a href="maletas.html">Maletas</a></li>
+                <li><a href="produtos.html">Produtos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Nova venda</h2>
+
+        <div id="venda-concluida" class="mensagem mensagem--sucesso" role="status" hidden></div>
+
+        <div class="venda-grade" id="venda-form">
+            <div>
+                <!-- 1. Cliente -->
+                <section class="venda-passo" aria-labelledby="passo-cliente">
+                    <h3 id="passo-cliente"><span class="passo-numero">1</span> Cliente</h3>
+                    <div class="campo">
+                        <label for="cliente">Para quem é a venda?</label>
+                        <select id="cliente" required>
+                            <option value="">Carregando clientes…</option>
+                        </select>
+                        <span class="dica">Não encontrou? <a href="clientes.html">Cadastre a cliente</a> e volte aqui.</span>
+                    </div>
+                </section>
+
+                <!-- 2. Peças -->
+                <section class="venda-passo" aria-labelledby="passo-pecas">
+                    <h3 id="passo-pecas"><span class="passo-numero">2</span> Peças</h3>
+                    <div class="campo">
+                        <label for="codigo">Etiqueta da peça ou código do modelo</label>
+                        <div class="adicionar-peca">
+                            <input type="text" id="codigo" placeholder="Ex.: C0001-02 ou C0001" autocomplete="off"
+                                   aria-describedby="codigo-dica">
+                            <button type="button" id="botao-adicionar">Adicionar</button>
+                        </div>
+                        <span class="dica" id="codigo-dica">Pelo modelo, o sistema escolhe a peça da maleta mais antiga.
+                            Você também pode buscar pelo nome.</span>
+                    </div>
+                    <ul class="sugestoes" id="sugestoes" aria-label="Peças encontradas"></ul>
+                    <ul class="lista-pecas" id="lista-pecas" aria-label="Peças desta venda"></ul>
+                    <p class="texto-suave" id="sem-pecas">Nenhuma peça adicionada.</p>
+                </section>
+
+                <!-- 3. Pagamento -->
+                <section class="venda-passo" aria-labelledby="passo-pagamento">
+                    <h3 id="passo-pagamento"><span class="passo-numero">3</span> Pagamento</h3>
+                    <div class="formas-venda" role="radiogroup" aria-label="Forma da venda">
+                        <label>
+                            <input type="radio" name="forma" value="A_VISTA" checked>
+                            <strong>À vista</strong>
+                            <span>Paga tudo agora</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="forma" value="PARCELADO">
+                            <strong>Parcelado</strong>
+                            <span>Parcelas todo dia 5</span>
+                        </label>
+                    </div>
+
+                    <div class="form-grade">
+                        <div class="campo" id="campo-parcelas" hidden>
+                            <label for="parcelas">Número de parcelas</label>
+                            <select id="parcelas"></select>
+                            <span class="dica">A 1ª vence no dia 5 do mês seguinte.</span>
+                        </div>
+                        <div class="campo" id="campo-entrada" hidden>
+                            <label for="entrada">Entrada <span class="opcional">(opcional)</span></label>
+                            <input type="text" id="entrada" inputmode="decimal" placeholder="0,00">
+                            <span class="dica">Valor pago hoje; o resto é dividido nas parcelas.</span>
+                        </div>
+                        <div class="campo" id="campo-forma-pagamento">
+                            <label for="forma-pagamento" id="rotulo-forma-pagamento">Forma de pagamento</label>
+                            <select id="forma-pagamento">
+                                <option value="PIX">PIX</option>
+                                <option value="DINHEIRO">Dinheiro</option>
+                                <option value="CARTAO">Cartão</option>
+                                <option value="TRANSFERENCIA">Transferência</option>
+                                <option value="OUTRO">Outro</option>
+                            </select>
+                        </div>
+                        <div class="campo campo-largo">
+                            <label class="opcao"><input type="checkbox" id="acrescimo"> Acrescentar 10% ao valor das peças</label>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Resumo (calculado pelo servidor) -->
+            <aside class="venda-passo resumo" aria-labelledby="titulo-resumo" aria-live="polite">
+                <h3 id="titulo-resumo">Resumo</h3>
+                <div id="resumo-erro" class="mensagem mensagem--erro" role="alert" hidden></div>
+                <p class="texto-suave" id="resumo-vazio">Escolha a cliente e adicione as peças para ver o total e as parcelas.</p>
+                <div id="resumo-conteudo" hidden>
+                    <dl class="resumo-linhas">
+                        <dt>Peças</dt><dd id="r-pecas"></dd>
+                        <dt>Acréscimo</dt><dd id="r-acrescimo"></dd>
+                        <dt class="total">Total</dt><dd class="total" id="r-total"></dd>
+                        <dt>Pago agora</dt><dd id="r-pago"></dd>
+                        <dt>Fica a pagar</dt><dd id="r-saldo"></dd>
+                    </dl>
+                    <p class="rotulo">Parcelas</p>
+                    <ul class="parcelas-previa" id="r-parcelas"></ul>
+                    <button type="button" class="confirmar" id="botao-confirmar">Confirmar venda</button>
+                </div>
+            </aside>
+        </div>
+
+        <section class="bloco" aria-labelledby="titulo-recentes">
+            <h3 id="titulo-recentes">Vendas recentes</h3>
+            <p class="carregando-texto" id="recentes-estado">Carregando vendas…</p>
+            <table id="tabela-recentes" hidden>
+                <thead>
+                    <tr>
+                        <th>Venda</th>
+                        <th>Data</th>
+                        <th>Cliente</th>
+                        <th class="numero">Peças</th>
+                        <th class="numero">Total</th>
+                        <th class="numero">Pago</th>
+                        <th class="numero">A receber</th>
+                    </tr>
+                </thead>
+                <tbody id="recentes"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Organização Its Joias. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/sessao.js"></script>
+    <script src="js/mascaras.js"></script>
+    <script src="js/vendas.js"></script>
+</body>
+</html>

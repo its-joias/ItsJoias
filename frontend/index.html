@@ -3,28 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organização Its Joias</title>
+    <title>Painel | Organização Its Joias</title>
+    <meta name="theme-color" content="#0E1728">
+    <script src="js/tema.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header>
-        <h1> Organização Its Joias </h1>
-        <nav>
+        <div class="topo">
+            <h1> Organização Its Joias </h1>
+            <div class="usuario-topo" id="usuario-topo"></div>
+        </div>
+        <nav aria-label="Menu principal">
             <ul>
-                <li><a href="index.html">Visualização geral</a></li>
+                <li><a href="index.html" aria-current="page">Visualização geral</a></li>
+                <li><a href="vendas.html">Nova venda</a></li>
+                <li><a href="clientes.html">Clientes</a></li>
                 <li><a href="maletas.html">Maletas</a></li>
                 <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="clientes.html">Clientes</a></li>
             </ul>
         </nav>
     </header>
 
-    <main>
-        <h2>Visualização geral</h2>
-        <p>Projeto criado por: Flávia Fernandes e Maria Clara para fins de aprendizado.</p>
+    <main id="painel" aria-busy="true">
+        <h2>Painel</h2>
+        <p id="painel-data">Carregando o painel…</p>
+
+        <!-- carregando / erro / banco novo -->
+        <div id="painel-aviso" class="painel-aviso" role="status" aria-live="polite" hidden></div>
+
+        <div id="painel-conteudo" hidden>
+            <section class="painel-cartoes" aria-label="Resumo">
+                <article class="cartao">
+                    <h3 class="cartao-rotulo">Total vendido</h3>
+                    <p class="cartao-valor" data-campo="totalVendido"></p>
+                    <p class="cartao-nota" data-campo="totalVendidoNota"></p>
+                </article>
+                <article class="cartao">
+                    <h3 class="cartao-rotulo">Recebido</h3>
+                    <p class="cartao-valor" data-campo="recebido"></p>
+                    <p class="cartao-nota" data-campo="recebidoNota"></p>
+                </article>
+                <article class="cartao">
+                    <h3 class="cartao-rotulo">A receber</h3>
+                    <p class="cartao-valor" data-campo="aReceber"></p>
+                    <p class="cartao-nota" data-campo="aReceberNota"></p>
+                </article>
+                <article class="cartao" data-cartao="atrasado">
+                    <h3 class="cartao-rotulo">Atrasado</h3>
+                    <p class="cartao-valor" data-campo="atrasado"></p>
+                    <p class="cartao-nota" data-campo="atrasadoNota"></p>
+                </article>
+                <article class="cartao">
+                    <h3 class="cartao-rotulo">Clientes devendo</h3>
+                    <p class="cartao-valor" data-campo="clientesDevendo"></p>
+                    <p class="cartao-nota" data-campo="clientesDevendoNota"></p>
+                </article>
+                <article class="cartao">
+                    <h3 class="cartao-rotulo">Próximo dia 5</h3>
+                    <p class="cartao-valor" data-campo="proximoDia5"></p>
+                    <p class="cartao-nota" data-campo="proximoDia5Nota"></p>
+                </article>
+            </section>
+
+            <div class="painel-blocos">
+                <section class="bloco" aria-labelledby="titulo-atrasadas">
+                    <h3 id="titulo-atrasadas">Parcelas atrasadas</h3>
+                    <ul class="bloco-lista" id="lista-atrasadas"></ul>
+                    <p class="bloco-vazio" id="vazio-atrasadas" hidden>Nenhuma parcela atrasada.</p>
+                    <footer class="bloco-rodape">
+                        <span>Total atrasado</span>
+                        <strong class="dinheiro" data-campo="rodapeAtrasado"></strong>
+                    </footer>
+                </section>
+
+                <section class="bloco" aria-labelledby="titulo-dia5">
+                    <h3 id="titulo-dia5">Vencem em <span data-campo="dataDia5"></span></h3>
+                    <ul class="bloco-lista" id="lista-dia5"></ul>
+                    <p class="bloco-vazio" id="vazio-dia5" hidden>Nenhuma parcela vence nesse dia.</p>
+                    <footer class="bloco-rodape">
+                        <span>Total a vencer</span>
+                        <strong class="dinheiro" data-campo="rodapeDia5"></strong>
+                    </footer>
+                </section>
+            </div>
+
+            <section class="bloco" aria-labelledby="titulo-maletas">
+                <h3 id="titulo-maletas">Maletas ativas</h3>
+                <ul class="legenda" aria-label="Legenda das barras">
+                    <li><span class="legenda-cor cor-vendidas" aria-hidden="true"></span>Vendidas</li>
+                    <li><span class="legenda-cor cor-disponiveis" aria-hidden="true"></span>Disponíveis</li>
+                    <li><span class="legenda-cor cor-perdidas" aria-hidden="true"></span>Perdidas ou devolvidas</li>
+                </ul>
+                <ul class="maletas" id="lista-maletas"></ul>
+                <p class="bloco-vazio" id="vazio-maletas" hidden>Nenhuma maleta ativa no momento.</p>
+            </section>
+        </div>
     </main>
+
     <footer>
         <p>&copy; 2026 Organização Its Joias. Todos os direitos reservados.</p>
     </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/sessao.js"></script>
+    <script src="js/painel.js"></script>
 </body>
 </html>

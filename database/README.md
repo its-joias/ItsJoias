@@ -35,7 +35,7 @@ SELECT (SELECT count(*) FROM information_schema.tables
        (SELECT count(*) FROM categoria_palavras_chave)                   AS palavras_chave;
 ```
 
-Resultado esperado: **17 | 10 | 21 | 8 | 30**.
+Resultado esperado: **18 | 10 | 22 | 8 | 32**.
 
 ---
 
@@ -50,6 +50,61 @@ Resultado esperado: **17 | 10 | 21 | 8 | 30**.
 
 **Nunca** altere o banco só pelo pgAdmin sem registrar o script: a outra pessoa fica com um banco diferente
 e o Spring para de subir.
+
+---
+
+## Banco de teste (para `./mvnw test`)
+
+Os testes do Painel (`PainelCalculoTest`) fazem as contas no Postgres de verdade, porque o cálculo é SQL
+em cima das views e das triggers. Eles precisam de um banco **só para teste, vazio**. Cada teste monta
+o próprio cenário e desfaz tudo no final (rollback), então o banco continua vazio.
+
+1. No pgAdmin, crie um banco vazio chamado **`its_joias_teste`**.
+2. Rode nele o `its_joias_banco.sql` e, em seguida, cada arquivo de `alteracoes/`, em ordem de data.
+3. Se o seu usuário ou senha não forem `postgres` / sem senha, defina as variáveis
+   `TEST_DB_URL`, `TEST_DB_USERNAME` e `TEST_DB_PASSWORD` (padrões em
+   `backend/src/test/resources/application-teste.properties`).
+
+> ⚠️ **Nunca** aponte os testes para o Supabase nem para o banco que você usa no dia a dia: o teste
+> recusa rodar se encontrar vendas ou maletas no banco.
+
+---
+
+## Conectar o Spring ao Supabase (pelo Codespaces)
+
+O `application.properties` lê três variáveis de ambiente. No Codespaces, elas são cadastradas como
+**secrets**: no GitHub, *Settings → Codespaces → Secrets → New secret*, liberando para o repositório
+`itsjoias` em *Repository access*.
+
+| Secret | Valor |
+|--------|-------|
+| `DB_URL` | `jdbc:postgresql://<host-do-pooler>:5432/postgres?sslmode=require` |
+| `DB_USERNAME` | `postgres.<ref-do-projeto>` (no pooler, o usuário leva o ref do projeto no final) |
+| `DB_PASSWORD` | a senha do banco do projeto no Supabase |
+
+- O **host** sai de *Connect → Session pooler* no painel do Supabase. O projeto está na região
+  **us-east-2**, então o host tem `us-east-2` no nome. O Supabase mostra a URL como `postgresql://...`:
+  troque o começo por `jdbc:postgresql://`.
+- Use o **Session pooler**, não o Transaction pooler: o `SET TIME ZONE` do `application.properties`
+  só se mantém no modo sessão.
+- Depois de criar ou mudar um secret, **reinicie o Codespace** (os secrets só carregam quando ele inicia).
+- Esqueceu a senha? *Project Settings → Database → Reset database password*, e atualize o secret.
+  Quem mais usa o banco também precisa atualizar.
+
+Para conferir se os secrets carregaram (mostra só se existem, sem mostrar a senha):
+
+```bash
+echo "URL: ${DB_URL:-FALTANDO}"; echo "Usuário: ${DB_USERNAME:-FALTANDO}"; [ -n "$DB_PASSWORD" ] && echo "Senha: ok" || echo "Senha: FALTANDO"
+```
+
+Erros mais comuns ao rodar `./mvnw spring-boot:run` na pasta `backend`:
+
+| Mensagem | Causa |
+|----------|-------|
+| `Connection refused` com `localhost` | os secrets não carregaram (falta reiniciar o Codespace) |
+| `Tenant or user not found` | host com região errada, ou usuário sem o `.<ref-do-projeto>` no final |
+| `password authentication failed` | senha errada, ou o secret não foi atualizado depois de trocar a senha |
+| `UnknownHostException` | erro de digitação no host |
 
 ---
 
