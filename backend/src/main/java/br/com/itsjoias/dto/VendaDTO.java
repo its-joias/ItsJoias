@@ -2,6 +2,7 @@ package br.com.itsjoias.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import jakarta.validation.constraints.DecimalMin;
@@ -117,6 +118,37 @@ public final class VendaDTO {
 			String maleta,
 			BigDecimal preco,
 			String situacao) {
+	}
+
+	/** Peça de uma venda já registrada (preço congelado no dia da venda). */
+	public record ItemVendido(String etiqueta, String produto, String maleta, BigDecimal preco) {
+	}
+
+	public record ParcelaDetalhe(int numero, LocalDate vencimento, BigDecimal valor, BigDecimal pago, String status) {
+	}
+
+	public record PagamentoDetalhe(LocalDate data, BigDecimal valor, String forma, boolean estornado, String motivoEstorno) {
+	}
+
+	/** Venda completa, para o histórico da cliente. */
+	public record VendaDetalhe(
+			long vendaId,
+			LocalDate dataVenda,
+			long clienteId,
+			String clienteNome,
+			String status,
+			String vendidaPor,
+			BigDecimal valorProdutos,
+			BigDecimal acrescimo,
+			BigDecimal valorTotal,
+			OffsetDateTime canceladaEm,
+			String motivoCancelamento,
+			List<ItemVendido> itens,
+			List<ParcelaDetalhe> parcelas,
+			List<PagamentoDetalhe> pagamentos) {
+	}
+
+	public record CancelamentoForm(String motivo) {
 	}
 
 }

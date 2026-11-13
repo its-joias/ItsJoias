@@ -16,6 +16,10 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.itsjoias.dto.VendaDTO.FormaPagamento;
+import br.com.itsjoias.dto.VendaDTO.ItemVendido;
+import br.com.itsjoias.dto.VendaDTO.PagamentoDetalhe;
+import br.com.itsjoias.dto.VendaDTO.ParcelaDetalhe;
+import br.com.itsjoias.dto.VendaDTO.VendaDetalhe;
 import br.com.itsjoias.dto.VendaDTO.PecaResumo;
 import br.com.itsjoias.dto.VendaDTO.VendaResumo;
 
@@ -163,7 +167,92 @@ public class VendaRepository {
 				.addValue("valor", valor).addValue("data", data).addValue("forma", forma.name()));
 	}
 
+	// ---- cancelar ------------------------------------------------------------------------
+
+	/** Trava a venda (um pagamento ou outro cancelamento ao mesmo tempo espera) e devolve a situação. */
+	public Optional<String> travarVenda(long vendaId) {
+		return jdbc.queryForList("SELECT status FROM vendas WHERE id = :id FOR UPDATE", Map.of("id", vendaId), String.class)
+				.stream().findFirst();
+	}
+
+	public record PecaVendida(long pecaId, long produtoId, long maletaItemId) {
+	}
+
+	public List<PecaVendida> pecasDaVenda(long vendaId) {
+		return jdbc.query("SELECT peca_id, produto_id, maleta_item_id FROM itens_venda WHERE venda_id = :v ORDER BY id",
+				Map.of("v", vendaId), (rs, i) -> new PecaVendida(rs.getLong("peca_id"), rs.getLong("produto_id"),
+						rs.getLong("maleta_item_id")));
+	}
+
+	/** Pagamentos não são apagados: ficam marcados como estornados, com quem e por quê. */
+	public int estornarPagamentos(long vendaId, long usuarioId, String motivo) {
+		return jdbc.update("""
+				UPDATE pagamentos SET estornado = true, estornado_em = now(), estornado_por = :usuario, motivo_estorno = :motivo
+				WHERE NOT estornado AND parcela_id IN (SELECT id FROM parcelas WHERE venda_id = :venda)
+				""", new MapSqlParameterSource("venda", vendaId).addValue("usuario", usuarioId).addValue("motivo", motivo));
+	}
+
+	public int cancelarParcelas(long vendaId) {
+		return jdbc.update("UPDATE parcelas SET status = 'CANCELADA' WHERE venda_id = :v AND status = 'ATIVA'",
+				Map.of("v", vendaId));
+	}
+
+	/** A peça volta a ficar disponível na mesma maleta (CANCELAMENTO_VENDA desta venda). */
+	public void devolverPeca(long vendaId, long usuarioId, PecaVendida peca) {
+		MapSqlParameterSource p = new MapSqlParameterSource("venda", vendaId).addValue("usuario", usuarioId)
+				.addValue("produto", peca.produtoId()).addValue("maletaItem", peca.maletaItemId()).addValue("peca", peca.pecaId());
+		Integer estoque = jdbc.queryForObject("SELECT quantidade_estoque FROM produtos WHERE id = :produto", p, Integer.class);
+		p.addValue("anterior", estoque).addValue("posterior", estoque + 1);
+		jdbc.update("""
+				INSERT INTO movimentacoes_estoque (produto_id, maleta_item_id, peca_id, venda_id, usuario_id, tipo,
+				                                   quantidade, estoque_anterior, estoque_posterior, observacao)
+				VALUES (:produto, :maletaItem, :peca, :venda, :usuario, 'CANCELAMENTO_VENDA', 1, :anterior, :posterior,
+				        'Venda cancelada')
+				""", p);
+		jdbc.update("UPDATE produtos SET quantidade_estoque = :posterior WHERE id = :produto", p);
+	}
+
+	public void marcarCancelada(long vendaId, String motivo) {
+		jdbc.update("UPDATE vendas SET status = 'CANCELADA', cancelada_em = now(), motivo_cancelamento = :motivo WHERE id = :id",
+				new MapSqlParameterSource("id", vendaId).addValue("motivo", motivo));
+	}
+
 	// ---- consultas -----------------------------------------------------------------------
+
+	public Optional<VendaDetalhe> detalhe(long vendaId) {
+		Map<String, Object> id = Map.of("id", vendaId);
+		List<ItemVendido> itens = jdbc.query("""
+				SELECT vp.codigo AS etiqueta, p.nome AS produto, m.nome AS maleta, iv.preco_unitario
+				FROM itens_venda iv
+				JOIN vw_pecas  vp ON vp.peca_id = iv.peca_id
+				JOIN produtos  p  ON p.id = iv.produto_id
+				JOIN maletas   m  ON m.id = vp.maleta_id
+				WHERE iv.venda_id = :id ORDER BY iv.id
+				""", id, (rs, i) -> new ItemVendido(rs.getString("etiqueta"), rs.getString("produto"), rs.getString("maleta"),
+						dinheiro(rs, "preco_unitario")));
+		List<ParcelaDetalhe> parcelas = jdbc.query("""
+				SELECT pa.numero_parcela, pa.data_vencimento, pa.valor, pa.status,
+				       COALESCE((SELECT SUM(pg.valor) FROM pagamentos pg WHERE pg.parcela_id = pa.id AND NOT pg.estornado), 0) AS pago
+				FROM parcelas pa WHERE pa.venda_id = :id ORDER BY pa.numero_parcela
+				""", id, (rs, i) -> new ParcelaDetalhe(rs.getInt("numero_parcela"), rs.getObject("data_vencimento", LocalDate.class),
+						dinheiro(rs, "valor"), dinheiro(rs, "pago"), rs.getString("status")));
+		List<PagamentoDetalhe> pagamentos = jdbc.query("""
+				SELECT pg.data_pagamento, pg.valor, pg.forma_pagamento, pg.estornado, pg.motivo_estorno
+				FROM pagamentos pg JOIN parcelas pa ON pa.id = pg.parcela_id
+				WHERE pa.venda_id = :id ORDER BY pg.data_pagamento, pg.id
+				""", id, (rs, i) -> new PagamentoDetalhe(rs.getObject("data_pagamento", LocalDate.class), dinheiro(rs, "valor"),
+						rs.getString("forma_pagamento"), rs.getBoolean("estornado"), rs.getString("motivo_estorno")));
+		return jdbc.query("""
+				SELECT v.id, v.data_venda, v.cliente_id, c.nome AS cliente_nome, v.status, u.nome AS vendida_por,
+				       v.valor_produtos, v.acrescimo, v.valor_total, v.cancelada_em, v.motivo_cancelamento
+				FROM vendas v JOIN clientes c ON c.id = v.cliente_id LEFT JOIN usuarios u ON u.id = v.usuario_id
+				WHERE v.id = :id AND v.status <> 'RASCUNHO'
+				""", id, (rs, i) -> new VendaDetalhe(rs.getLong("id"), rs.getObject("data_venda", LocalDate.class),
+						rs.getLong("cliente_id"), rs.getString("cliente_nome"), rs.getString("status"), rs.getString("vendida_por"),
+						dinheiro(rs, "valor_produtos"), dinheiro(rs, "acrescimo"), dinheiro(rs, "valor_total"),
+						rs.getObject("cancelada_em", java.time.OffsetDateTime.class), rs.getString("motivo_cancelamento"),
+						itens, parcelas, pagamentos)).stream().findFirst();
+	}
 
 	public Optional<String> nomeClienteAtiva(long clienteId) {
 		return jdbc.queryForList("SELECT nome FROM clientes WHERE id = :id AND ativo", Map.of("id", clienteId), String.class)

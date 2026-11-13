@@ -92,6 +92,26 @@
             </div>
         </dialog>
 
+        <!-- perfil da cliente: dados, totais e histórico de vendas -->
+        <dialog id="perfil" class="modal modal-largo" aria-labelledby="perfil-nome">
+            <div class="modal-cabecalho">
+                <div>
+                    <h3 id="perfil-nome">Cliente</h3>
+                    <span class="texto-suave" id="perfil-contato"></span>
+                </div>
+                <button type="button" class="botao-fechar" data-fechar-modal aria-label="Fechar">✕</button>
+            </div>
+            <div class="modal-corpo">
+                <div class="resumo-importacao" id="perfil-totais"></div>
+                <h4 class="subtitulo-secao">Histórico de vendas</h4>
+                <p class="carregando-texto" id="perfil-estado">Carregando vendas…</p>
+                <ul class="historico-vendas" id="perfil-vendas"></ul>
+                <div class="acoes">
+                    <a class="botao-link" id="perfil-nova-venda" href="vendas.html">Nova venda para esta cliente</a>
+                </div>
+            </div>
+        </dialog>
+
         <div class="barra-ferramentas">
             <input type="search" id="busca" placeholder="Buscar por nome ou telefone" aria-label="Buscar cliente">
             <label class="opcao"><input type="checkbox" id="mostrar-inativas"> Mostrar desativadas</label>

@@ -77,7 +77,9 @@
 
     /**
      * opcoes: { tipo: "confirmar" | "perigo" | "importar" | "alerta", titulo, texto (string ou lista),
-     *           detalhes: [[rótulo, valor], ...], sim: "Confirmar", nao: "Voltar" }
+     *           detalhes: [[rótulo, valor], ...], sim: "Confirmar", nao: "Voltar",
+     *           campo: { rotulo, placeholder, minimo } }
+     * Sem campo: devolve true/false. Com campo: devolve o texto digitado (ou null, se a pessoa voltar).
      */
     function perguntar(opcoes) {
         const tipo = opcoes.tipo || (opcoes.perigo ? "perigo" : "confirmar");
@@ -100,6 +102,17 @@
                 janela.append(dl);
             }
 
+            let entrada = null;
+            if (opcoes.campo) {
+                const campo = criar("label", "janela-campo");
+                entrada = criar("textarea");
+                entrada.rows = 2;
+                entrada.maxLength = 500;
+                entrada.placeholder = opcoes.campo.placeholder || "";
+                campo.append(criar("span", null, opcoes.campo.rotulo), entrada);
+                janela.append(campo);
+            }
+
             const acoes = criar("div", "janela-acoes");
             const nao = criar("button", "botao-secundario", opcoes.nao || "Voltar");
             const sim = criar("button", tipo === "perigo" ? "botao-perigo-cheio" : null, opcoes.sim || "Confirmar");
@@ -108,12 +121,22 @@
             janela.append(acoes);
 
             let resposta = false;
+            if (entrada) {
+                const minimo = opcoes.campo.minimo || 1;
+                const conferir = () => { sim.disabled = entrada.value.trim().length < minimo; };
+                entrada.addEventListener("input", conferir);
+                conferir();
+            }
             sim.addEventListener("click", () => { resposta = true; fechar(janela); });
             nao.addEventListener("click", () => fechar(janela));
-            janela.addEventListener("close", () => { janela.remove(); resolver(resposta); });
+            janela.addEventListener("close", () => {
+                janela.remove();
+                resolver(entrada ? (resposta ? entrada.value.trim() : null) : resposta);
+            });
             document.body.append(janela);
             abrir(janela);
-            (tipo === "perigo" ? nao : sim).focus(); // em exclusão, o foco começa no botão seguro
+            if (entrada) entrada.focus();
+            else (tipo === "perigo" ? nao : sim).focus(); // em exclusão, o foco começa no botão seguro
         });
     }
 
@@ -125,7 +148,14 @@
         if (!area) {
             area = criar("div", "notificacoes");
             area.setAttribute("aria-live", "polite");
+            if (typeof area.showPopover === "function") area.popover = "manual";
             document.body.append(area);
+        }
+        // janelas abertas (modais) ficam na "camada de cima" do navegador; o aviso precisa ficar por cima delas.
+        // Mostrar de novo como popover o coloca no topo dessa camada.
+        if (area.popover) {
+            if (area.matches(":popover-open")) area.hidePopover();
+            area.showPopover();
         }
         return area;
     }

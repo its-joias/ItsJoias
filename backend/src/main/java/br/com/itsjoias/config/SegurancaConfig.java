@@ -59,6 +59,8 @@ public class SegurancaConfig {
 						.requestMatchers("/", "/error").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/auth/entrar", "/api/auth/renovar").permitAll()
 						.requestMatchers(HttpMethod.DELETE, "/api/**").hasRole(proprietaria)
+						// cancelar venda e descartar maleta desfazem lançamentos: só a proprietária
+						.requestMatchers(HttpMethod.POST, "/api/vendas/*/cancelar", "/api/maletas/*/descartar").hasRole(proprietaria)
 						.requestMatchers("/api/**").hasAnyRole(proprietaria, desenvolvimento)
 						.anyRequest().denyAll())
 				.oauth2ResourceServer(rs -> rs

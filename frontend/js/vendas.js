@@ -340,7 +340,12 @@
             const vendas = await api("/api/vendas?limite=10");
             el("recentes").replaceChildren(...vendas.map((v) => {
                 const tr = criar("tr");
-                tr.append(criar("td", null, `#${v.vendaId}`), criar("td", null, formato.data(v.dataVenda)),
+                const numero = criar("td", null, `#${v.vendaId}`);
+                if (v.status === "CANCELADA") {
+                    tr.className = "linha-cancelada";
+                    numero.append(" ", criar("span", "etiqueta-situacao etiqueta-cancelada", "Cancelada"));
+                }
+                tr.append(numero, criar("td", null, formato.data(v.dataVenda)),
                     criar("td", null, v.clienteNome), criar("td", "numero", String(v.quantidadePecas)),
                     criar("td", "numero", formato.reais(v.valorTotal)), criar("td", "numero", formato.reais(v.pago)),
                     criar("td", "numero", formato.reais(v.saldo)));

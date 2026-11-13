@@ -20,11 +20,14 @@ import br.com.itsjoias.dto.VendaDTO.ParcelaPrevia;
 import br.com.itsjoias.dto.VendaDTO.PecaResumo;
 import br.com.itsjoias.dto.VendaDTO.Previa;
 import br.com.itsjoias.dto.VendaDTO.VendaCriada;
+import br.com.itsjoias.dto.VendaDTO.VendaDetalhe;
 import br.com.itsjoias.dto.VendaDTO.VendaForm;
 import br.com.itsjoias.dto.VendaDTO.VendaResumo;
+import br.com.itsjoias.exception.NaoEncontradoException;
 import br.com.itsjoias.exception.RegraNegocioException;
 import br.com.itsjoias.repository.VendaRepository;
 import br.com.itsjoias.repository.VendaRepository.PecaParaVenda;
+import br.com.itsjoias.repository.VendaRepository.PecaVendida;
 import br.com.itsjoias.seguranca.UsuarioAtual;
 
 /**
@@ -84,6 +87,44 @@ public class VendaService {
 	@Transactional(readOnly = true)
 	public List<VendaResumo> recentes(Long clienteId, int limite) {
 		return vendas.listarRecentes(clienteId, Math.clamp(limite, 1, 200));
+	}
+
+	public VendaDetalhe detalhe(long vendaId) {
+		return vendas.detalhe(vendaId).orElseThrow(() -> new NaoEncontradoException("Venda não encontrada."));
+	}
+
+	/**
+	 * Cancela uma venda lançada errada, sem apagar nada: estorna os pagamentos, cancela as parcelas,
+	 * devolve cada peça para a maleta de onde saiu e marca a venda como CANCELADA (com o motivo).
+	 * Tudo numa transação: se qualquer passo falhar, nada muda. O banco confere no COMMIT que
+	 * não sobrou pagamento válido nem peça vendida por esta venda.
+	 */
+	@Transactional
+	public VendaDetalhe cancelar(long vendaId, String motivo) {
+		String m = motivo == null ? "" : motivo.trim();
+		if (m.length() < 3) {
+			throw new RegraNegocioException("Escreva o motivo do cancelamento (ex.: lançada para a cliente errada).");
+		}
+		if (m.length() > 500) {
+			throw new RegraNegocioException("O motivo pode ter no máximo 500 caracteres.");
+		}
+		String status = vendas.travarVenda(vendaId).orElseThrow(() -> new NaoEncontradoException("Venda não encontrada."));
+		if ("CANCELADA".equals(status)) {
+			throw new RegraNegocioException("Esta venda já está cancelada.");
+		}
+		if (!"FINALIZADA".equals(status)) {
+			throw new RegraNegocioException("Só uma venda finalizada pode ser cancelada.");
+		}
+		long usuario = usuarioAtual.obter().id();
+		List<PecaVendida> pecas = vendas.pecasDaVenda(vendaId);
+		vendas.travarProdutos(new TreeSet<>(pecas.stream().map(PecaVendida::produtoId).toList()));
+		vendas.estornarPagamentos(vendaId, usuario, "Venda cancelada: " + m);
+		vendas.cancelarParcelas(vendaId);
+		for (PecaVendida peca : pecas) {
+			vendas.devolverPeca(vendaId, usuario, peca);
+		}
+		vendas.marcarCancelada(vendaId, m);
+		return detalhe(vendaId);
 	}
 
 	@Transactional(readOnly = true)

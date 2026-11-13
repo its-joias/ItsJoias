@@ -2225,3 +2225,378 @@ button.processando::after {
 .mensagem > .opcao {
     margin-top: 6px;
 }
+
+.janela-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 14px;
+    text-align: left;
+}
+
+.janela-campo span {
+    color: var(--texto-forte);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.janela-campo textarea {
+    width: 100%;
+    resize: vertical;
+}
+
+/* =====================================================================
+   Perfil da cliente: histórico de vendas
+   ===================================================================== */
+dialog.modal-largo {
+    width: min(860px, calc(100vw - 32px));
+}
+
+.modal-cabecalho .texto-suave {
+    font-size: 13px;
+}
+
+.botao-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 11px 20px;
+    border-radius: 24px;
+    background: var(--dourado);
+    color: var(--sobre-dourado);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-decoration: none;
+}
+
+.botao-link:hover {
+    background: var(--dourado-hover);
+    color: var(--sobre-dourado);
+}
+
+.historico-vendas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+}
+
+.venda-cartao {
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: var(--superficie);
+    overflow: hidden;
+}
+
+.venda-cartao--cancelada {
+    border-style: dashed;
+}
+
+.venda-cartao--cancelada .venda-cartao-titulo strong,
+.venda-cartao--cancelada .venda-cartao-valores .dinheiro {
+    color: var(--texto-suave);
+    text-decoration: line-through;
+}
+
+.venda-cartao-topo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    width: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--texto);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-align: left;
+}
+
+.venda-cartao-topo:hover {
+    background: var(--superficie-hover);
+    transform: none;
+}
+
+.venda-cartao-titulo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+}
+
+.venda-cartao-titulo strong {
+    color: var(--texto-forte);
+}
+
+.venda-cartao-valores {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 12px;
+}
+
+.venda-cartao-valores .dinheiro {
+    color: var(--texto-forte);
+    font-size: 15px;
+}
+
+.venda-cartao-corpo {
+    padding: 4px 16px 14px;
+    border-top: 1px solid var(--borda);
+}
+
+.venda-cartao-corpo h5 {
+    margin: 12px 0 6px;
+    color: var(--texto-suave);
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.venda-lista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.venda-lista li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--borda);
+    font-size: 13px;
+}
+
+.venda-lista li:last-child {
+    border-bottom: none;
+}
+
+.venda-lista li.estornado span {
+    color: var(--texto-suave);
+    text-decoration: line-through;
+}
+
+.venda-lista .dinheiro {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.etiqueta-finalizada {
+    border-color: var(--verde);
+    color: var(--sucesso-texto);
+}
+
+.etiqueta-cancelada {
+    border-color: var(--vermelho);
+    color: var(--perigo-texto);
+}
+
+@media (max-width: 520px) {
+    .venda-lista li {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .venda-lista li > .texto-suave {
+        grid-column: 1;
+        grid-row: 2;
+    }
+}
+
+tr.linha-cancelada td {
+    color: var(--texto-suave);
+}
+
+tr.linha-cancelada td.numero {
+    text-decoration: line-through;
+}
+
+/* a área de avisos vira "popover" para ficar acima dos modais abertos */
+.notificacoes[popover] {
+    inset: auto 16px 16px auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: visible;
+}
+
+@media (max-width: 520px) {
+    .notificacoes[popover] {
+        inset: auto 12px 12px 12px;
+    }
+}
+
+/* texto só para leitores de tela */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* =====================================================================
+   Gráficos (SVG) — cores das marcas vêm de --barra-*; textos usam as cores de texto
+   ===================================================================== */
+.grafico-subtitulo {
+    margin: -6px 0 12px;
+    font-size: 13px;
+}
+
+.grafico {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.grafico-legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin: 0;
+    padding: 0;
+    color: var(--texto-suave);
+    font-size: 12px;
+    list-style: none;
+}
+
+.grafico-legenda li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.grafico-amostra {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex: none;
+}
+
+.grafico-area {
+    position: relative;
+    width: 100%;
+}
+
+.grafico-area svg {
+    display: block;
+    overflow: visible;
+}
+
+.grafico-grade {
+    stroke: var(--borda);
+    stroke-width: 1;
+}
+
+.grafico-eixo {
+    fill: var(--texto-suave);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.grafico-valor {
+    fill: var(--texto-forte);
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.grafico-categoria {
+    fill: var(--texto);
+    font-size: 12px;
+}
+
+.grafico-alvo {
+    fill: transparent;
+    cursor: default;
+    outline: none;
+}
+
+.grafico-alvo.ativo,
+.grafico-alvo:focus-visible {
+    fill: var(--superficie-hover);
+}
+
+.grafico-alvo:focus-visible {
+    stroke: var(--dourado);
+    stroke-width: 2;
+}
+
+.grafico-balao {
+    position: absolute;
+    z-index: 2;
+    min-width: 150px;
+    padding: 8px 10px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background: var(--superficie-elevada);
+    box-shadow: var(--sombra-leve);
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.grafico-balao-titulo {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--texto-forte);
+}
+
+.grafico-balao-linha {
+    display: grid;
+    grid-template-columns: 10px 1fr auto;
+    align-items: center;
+    gap: 6px;
+    color: var(--texto-suave);
+}
+
+.grafico-balao-linha strong {
+    color: var(--texto-forte);
+    font-variant-numeric: tabular-nums;
+}
+
+.grafico-balao-total {
+    margin-top: 2px;
+    padding-top: 2px;
+    border-top: 1px solid var(--borda);
+}
+
+.grafico-balao-extra {
+    margin-top: 2px;
+    color: var(--texto-suave);
+}
+
+.grafico-botao-tabela {
+    align-self: flex-start;
+    margin: 0;
+}
+
+.grafico-tabela {
+    font-size: 12px;
+}
+
+@media (max-width: 900px) {
+    .painel-blocos {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* só a faixa de cada mês/categoria responde ao mouse; grade, barras e textos deixam passar */
+.grafico-grade,
+.grafico-eixo,
+.grafico-marca,
+.grafico-valor,
+.grafico-categoria {
+    pointer-events: none;
+}

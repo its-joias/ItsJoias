@@ -77,6 +77,15 @@ class ApiSegurancaTest {
 	}
 
 	@Test
+	void desenvolvimentoNaoCancelaVendaNemDescartaMaleta() throws Exception {
+		for (String rota : List.of("/api/vendas/7/cancelar", "/api/maletas/7/descartar")) {
+			mvc.perform(post(rota).with(como(Perfil.DESENVOLVIMENTO)).contentType(MediaType.APPLICATION_JSON)
+					.content("{\"motivo\":\"teste\"}"))
+					.andExpect(status().isForbidden());
+		}
+	}
+
+	@Test
 	void desenvolvimentoConsultaMasNaoExclui() throws Exception {
 		given(clienteService.listar(any(), org.mockito.ArgumentMatchers.anyBoolean())).willReturn(List.of());
 		mvc.perform(get("/api/clientes").with(como(Perfil.DESENVOLVIMENTO))).andExpect(status().isOk());

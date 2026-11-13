@@ -49,7 +49,7 @@ import br.com.itsjoias.service.VendaService;
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("teste")
-@Import({ VendaRepository.class, PainelRepository.class })
+@Import({ VendaRepository.class, PainelRepository.class, br.com.itsjoias.repository.GraficoRepository.class })
 class VendaServiceTest {
 
 	private static final LocalDate HOJE = LocalDate.of(2026, 11, 11);
@@ -62,6 +62,9 @@ class VendaServiceTest {
 
 	@Autowired
 	private PainelRepository painelRepository;
+
+	@Autowired
+	private br.com.itsjoias.repository.GraficoRepository graficos;
 
 	private VendaService vendas;
 	private PainelService painel;
@@ -132,6 +135,7 @@ class VendaServiceTest {
 	/** Roda agora as conferências que o banco faria no COMMIT (o teste termina em rollback). */
 	private void conferirComoNoCommit() {
 		jdbc.execute("SET CONSTRAINTS ALL IMMEDIATE");
+		jdbc.execute("SET CONSTRAINTS ALL DEFERRED"); // os próximos passos voltam a ser conferidos só no fim, como no sistema
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -215,6 +219,91 @@ class VendaServiceTest {
 		assertThat(p.totais().proximoDia5().valor()).isEqualTo(r("45.00"));
 		assertThat(jdbc.queryForObject("SELECT total_em_aberto FROM vw_saldo_clientes WHERE cliente_id = ?", BigDecimal.class, ana))
 				.isEqualTo(r("90.00"));
+	}
+
+	@Test
+	void cancelarVendaParceladaDevolvePecasEstornaECancelaParcelas() {
+		VendaForm form = new VendaForm(ana, List.of(colar + "-03", brinco), false, FormaVenda.PARCELADO, 2, r("50.00"), FormaPagamento.PIX);
+		long v = vendas.confirmar(form).vendaId();
+		conferirComoNoCommit();
+
+		var cancelada = vendas.cancelar(v, "  Lançada para a cliente errada ");
+		conferirComoNoCommit(); // o banco confere no COMMIT: nenhum pagamento válido nem peça vendida por esta venda
+
+		assertThat(cancelada.status()).isEqualTo("CANCELADA");
+		assertThat(cancelada.motivoCancelamento()).isEqualTo("Lançada para a cliente errada");
+		assertThat(cancelada.canceladaEm()).isNotNull();
+		assertThat(cancelada.itens()).extracting(i -> i.etiqueta()).containsExactly(colar + "-03", brinco + "-01");
+		assertThat(cancelada.parcelas()).allSatisfy(pa -> assertThat(pa.status()).isEqualTo("CANCELADA"));
+		assertThat(cancelada.pagamentos()).singleElement().satisfies(pg -> {
+			assertThat(pg.estornado()).isTrue();
+			assertThat(pg.motivoEstorno()).contains("Lançada para a cliente errada");
+		});
+		// as peças voltam a ficar disponíveis, na mesma maleta, e o estoque bate com o histórico
+		assertThat(jdbc.queryForList("SELECT situacao FROM vw_pecas vp JOIN itens_venda iv ON iv.peca_id = vp.peca_id WHERE iv.venda_id = ?",
+				String.class, v)).containsOnly("DISPONIVEL").hasSize(2);
+		assertThat(jdbc.queryForList("SELECT produto_id FROM vw_divergencia_estoque")).isEmpty();
+		// o registro continua lá
+		assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM vendas WHERE id = ?", Integer.class, v)).isEqualTo(1);
+		// e o painel deixa de contar a venda
+		PainelDTO p = painel.montarPainel();
+		assertThat(p.totais().totalVendido().valor()).isEqualByComparingTo("0");
+		assertThat(p.totais().aReceber().valor()).isEqualByComparingTo("0");
+		assertThat(p.totais().recebido().valor()).isEqualByComparingTo("0");
+	}
+
+	@Test
+	void pecaDeVendaCanceladaPodeSerVendidaDeNovo() {
+		long v = vendas.confirmar(aVista(ana, brinco + "-01")).vendaId();
+		vendas.cancelar(v, "Teste de cancelamento");
+		conferirComoNoCommit();
+
+		long nova = vendas.confirmar(aVista(ana, brinco + "-01")).vendaId();
+		conferirComoNoCommit();
+		assertThat(vendas.detalhe(nova).status()).isEqualTo("FINALIZADA");
+		assertThat(vendas.recentes(ana, 30)).extracting(r -> r.status()).containsExactlyInAnyOrder("FINALIZADA", "CANCELADA");
+	}
+
+	@Test
+	void cancelamentoComMensagemClara() {
+		long v = vendas.confirmar(aVista(ana, colar)).vendaId();
+		assertThatThrownBy(() -> vendas.cancelar(v, " ")).hasMessageContaining("motivo");
+		vendas.cancelar(v, "Teste");
+		assertThatThrownBy(() -> vendas.cancelar(v, "De novo")).hasMessageContaining("já está cancelada");
+		assertThatThrownBy(() -> vendas.cancelar(999999, "Não existe")).hasMessageContaining("não encontrada");
+	}
+
+	@Test
+	void graficosContamSoVendaFinalizadaEMesesSemMovimentoVemComZero() {
+		LocalDate hoje = LocalDate.of(2026, 11, 11);
+		// parcelada: entrada de 50 paga hoje + 2 parcelas (dez e jan)
+		vendas.confirmar(new VendaForm(ana, List.of(colar), false, FormaVenda.PARCELADO, 2, r("50.00"), FormaPagamento.PIX));
+		long cancelada = vendas.confirmar(aVista(ana, brinco)).vendaId();
+		vendas.cancelar(cancelada, "Teste dos gráficos");
+		conferirComoNoCommit();
+
+		var meses = graficos.vendasPorMes(hoje, 12);
+		assertThat(meses).hasSize(12);
+		assertThat(meses.get(0).mes()).isEqualTo("2025-12");
+		assertThat(meses.get(11)).satisfies(m -> {
+			assertThat(m.mes()).isEqualTo("2026-11");
+			assertThat(m.vendido()).isEqualByComparingTo("100.00"); // a cancelada (49,90) não conta
+			assertThat(m.vendas()).isEqualTo(1);
+		});
+		assertThat(meses.get(10).vendido()).isEqualByComparingTo("0");
+
+		var recebimentos = graficos.recebimentosPorMes(hoje, 5, 6);
+		assertThat(recebimentos).hasSize(12);
+		assertThat(recebimentos).filteredOn(m -> m.mes().equals("2026-11")).singleElement()
+				.satisfies(m -> assertThat(m.recebido()).isEqualByComparingTo("50.00"));
+		assertThat(recebimentos).filteredOn(m -> m.mes().equals("2026-12")).singleElement()
+				.satisfies(m -> assertThat(m.aReceber()).isEqualByComparingTo("25.00"));
+		assertThat(recebimentos.stream().map(m -> m.aReceber()).reduce(BigDecimal.ZERO, BigDecimal::add))
+				.isEqualByComparingTo("50.00");
+
+		var categorias = graficos.pecasPorCategoria();
+		assertThat(categorias).extracting(c -> c.categoria(), c -> c.disponiveis(), c -> c.vendidas())
+				.contains(tuple("Colar", 3, 1), tuple("Brinco", 1, 0));
 	}
 
 	@Test
