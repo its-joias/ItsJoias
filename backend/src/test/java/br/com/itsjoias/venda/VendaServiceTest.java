@@ -301,6 +301,9 @@ class VendaServiceTest {
 		assertThat(recebimentos.stream().map(m -> m.aReceber()).reduce(BigDecimal.ZERO, BigDecimal::add))
 				.isEqualByComparingTo("50.00");
 
+		assertThat(graficos.vendidoPorCategoria(hoje, 12)).extracting(c -> c.categoria(), c -> c.vendido(), c -> c.pecas())
+				.containsExactly(tuple("Colar", r("100.00"), 1)); // o brinco da venda cancelada não conta
+
 		var categorias = graficos.pecasPorCategoria();
 		assertThat(categorias).extracting(c -> c.categoria(), c -> c.disponiveis(), c -> c.vendidas())
 				.contains(tuple("Colar", 3, 1), tuple("Brinco", 1, 0));

@@ -16,6 +16,10 @@ public final class GraficoDTO {
 	public record RecebimentosDoMes(String mes, BigDecimal recebido, BigDecimal aReceber, BigDecimal atrasado) {
 	}
 
+	/** Valor vendido (preço das peças, sem o acréscimo de 10%) por categoria. */
+	public record VendidoDaCategoria(String categoria, BigDecimal vendido, int pecas) {
+	}
+
 	/** Peças das maletas ativas, por categoria. */
 	public record PecasDaCategoria(String categoria, int disponiveis, int vendidas, int perdidasOuDevolvidas) {
 	}

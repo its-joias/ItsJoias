@@ -45,6 +45,32 @@
         }
     }
 
+    /** Pizza: as 3 categorias que mais venderam + "Outras" (mais fatias ficariam difíceis de distinguir). */
+    async function pizza() {
+        const caixa = document.getElementById("grafico-pizza");
+        try {
+            const categorias = await api("/api/graficos/vendido-por-categoria");
+            if (!categorias.length) {
+                caixa.replaceChildren(criar("p", "vazio", "Nenhuma venda nos últimos 12 meses."));
+                return;
+            }
+            const cores = ["var(--barra-vendidas)", "var(--barra-disponiveis)", "var(--barra-perdidas)"];
+            const pecas = (n) => (n === 1 ? "1 peça" : `${n} peças`);
+            const fatias = categorias.slice(0, 3).map((c, i) => ({ nome: c.categoria, valor: Number(c.vendido), cor: cores[i],
+                detalhe: pecas(c.pecas) }));
+            const resto = categorias.slice(3);
+            if (resto.length) {
+                fatias.push({ nome: resto.length === 1 ? resto[0].categoria : "Outras", cor: "var(--fatia-outras)",
+                    valor: resto.reduce((s, c) => s + Number(c.vendido), 0),
+                    detalhe: resto.map((c) => c.categoria).join(", ") });
+            }
+            g.pizza(caixa, { titulo: "Vendido por categoria, últimos 12 meses", rotuloCategoria: "Categoria", fatias });
+        } catch (e) {
+            erro(caixa, e.message);
+        }
+    }
+
     vendas();
+    pizza();
     recebimentos();
 })();

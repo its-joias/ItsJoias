@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import br.com.itsjoias.dto.GraficoDTO.PecasDaCategoria;
 import br.com.itsjoias.dto.GraficoDTO.RecebimentosDoMes;
 import br.com.itsjoias.dto.GraficoDTO.VendasDoMes;
+import br.com.itsjoias.dto.GraficoDTO.VendidoDaCategoria;
 
 /** Consultas dos gráficos. Mês sem movimento aparece com zero (o eixo do tempo não pula meses). */
 @Repository
@@ -52,6 +53,21 @@ public class GraficoRepository {
 				""", Map.of("hoje", hoje, "antes", mesesAntes, "depois", mesesDepois),
 				(rs, i) -> new RecebimentosDoMes(rs.getString("mes"), dinheiro(rs, "recebido"), dinheiro(rs, "a_receber"),
 						dinheiro(rs, "atrasado")));
+	}
+
+	/** Vendido por categoria nos últimos N meses (vendas finalizadas), do maior para o menor. */
+	public List<VendidoDaCategoria> vendidoPorCategoria(LocalDate hoje, int meses) {
+		return jdbc.query("""
+				SELECT c.nome AS categoria, SUM(iv.preco_unitario) AS vendido, COUNT(*) AS pecas
+				FROM itens_venda iv
+				JOIN vendas     v ON v.id = iv.venda_id AND v.status = 'FINALIZADA'
+				JOIN produtos   p ON p.id = iv.produto_id
+				JOIN categorias c ON c.id = p.categoria_id
+				WHERE v.data_venda >= date_trunc('month', CAST(:hoje AS date)) - make_interval(months => :meses - 1)
+				GROUP BY c.nome
+				ORDER BY SUM(iv.preco_unitario) DESC, c.nome
+				""", Map.of("hoje", hoje, "meses", meses),
+				(rs, i) -> new VendidoDaCategoria(rs.getString("categoria"), dinheiro(rs, "vendido"), rs.getInt("pecas")));
 	}
 
 	/** Peças das maletas ATIVAS por categoria (maleta encerrada ou descartada não entra). */

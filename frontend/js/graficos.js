@@ -274,5 +274,141 @@
         redesenharAoMudarTamanho(caixa, desenhar);
     }
 
-    window.ItsJoiasGraficos = { colunas, barras, mes, reais };
+    // ---- pizza (parte de um todo) -----------------------------------------------------------
+    // fatias: [{ nome, valor, cor, detalhe }]. Até 4 fatias; a última costuma ser "Outras".
+
+    /** Texto dentro de uma fatia: branco ou quase-preto, conforme a cor da fatia (calculado na tela). */
+    function corDoTextoSobre(elemento) {
+        const m = getComputedStyle(elemento).fill.match(/\d+(\.\d+)?/g);
+        if (!m) return "#172A33";
+        const [r, g, b] = m.slice(0, 3).map(Number).map((c) => {
+            const v = c / 255;
+            return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+        });
+        const luz = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        return (1.05) / (luz + 0.05) >= (luz + 0.05) / 0.05 ? "#FFFFFF" : "#172A33";
+    }
+
+    function pizza(caixa, opcoes) {
+        const o = { formatar: reais, ...opcoes };
+        caixa.replaceChildren();
+        caixa.classList.add("grafico", "grafico-pizza");
+        const total = o.fatias.reduce((s, f) => s + f.valor, 0);
+        const pct = (v) => new Intl.NumberFormat("pt-BR", { maximumFractionDigits: v / total < 0.1 ? 1 : 0 }).format((v / total) * 100) + "%";
+
+        const corpo = criar("div", "grafico-pizza-corpo");
+        const area = criar("div", "grafico-area grafico-pizza-area");
+        const balao = criar("div", "grafico-balao");
+        balao.hidden = true;
+        balao.setAttribute("aria-hidden", "true");
+        area.append(balao);
+
+        // legenda com os números (a pizza sozinha não deixa comparar valores parecidos)
+        const legenda = criar("ul", "grafico-pizza-legenda");
+        o.fatias.forEach((f) => {
+            const li = criar("li");
+            const cor = criar("span", "grafico-amostra");
+            cor.style.background = f.cor;
+            const nome = criar("span", "grafico-pizza-nome", f.nome);
+            li.append(cor, nome, criar("strong", null, o.formatar(f.valor)), criar("span", "texto-suave", pct(f.valor)));
+            legenda.append(li);
+        });
+        const totalLi = criar("li", "grafico-pizza-total");
+        totalLi.append(criar("span"), criar("span", null, "Total"), criar("strong", null, o.formatar(total)), criar("span"));
+        legenda.append(totalLi);
+        corpo.append(area, legenda);
+
+        // tabela
+        const botao = criar("button", "botao-secundario botao-pequeno grafico-botao-tabela", "Ver tabela");
+        botao.type = "button";
+        const tabela = criar("table", "grafico-tabela");
+        tabela.hidden = true;
+        const cab = criar("tr");
+        [o.rotuloCategoria || "", "Valor", "Parte"].forEach((t, i) => cab.append(criar("th", i ? "numero" : null, t)));
+        const thead = criar("thead");
+        thead.append(cab);
+        const tbody = criar("tbody");
+        o.fatias.forEach((f) => {
+            const tr = criar("tr");
+            tr.append(criar("td", null, f.nome), criar("td", "numero", o.formatar(f.valor)), criar("td", "numero", pct(f.valor)));
+            tbody.append(tr);
+        });
+        tabela.append(thead, tbody);
+        botao.addEventListener("click", () => {
+            tabela.hidden = !tabela.hidden;
+            botao.textContent = tabela.hidden ? "Ver tabela" : "Ocultar tabela";
+        });
+        caixa.append(corpo, botao, tabela);
+
+        const raio = 96;
+        const tamanho = raio * 2 + 8;
+        const centro = tamanho / 2;
+        const s = svg("svg", { width: tamanho, height: tamanho, viewBox: `0 0 ${tamanho} ${tamanho}`, role: "img", "aria-label": o.titulo });
+        let angulo = -Math.PI / 2; // começa no meio-dia, sentido horário
+        const ponto = (a, r) => [centro + r * Math.cos(a), centro + r * Math.sin(a)];
+        o.fatias.forEach((f, i) => {
+            const fatiaAngulo = (f.valor / total) * Math.PI * 2;
+            let forma;
+            if (o.fatias.length === 1 || fatiaAngulo >= Math.PI * 2 - 1e-6) {
+                forma = svg("circle", { cx: centro, cy: centro, r: raio });
+            } else {
+                const [x1, y1] = ponto(angulo, raio);
+                const [x2, y2] = ponto(angulo + fatiaAngulo, raio);
+                const grande = fatiaAngulo > Math.PI ? 1 : 0;
+                forma = svg("path", { d: `M${centro},${centro} L${x1},${y1} A${raio},${raio} 0 ${grande} 1 ${x2},${y2} Z` });
+            }
+            forma.setAttribute("class", "grafico-fatia");
+            forma.setAttribute("tabindex", "0");
+            forma.setAttribute("aria-label", `${f.nome}: ${o.formatar(f.valor)}, ${pct(f.valor)}`);
+            forma.style.fill = f.cor;
+            s.append(forma);
+            const meio = angulo + fatiaAngulo / 2;
+            const mostrar = () => {
+                s.classList.add("com-destaque");
+                s.querySelectorAll(".grafico-fatia").forEach((e) => e.classList.toggle("ativa", e === forma));
+                balao.replaceChildren(criar("strong", "grafico-balao-titulo", f.nome));
+                const linha = criar("div", "grafico-balao-linha");
+                const cor = criar("span", "grafico-amostra");
+                cor.style.background = f.cor;
+                linha.append(cor, criar("span", null, pct(f.valor)), criar("strong", null, o.formatar(f.valor)));
+                balao.append(linha);
+                if (f.detalhe) balao.append(criar("div", "grafico-balao-extra", f.detalhe));
+                balao.hidden = false;
+                const [bx, by] = ponto(meio, raio * 0.6);
+                balao.style.left = Math.max(0, bx - balao.offsetWidth / 2) + "px";
+                balao.style.top = Math.max(0, by - balao.offsetHeight - 12) + "px";
+            };
+            const esconder = () => {
+                s.classList.remove("com-destaque");
+                forma.classList.remove("ativa");
+                balao.hidden = true;
+            };
+            forma.addEventListener("pointerenter", mostrar);
+            forma.addEventListener("focus", mostrar);
+            forma.addEventListener("pointerleave", esconder);
+            forma.addEventListener("blur", esconder);
+            f.forma = forma;
+            f.meio = meio;
+            f.fatiaAngulo = fatiaAngulo;
+            angulo += fatiaAngulo;
+        });
+        area.append(s);
+        // percentual só nas fatias grandes (>= 12%), com a cor de texto que contrasta com a fatia
+        const rotulos = [];
+        o.fatias.forEach((f) => {
+            if (f.valor / total < 0.12) return;
+            const [tx, ty] = o.fatias.length === 1 ? [centro, centro] : ponto(f.meio, raio * 0.62);
+            const t = svg("text", { x: tx, y: ty + 4, class: "grafico-pizza-rotulo", "text-anchor": "middle" });
+            t.textContent = pct(f.valor);
+            t.style.fill = corDoTextoSobre(f.forma);
+            s.append(t);
+            rotulos.push([t, f.forma]);
+        });
+        // no outro tema as fatias mudam de cor: recalcula a cor do texto
+        document.addEventListener("itsjoias:tema", () => {
+            requestAnimationFrame(() => rotulos.forEach(([t, forma]) => { t.style.fill = corDoTextoSobre(forma); }));
+        });
+    }
+
+    window.ItsJoiasGraficos = { colunas, barras, pizza, mes, reais };
 })();

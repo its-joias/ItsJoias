@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.itsjoias.dto.GraficoDTO.PecasDaCategoria;
 import br.com.itsjoias.dto.GraficoDTO.RecebimentosDoMes;
 import br.com.itsjoias.dto.GraficoDTO.VendasDoMes;
+import br.com.itsjoias.dto.GraficoDTO.VendidoDaCategoria;
 import br.com.itsjoias.repository.GraficoRepository;
 import br.com.itsjoias.service.CalendarioCobranca;
 
@@ -17,6 +18,7 @@ import br.com.itsjoias.service.CalendarioCobranca;
  * GET /api/graficos/vendas-por-mes        últimos 12 meses
  * GET /api/graficos/recebimentos-por-mes  5 meses antes até 6 meses depois (mês de vencimento das parcelas)
  * GET /api/graficos/pecas-por-categoria   peças das maletas ativas
+ * GET /api/graficos/vendido-por-categoria valor vendido por categoria, últimos 12 meses (pizza)
  */
 @RestController
 @RequestMapping("/api/graficos")
@@ -39,6 +41,11 @@ public class GraficoController {
 	@GetMapping("/recebimentos-por-mes")
 	public List<RecebimentosDoMes> recebimentosPorMes() {
 		return graficos.recebimentosPorMes(calendario.hoje(), 5, 6);
+	}
+
+	@GetMapping("/vendido-por-categoria")
+	public List<VendidoDaCategoria> vendidoPorCategoria() {
+		return graficos.vendidoPorCategoria(calendario.hoje(), 12);
 	}
 
 	@GetMapping("/pecas-por-categoria")

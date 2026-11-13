@@ -427,12 +427,14 @@ footer p {
     --barra-vendidas: #B98A12;
     --barra-disponiveis: #5786CC;
     --barra-perdidas: #C2618C;
+    --fatia-outras: #C3CCD8;   /* neutro da pizza ("Outras"), conferido contra as 3 cores acima */
 }
 
 html[data-tema="claro"] {
     --barra-vendidas: #B07F0A;
     --barra-disponiveis: #3B6BB0;
     --barra-perdidas: #A9466F;
+    --fatia-outras: #CFC8BA;
 }
 
 .dinheiro,
@@ -2586,6 +2588,79 @@ tr.linha-cancelada td.numero {
     font-size: 12px;
 }
 
+/* pizza */
+.grafico-pizza-corpo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 28px;
+}
+
+.grafico-pizza-area {
+    width: auto;
+    flex: none;
+}
+
+.grafico-fatia {
+    stroke: var(--superficie);   /* 2px de espaço entre as fatias, na cor do fundo */
+    stroke-width: 2;
+    stroke-linejoin: round;
+    outline: none;
+    transition: opacity 0.15s ease;
+}
+
+.com-destaque .grafico-fatia:not(.ativa) {
+    opacity: 0.45;
+}
+
+.grafico-fatia:focus-visible {
+    stroke: var(--dourado);
+    stroke-width: 3;
+}
+
+.grafico-pizza-rotulo {
+    font-size: 13px;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.grafico-pizza-legenda {
+    display: grid;
+    grid-template-columns: 10px minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 8px 12px;
+    flex: 1 1 220px;
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    list-style: none;
+}
+
+.grafico-pizza-legenda li {
+    display: contents;
+}
+
+.grafico-pizza-legenda strong {
+    color: var(--texto-forte);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.grafico-pizza-legenda .texto-suave {
+    min-width: 42px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.grafico-pizza-total > * {
+    padding-top: 8px;
+    border-top: 1px solid var(--borda);
+}
+
+.painel-grafico-largo {
+    margin-top: 16px;
+}
+
 @media (max-width: 900px) {
     .painel-blocos {
         grid-template-columns: 1fr;
@@ -2599,4 +2674,8 @@ tr.linha-cancelada td.numero {
 .grafico-valor,
 .grafico-categoria {
     pointer-events: none;
+}
+
+.grafico-pizza-total > span:empty {
+    border-top: none;
 }
