@@ -67,6 +67,19 @@
             </section>
 
             <div class="painel-blocos">
+                <section class="bloco" aria-labelledby="titulo-grafico-vendas">
+                    <h3 id="titulo-grafico-vendas">Vendas por mês</h3>
+                    <p class="texto-suave grafico-subtitulo">Total vendido nos últimos 12 meses (vendas canceladas não contam).</p>
+                    <div id="grafico-vendas"><p class="carregando-texto">Carregando gráfico…</p></div>
+                </section>
+                <section class="bloco" aria-labelledby="titulo-grafico-recebimentos">
+                    <h3 id="titulo-grafico-recebimentos">Recebido × a receber</h3>
+                    <p class="texto-suave grafico-subtitulo">Parcelas pelo mês de vencimento: o que já entrou e o que falta entrar.</p>
+                    <div id="grafico-recebimentos"><p class="carregando-texto">Carregando gráfico…</p></div>
+                </section>
+            </div>
+
+            <div class="painel-blocos">
                 <section class="bloco" aria-labelledby="titulo-atrasadas">
                     <h3 id="titulo-atrasadas">Parcelas atrasadas</h3>
                     <ul class="bloco-lista" id="lista-atrasadas"></ul>
@@ -110,5 +123,7 @@
     <script src="js/ui.js"></script>
     <script src="js/sessao.js"></script>
     <script src="js/painel.js"></script>
+    <script src="js/graficos.js"></script>
+    <script src="js/painel-graficos.js"></script>
 </body>
 </html>

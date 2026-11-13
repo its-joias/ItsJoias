@@ -29,6 +29,12 @@
         <h2>Produtos</h2>
         <p>Peças disponíveis nas maletas, com a etiqueta de cada uma e o preço de venda.</p>
 
+        <section class="bloco" aria-labelledby="titulo-grafico-categorias">
+            <h3 id="titulo-grafico-categorias">Peças por categoria</h3>
+            <p class="texto-suave grafico-subtitulo">Peças das maletas ativas: disponíveis, vendidas e perdidas ou devolvidas.</p>
+            <div id="grafico-categorias"><p class="carregando-texto">Carregando gráfico…</p></div>
+        </section>
+
         <div class="barra-ferramentas">
             <input type="search" id="busca" placeholder="Buscar por etiqueta, modelo ou nome" aria-label="Buscar peça">
         </div>
@@ -58,5 +64,7 @@
     <script src="js/ui.js"></script>
     <script src="js/sessao.js"></script>
     <script src="js/produtos.js"></script>
+    <script src="js/graficos.js"></script>
+    <script src="js/produtos-graficos.js"></script>
 </body>
 </html>
