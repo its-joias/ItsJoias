@@ -39,6 +39,8 @@ public class VendaService {
 
 	private static final Pattern ETIQUETA = Pattern.compile("^([A-Z]{1,3}[0-9]{4,})-([0-9]{1,4})$");
 	private static final Pattern MODELO = Pattern.compile("^[A-Z]{1,3}[0-9]{4,}$");
+	/** Código de barras da etiqueta que veio na maleta (só números). */
+	private static final Pattern CODIGO_BARRAS = Pattern.compile("^[0-9]{6,14}$");
 
 	private final VendaRepository vendas;
 	private final CalendarioCobranca calendario;
@@ -149,8 +151,23 @@ public class VendaService {
 				long produto = vendas.produtoPorCodigo(codigo)
 						.orElseThrow(() -> new RegraNegocioException("Modelo " + codigo + " não encontrado."));
 				pedidos.add(new Pedido(codigo, null, produto));
+			} else if (CODIGO_BARRAS.matcher(codigo).matches()) {
+				// código de barras do fornecedor: acha o modelo; a peça sai da maleta mais antiga com peça disponível
+				// (a tela pergunta a maleta antes, quando o código está em mais de uma)
+				List<String> modelos = vendas.produtosPorCodigoFornecedor(codigo);
+				if (modelos.isEmpty()) {
+					throw new RegraNegocioException("Código de barras " + codigo + " não encontrado em nenhuma maleta importada.");
+				}
+				if (modelos.size() > 1) {
+					throw new RegraNegocioException("O código de barras " + codigo + " está em mais de um modelo ("
+							+ String.join(", ", modelos.stream().map(m -> m.substring(m.indexOf(':') + 1)).toList())
+							+ "). Use a etiqueta da peça.");
+				}
+				String modelo = modelos.get(0);
+				pedidos.add(new Pedido(codigo, null, Long.parseLong(modelo.substring(0, modelo.indexOf(':')))));
 			} else {
-				throw new RegraNegocioException("Código " + codigo + " inválido. Use a etiqueta (C0001-02) ou o modelo (C0001).");
+				throw new RegraNegocioException("Código " + codigo
+						+ " inválido. Use o código de barras da etiqueta, a etiqueta (C0001-02) ou o modelo (C0001).");
 			}
 		}
 		if (pedidos.isEmpty()) {
@@ -177,7 +194,7 @@ public class VendaService {
 			if (p.pecaId() == null) {
 				Optional<Long> peca = vendas.primeiraPecaDisponivel(p.produtoId(), escolhidas);
 				long id = peca.orElseThrow(() -> new RegraNegocioException(
-						"Não há peça disponível do modelo " + p.digitado() + "."));
+						"Não há peça disponível para " + p.digitado() + " (já vendida, perdida ou devolvida)."));
 				escolhidas.add(id);
 				porPosicao[i] = id;
 			}

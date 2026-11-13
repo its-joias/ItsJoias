@@ -1203,6 +1203,21 @@ td.acoes-linha button {
     white-space: nowrap;
 }
 
+/* "O código 48480079 está em 2 maletas. De qual maleta saiu esta peça?" */
+.sugestoes-pergunta {
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--dourado);
+    border-radius: 10px;
+    background: var(--alerta-fundo);
+    color: var(--texto);
+    font-size: 13px;
+}
+
+.sugestoes-pergunta strong {
+    color: var(--destaque);
+}
+
 .lista-pecas {
     margin: 12px 0 0;
     padding: 0;

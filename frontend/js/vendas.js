@@ -112,15 +112,74 @@
 
     // ---- peças --------------------------------------------------------------------------
 
+    const CODIGO_BARRAS = /^[0-9]{6,14}$/;
+
     function adicionar(codigo) {
-        const c = (codigo || "").trim().toUpperCase();
+        const c = (codigo || "").trim().toUpperCase().replace(/\s+/g, "");
         if (!c) return;
+        clearTimeout(esperaBusca);
+        buscaAtual++; // descarta sugestões que ainda estavam a caminho
+        if (CODIGO_BARRAS.test(c)) {
+            porCodigoDeBarras(c);
+            return;
+        }
         codigos.push(c);
         inpCodigo.value = "";
         sugestoes.replaceChildren();
         desenharPecas();
         atualizarPrevia();
         inpCodigo.focus();
+    }
+
+    /** Etiquetas já escolhidas nesta venda (para não oferecer a mesma peça de novo). */
+    function etiquetasUsadas() {
+        return new Set(previa && previa.itens.length === codigos.length ? previa.itens.map((i) => i.etiqueta) : codigos);
+    }
+
+    /**
+     * Código de barras da etiqueta da maleta: acha as peças disponíveis com esse código.
+     * Uma maleta só -> entra direto. Mais de uma -> pergunta de qual maleta a peça saiu (a baixa vai para a maleta certa).
+     */
+    async function porCodigoDeBarras(codigo) {
+        inpCodigo.value = "";
+        let pecas;
+        try {
+            pecas = await api("/api/pecas?situacao=DISPONIVEL&limite=200&busca=" + encodeURIComponent(codigo));
+        } catch (erro) {
+            notificar({ tipo: "erro", titulo: "Não foi possível buscar o código " + codigo + ".", texto: erro.message });
+            return;
+        }
+        const usadas = etiquetasUsadas();
+        const livres = pecas.filter((p) => !usadas.has(p.etiqueta));
+        if (!livres.length) {
+            notificar({ tipo: "alerta", titulo: "Nenhuma peça disponível com o código " + codigo + ".",
+                texto: "Confira o número na etiqueta. Se a peça já foi vendida, devolvida ou ainda não foi importada, ela não aparece." });
+            inpCodigo.focus();
+            return;
+        }
+        const porMaleta = new Map();
+        livres.forEach((p) => {
+            if (!porMaleta.has(p.maleta)) porMaleta.set(p.maleta, []);
+            porMaleta.get(p.maleta).push(p);
+        });
+        if (porMaleta.size === 1) {
+            adicionar(livres[0].etiqueta);
+            return;
+        }
+        const pergunta = criar("li", "sugestoes-pergunta");
+        pergunta.append(criar("strong", null, `O código ${codigo} está em ${porMaleta.size} maletas.`),
+            criar("span", null, " De qual maleta saiu esta peça?"));
+        sugestoes.replaceChildren(pergunta, ...[...porMaleta].map(([maleta, lista]) => {
+            const li = criar("li");
+            const botao = criar("button");
+            botao.type = "button";
+            botao.append(criar("span", null, `${maleta} · ${lista[0].produto} · ${formato.plural(lista.length, "disponível", "disponíveis")}`),
+                criar("span", "dinheiro", formato.reais(lista[0].preco)));
+            botao.addEventListener("click", () => adicionar(lista[0].etiqueta));
+            li.append(botao);
+            return li;
+        }));
+        sugestoes.querySelector("button").focus();
     }
 
     function remover(indice) {
@@ -170,7 +229,7 @@
             try {
                 const pecas = await api("/api/pecas?limite=8&busca=" + encodeURIComponent(termo));
                 if (meu !== buscaAtual) return;
-                const usadas = new Set(previa ? previa.itens.map((i) => i.etiqueta) : codigos);
+                const usadas = etiquetasUsadas();
                 sugestoes.replaceChildren(...pecas.filter((p) => !usadas.has(p.etiqueta)).map((p) => {
                     const li = criar("li");
                     const botao = criar("button");

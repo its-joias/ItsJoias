@@ -75,6 +75,15 @@ public class VendaRepository {
 				""", Map.of("c", codigo), Long.class).stream().findFirst();
 	}
 
+	/** Código de barras da etiqueta do fornecedor -> modelos (normalmente um só). */
+	public List<String> produtosPorCodigoFornecedor(String codigo) {
+		return jdbc.queryForList("""
+				SELECT DISTINCT p.id || ':' || p.codigo FROM produto_codigos_fornecedor f
+				JOIN produtos p ON p.id = f.produto_id
+				WHERE f.codigo_fornecedor = :c ORDER BY 1
+				""", Map.of("c", codigo), String.class);
+	}
+
 	public Optional<Long> produtoDaPeca(long pecaId) {
 		return jdbc.queryForList("SELECT produto_id FROM pecas WHERE id = :id", Map.of("id", pecaId), Long.class)
 				.stream().findFirst();
@@ -195,11 +204,13 @@ public class VendaRepository {
 				WHERE (CAST(:situacao AS text) IS NULL OR vp.situacao = :situacao)
 				""");
 		if (busca != null && !busca.isBlank()) {
-			sql.append(" AND (vp.codigo LIKE :codigo OR lower(p.nome) LIKE :nome)");
+			// etiqueta (C0001-02), modelo (C0001), nome ou código de barras da etiqueta do fornecedor
+			sql.append(" AND (vp.codigo LIKE :codigo OR lower(p.nome) LIKE :nome OR EXISTS (SELECT 1 FROM produto_codigos_fornecedor f"
+					+ " WHERE f.produto_id = p.id AND f.codigo_fornecedor LIKE :codigo))");
 			p.addValue("codigo", busca.trim().toUpperCase().replace("%", "") + "%");
 			p.addValue("nome", "%" + busca.trim().toLowerCase().replace("%", "") + "%");
 		}
-		sql.append(" ORDER BY p.codigo, vp.numero LIMIT :limite");
+		sql.append(" ORDER BY p.codigo, vp.maleta_data_entrada, vp.maleta_id, vp.numero LIMIT :limite");
 		return jdbc.query(sql.toString(), p, (rs, i) -> new PecaResumo(rs.getLong("peca_id"), rs.getString("etiqueta"),
 				rs.getString("produto_codigo"), rs.getString("produto"), rs.getString("categoria"), rs.getString("maleta"),
 				dinheiro(rs, "preco_venda"), rs.getString("situacao")));

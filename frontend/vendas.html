@@ -48,13 +48,14 @@
                 <section class="venda-passo" aria-labelledby="passo-pecas">
                     <h3 id="passo-pecas"><span class="passo-numero">2</span> Peças</h3>
                     <div class="campo">
-                        <label for="codigo">Etiqueta da peça ou código do modelo</label>
+                        <label for="codigo">Código de barras da etiqueta, etiqueta da peça ou modelo</label>
                         <div class="adicionar-peca">
-                            <input type="text" id="codigo" placeholder="Ex.: C0001-02 ou C0001" autocomplete="off"
+                            <input type="text" id="codigo" placeholder="Ex.: 48480079, C0001-02 ou C0001" autocomplete="off"
                                    aria-describedby="codigo-dica">
                             <button type="button" id="botao-adicionar">Adicionar</button>
                         </div>
-                        <span class="dica" id="codigo-dica">Pelo modelo, o sistema escolhe a peça da maleta mais antiga.
+                        <span class="dica" id="codigo-dica">Leia ou digite o código de barras da etiqueta que veio na maleta.
+                            Se o mesmo código estiver em mais de uma maleta, o sistema pergunta de qual a peça saiu.
                             Você também pode buscar pelo nome.</span>
                     </div>
                     <ul class="sugestoes" id="sugestoes" aria-label="Peças encontradas"></ul>

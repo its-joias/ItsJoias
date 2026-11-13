@@ -88,6 +88,9 @@ class VendaServiceTest {
 		entrada(pColar, agosto, 2, "40.00");
 		entrada(pColar, outubro, 2, "42.00");
 		entrada(pBrinco, outubro, 1, "18.00");
+		// código de barras da etiqueta do fornecedor (fictício)
+		jdbc.update("INSERT INTO produto_codigos_fornecedor (produto_id, fornecedor_id, codigo_fornecedor) VALUES (?, ?, '48480079')", pColar, fornecedor);
+		jdbc.update("INSERT INTO produto_codigos_fornecedor (produto_id, fornecedor_id, codigo_fornecedor) VALUES (?, ?, '65964651')", pBrinco, fornecedor);
 
 		ana = id("INSERT INTO clientes (nome, telefone) VALUES ('Ana Teste', '(71) 90000-0001') RETURNING id");
 		inativa = id("INSERT INTO clientes (nome, telefone, ativo) VALUES ('Inativa Teste', '(71) 90000-0009', false) RETURNING id");
@@ -222,6 +225,38 @@ class VendaServiceTest {
 				.isInstanceOf(RegraNegocioException.class).hasMessageContaining("já foi vendida");
 		assertThatThrownBy(() -> vendas.previa(aVista(ana, brinco)))
 				.isInstanceOf(RegraNegocioException.class).hasMessageContaining("Não há peça disponível");
+	}
+
+	@Test
+	void peloCodigoDeBarrasDaEtiquetaVendeOModeloCerto() {
+		Previa p = vendas.previa(aVista(ana, "48480079", " 65964651 "));
+
+		assertThat(p.itens()).extracting(ItemPrevia::etiqueta, ItemPrevia::maleta)
+				.containsExactly(tuple(colar + "-01", "Maleta Agosto"), tuple(brinco + "-01", "Maleta Outubro"));
+	}
+
+	@Test
+	void codigoDeBarrasAchaAsPecasDeCadaMaletaNaBusca() {
+		// a tela usa esta busca para perguntar de qual maleta a peça saiu quando há mais de uma
+		assertThat(vendas.buscarPecas("48480079", "DISPONIVEL", 30)).extracting(p -> p.etiqueta(), p -> p.maleta())
+				.containsExactly(tuple(colar + "-01", "Maleta Agosto"), tuple(colar + "-02", "Maleta Agosto"),
+						tuple(colar + "-03", "Maleta Outubro"), tuple(colar + "-04", "Maleta Outubro"));
+	}
+
+	@Test
+	void codigoDeBarrasComMensagemClara() {
+		assertThatThrownBy(() -> vendas.previa(aVista(ana, "11111116")))
+				.hasMessageContaining("não encontrado em nenhuma maleta");
+
+		vendas.confirmar(aVista(ana, "65964651"));
+		assertThatThrownBy(() -> vendas.previa(aVista(ana, "65964651")))
+				.hasMessageContaining("Não há peça disponível para 65964651");
+
+		long outroFornecedor = id("INSERT INTO fornecedores (nome) VALUES ('Outra Fornecedora') RETURNING id");
+		long pAnel = id("INSERT INTO produtos (nome, categoria_id, preco_venda) SELECT 'Anel', id, 30.00 FROM categorias WHERE prefixo = 'A' RETURNING id");
+		jdbc.update("INSERT INTO produto_codigos_fornecedor (produto_id, fornecedor_id, codigo_fornecedor) VALUES (?, ?, '48480079')", pAnel, outroFornecedor);
+		assertThatThrownBy(() -> vendas.previa(aVista(ana, "48480079")))
+				.hasMessageContaining("mais de um modelo").hasMessageContaining(colar);
 	}
 
 	@Test
