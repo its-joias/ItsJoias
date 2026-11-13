@@ -93,7 +93,9 @@ public class ImportacaoRepository {
 				FROM importacoes_maleta i
 				JOIN usuarios u ON u.id = i.usuario_id
 				JOIN maletas  m ON m.id = i.maleta_id
-				WHERE i.arquivo_hash = :h ORDER BY i.id
+				WHERE i.arquivo_hash = :h
+				  AND COALESCE(m.observacao, '') NOT LIKE '[Descartada]%' -- maleta descartada não conta como já importada
+				ORDER BY i.id
 				""", Map.of("h", hash), (rs, i) -> new ImportacaoAnterior(rs.getLong("id"),
 				rs.getObject("criado_em", OffsetDateTime.class), rs.getString("usuario"), rs.getString("maleta"),
 				rs.getInt("pecas_importadas")));

@@ -48,7 +48,7 @@ import br.com.itsjoias.service.ImportacaoService;
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("teste")
-@Import({ ImportacaoRepository.class, LeitorPdf.class })
+@Import({ ImportacaoRepository.class, LeitorPdf.class, br.com.itsjoias.repository.MaletaRepository.class })
 class ImportacaoServiceTest {
 
 	@Autowired
@@ -60,7 +60,11 @@ class ImportacaoServiceTest {
 	@Autowired
 	private LeitorPdf leitor;
 
+	@Autowired
+	private br.com.itsjoias.repository.MaletaRepository maletaRepo;
+
 	private ImportacaoService service;
+	private br.com.itsjoias.service.MaletaService maletas;
 	private long brinco;
 	private long anel;
 	private long colar;
@@ -85,6 +89,7 @@ class ImportacaoServiceTest {
 		when(atual.obter()).thenReturn(new UsuarioLogado(usuario, "Leide Teste", "leide@example.com", Perfil.PROPRIETARIA));
 		CalendarioCobranca calendario = new CalendarioCobranca(Clock.fixed(Instant.parse("2026-11-13T15:00:00Z"), ZoneOffset.UTC));
 		service = new ImportacaoService(leitor, repo, calendario, atual);
+		maletas = new br.com.itsjoias.service.MaletaService(maletaRepo, atual);
 		brinco = categoria("B");
 		anel = categoria("A");
 		colar = categoria("C");
@@ -292,6 +297,71 @@ class ImportacaoServiceTest {
 		byte[] pdf = PdfDeTeste.comLinhas(List.of("Relatório mensal de vendas da loja (texto sem tabela de peças)",
 				"Este documento não tem nenhuma linha de mercadoria com código e valor."));
 		assertThatThrownBy(() -> service.ler("relatorio.pdf", pdf)).hasMessageContaining("Não foi encontrada nenhuma peça");
+	}
+
+	// ---- descartar maleta importada errada ---------------------------------------------------
+
+	@Test
+	void descartarMaletaTiraAsPecasDoEstoqueELiberaParaImportarDeNovo() {
+		Previa p = service.ler("termo-99001.pdf", termoFicticio("99001", "45,00"));
+		Resultado r = service.confirmar(corrigir(p, this::correcoesPadrao, false));
+		jdbc.execute("SET CONSTRAINTS ALL IMMEDIATE");
+		jdbc.execute("SET CONSTRAINTS ALL DEFERRED");
+
+		var descarte = maletas.descartar(r.maletaId(), " Importei o PDF errado ");
+		jdbc.execute("SET CONSTRAINTS ALL IMMEDIATE");
+		jdbc.execute("SET CONSTRAINTS ALL DEFERRED");
+
+		assertThat(descarte.pecasRetiradas()).isEqualTo(6);
+		assertThat(jdbc.queryForList("SELECT DISTINCT situacao FROM vw_pecas WHERE maleta_id = ?", String.class, r.maletaId()))
+				.containsExactly("DEVOLVIDA");
+		assertThat(jdbc.queryForList("SELECT produto_id FROM vw_divergencia_estoque")).isEmpty();
+		assertThat(jdbc.queryForMap("SELECT status, codigo, nome, observacao FROM maletas WHERE id = ?", r.maletaId()))
+				.containsEntry("status", "ENCERRADA")
+				.containsEntry("codigo", "X" + r.maletaId() + "-PED99001")
+				.containsEntry("observacao", "[Descartada] Importei o PDF errado");
+		// nada foi apagado: peças, entradas e o histórico da importação continuam lá
+		assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM pecas pc JOIN maleta_itens mi ON mi.id = pc.maleta_item_id WHERE mi.maleta_id = ?",
+				Integer.class, r.maletaId())).isEqualTo(6);
+		assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM importacoes_maleta", Integer.class)).isEqualTo(1);
+
+		// o mesmo PDF pode ser importado de novo: não conta como repetido e o código PED99001 está livre
+		Previa denovo = service.ler("termo-99001.pdf", termoFicticio("99001", "45,00"));
+		assertThat(denovo.importacoesDoMesmoArquivo()).isEmpty();
+		assertThat(denovo.maleta().codigo()).isEqualTo("PED99001");
+		Previa ok = service.validar(corrigir(denovo, l -> correcoesComDecisao(l), false));
+		assertThat(ok.avisosMaleta()).extracting(a -> a.nivel()).doesNotContain(NivelAviso.ERRO);
+	}
+
+	@Test
+	void descartarMaletaComPecaVendidaOuSemMotivoEhRecusado() {
+		Previa p = service.ler("termo-99001.pdf", termoFicticio("99001", "45,00"));
+		Resultado r = service.confirmar(corrigir(p, this::correcoesPadrao, false));
+		jdbc.execute("SET CONSTRAINTS ALL IMMEDIATE");
+		jdbc.execute("SET CONSTRAINTS ALL DEFERRED");
+
+		assertThatThrownBy(() -> maletas.descartar(r.maletaId(), "  ")).hasMessageContaining("motivo");
+
+		// simula uma venda de uma peça desta maleta (baixa VENDA direto no estoque)
+		long usuario = jdbc.queryForObject("SELECT id FROM usuarios LIMIT 1", Long.class);
+		long cliente = jdbc.queryForObject("INSERT INTO clientes (nome, telefone) VALUES ('Cliente Teste', '(71) 90000-0001') RETURNING id", Long.class);
+		var peca = jdbc.queryForMap("SELECT peca_id, produto_id, maleta_item_id FROM vw_pecas WHERE maleta_id = ? ORDER BY peca_id LIMIT 1", r.maletaId());
+		long venda = jdbc.queryForObject("INSERT INTO vendas (cliente_id, usuario_id, data_venda, valor_produtos, desconto, acrescimo, status, finalizada_em) "
+				+ "VALUES (?, ?, CURRENT_DATE, 45.00, 0, 0, 'FINALIZADA', now()) RETURNING id", Long.class, cliente, usuario);
+		jdbc.update("INSERT INTO itens_venda (venda_id, produto_id, maleta_item_id, peca_id, preco_unitario, preco_custo_unitario) VALUES (?, ?, ?, ?, 45.00, 45.00)",
+				venda, peca.get("produto_id"), peca.get("maleta_item_id"), peca.get("peca_id"));
+		int estoque = jdbc.queryForObject("SELECT quantidade_estoque FROM produtos WHERE id = ?", Integer.class, peca.get("produto_id"));
+		jdbc.update("INSERT INTO movimentacoes_estoque (produto_id, maleta_item_id, peca_id, venda_id, usuario_id, tipo, quantidade, estoque_anterior, estoque_posterior) "
+				+ "VALUES (?, ?, ?, ?, ?, 'VENDA', -1, ?, ?)", peca.get("produto_id"), peca.get("maleta_item_id"), peca.get("peca_id"), venda, usuario, estoque, estoque - 1);
+
+		assertThatThrownBy(() -> maletas.descartar(r.maletaId(), "Tentativa")).hasMessageContaining("1 peça desta maleta está vendida");
+		assertThat(jdbc.queryForObject("SELECT status FROM maletas WHERE id = ?", String.class, r.maletaId())).isEqualTo("ATIVA");
+	}
+
+	/** Correções padrão + "manter o preço" quando o modelo já existe com preço diferente. */
+	private LinhaImportacao correcoesComDecisao(LinhaImportacao l) {
+		LinhaImportacao c = correcoesPadrao(l);
+		return com(c, null, null, null, DecisaoPreco.MANTER);
 	}
 
 }
