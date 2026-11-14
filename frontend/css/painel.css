@@ -1,0 +1,559 @@
+/* =====================================================================
+   Painel (index.html): a página que a Leide vê ao entrar.
+   A abertura com a saudação e uma peça num medalhão; o carnê do próximo dia 5
+   (canhoto destacável, como os carnês de parcela); o fio de ouro do dinheiro
+   (recebido, a receber, atrasado); depois quem deve, as maletas e os gráficos.
+   Carregado depois de style.css e visual.css.
+   ===================================================================== */
+
+.painel-novo {
+    --ouro-claro: #F6D27A;
+    --renda: var(--borda);
+}
+
+/* --- abertura ------------------------------------------------------- */
+.abertura {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 32px;
+    margin: 8px 0 28px;
+    padding: 8px 0 28px;
+}
+
+/* a borda de renda: semicírculos pequenos, como a beira de uma renda de bilro */
+.abertura::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 8px;
+    background: radial-gradient(circle at 6px 0, transparent 4px, var(--renda) 4px 5px, transparent 5px) 0 0 / 12px 8px repeat-x;
+    content: "";
+    opacity: 0.9;
+}
+
+.abertura-saudacao {
+    margin: 0 0 6px;
+    color: var(--destaque);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.painel-novo .abertura h2 {
+    max-width: 16ch;
+    margin: 0 0 12px;
+    font-size: clamp(36px, 4.6vw, 60px);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+}
+
+.painel-novo .abertura h2::after {
+    display: none;
+}
+
+.painel-novo #painel-data {
+    margin: 0;
+    color: var(--texto-suave);
+    font-size: 16px;
+}
+
+/* a peça num medalhão oval com aro dourado, como um pingente */
+.medalhao {
+    position: relative;
+    width: 168px;
+    aspect-ratio: 3 / 4;
+    margin: 0;
+    padding: 6px;
+    border-radius: 50%;
+    background: linear-gradient(160deg, var(--ouro-claro), var(--dourado) 45%, #9C6F12);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    animation: medalhao-entrar 0.9s var(--curva) both;
+}
+
+.medalhao img {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 28%;
+    transition: transform 0.6s var(--curva);
+}
+
+.medalhao:hover img {
+    transform: scale(1.03);
+}
+
+.medalhao::before {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    border: 3px solid var(--dourado);
+    border-radius: 50%;
+    content: "";
+    transform: translateX(-50%);
+}
+
+@keyframes medalhao-entrar {
+    from { opacity: 0; transform: translateY(-10px) rotate(-4deg); }
+}
+
+.abertura-texto > * {
+    animation: subir-painel 0.6s var(--curva) both;
+}
+
+.abertura-texto > :nth-child(2) { animation-delay: 70ms; }
+.abertura-texto > :nth-child(3) { animation-delay: 140ms; }
+
+@keyframes subir-painel {
+    from { opacity: 0; transform: translateY(10px); }
+}
+
+/* --- primeira linha: carnê e fio ----------------------------------- */
+.painel-linha--abre {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* --- o carnê ------------------------------------------------------- */
+.carne {
+    position: relative;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    min-height: 100%;
+    border-radius: 18px;
+    background: var(--superficie);
+    box-shadow: inset 0 0 0 1px var(--borda);
+}
+
+.carne-canhoto {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 22px 20px;
+    border-radius: 18px 0 0 18px;
+    background: var(--dourado);
+    color: var(--sobre-dourado);
+}
+
+/* o picote: uma linha de furos entre o canhoto e o corpo, e os dois recortes nas pontas */
+.carne-canhoto::after {
+    position: absolute;
+    top: 14px;
+    right: -1px;
+    bottom: 14px;
+    width: 2px;
+    background: radial-gradient(circle, var(--superficie) 1.5px, transparent 2px) 0 0 / 2px 9px repeat-y;
+    content: "";
+}
+
+.carne::before,
+.carne::after {
+    position: absolute;
+    left: 191px;
+    z-index: 1;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--fundo);
+    content: "";
+}
+
+.carne::before { top: -9px; box-shadow: inset 0 -1px 0 var(--borda); }
+.carne::after { bottom: -9px; box-shadow: inset 0 1px 0 var(--borda); }
+
+.carne-rotulo {
+    margin: 0;
+    color: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.75;
+}
+
+.carne-data {
+    margin: 8px 0 auto;
+    color: inherit;
+    font-family: var(--fonte-titulo);
+    font-size: 52px;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+}
+
+.carne-valor {
+    margin: 18px 0 2px;
+    color: inherit;
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.carne-nota {
+    margin: 0;
+    color: inherit;
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.carne-corpo {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 20px 24px;
+}
+
+.carne-corpo h3 {
+    margin: 0 0 8px;
+    font-size: 22px;
+}
+
+.carne-corpo .bloco-lista {
+    flex: 1;
+    list-style: none;
+}
+
+.carne-corpo .bloco-rodape {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--borda);
+    color: var(--texto-suave);
+    font-size: 13px;
+}
+
+.carne-corpo .bloco-rodape strong {
+    color: var(--texto-forte);
+    font-size: 16px;
+}
+
+/* --- o fio de ouro ----------------------------------------------- */
+.fio {
+    display: flex;
+    flex-direction: column;
+    padding: 22px 24px;
+    border: 1px solid var(--borda);
+    border-radius: 18px;
+    background: var(--superficie);
+}
+
+.painel-novo .fio-rotulo {
+    margin: 0;
+    color: var(--texto-suave);
+    font-family: var(--fonte-texto);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.fio-total {
+    margin: 4px 0 0;
+    color: var(--texto-forte);
+    font-family: var(--fonte-titulo);
+    font-size: clamp(40px, 4vw, 54px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+}
+
+.fio-nota {
+    margin: 6px 0 22px;
+    font-size: 13px;
+}
+
+/* o fio: trechos com contas nas emendas, como um colar esticado */
+.fio-linha {
+    --recebido: 0;
+    --receber: 0;
+    --atrasado: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 14px;
+    margin: 0 0 20px;
+}
+
+.fio-linha::before {
+    position: absolute;
+    right: 0;
+    left: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--borda);
+    content: "";
+}
+
+.fio-parte {
+    position: relative;
+    height: 6px;
+    border-radius: 999px;
+    transition: flex-grow 0.9s var(--curva);
+}
+
+.fio-parte::after {
+    position: absolute;
+    top: 50%;
+    right: -6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: inherit;
+    box-shadow: 0 0 0 2px var(--superficie);
+    content: "";
+    transform: translateY(-50%);
+}
+
+.fio-parte--recebido {
+    flex-grow: var(--recebido);
+    background: linear-gradient(90deg, var(--dourado), var(--ouro-claro));
+}
+
+.fio-parte--receber {
+    flex-grow: var(--receber);
+    background: var(--barra-disponiveis);
+}
+
+.fio-parte--atrasado {
+    flex-grow: var(--atrasado);
+    background: var(--coral);
+}
+
+.fio-parte:not([style]) {
+    min-width: 0;
+}
+
+.fio-contas {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+}
+
+.fio-conta {
+    padding-left: 12px;
+    border-left: 3px solid var(--borda);
+}
+
+.fio-conta--recebido { border-left-color: var(--dourado); }
+.fio-conta--receber { border-left-color: var(--barra-disponiveis); }
+.fio-conta--atrasado { border-left-color: var(--coral); }
+
+.fio-conta dt {
+    color: var(--texto-suave);
+    font-size: 13px;
+}
+
+.fio-conta-valor {
+    color: var(--texto-forte);
+    font-size: 20px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.fio-conta-nota {
+    color: var(--texto-suave);
+    font-size: 12px;
+}
+
+.fio-conta.cartao--alerta .fio-conta-valor,
+.fio-conta.cartao--alerta .fio-conta-nota {
+    color: var(--perigo-texto);
+}
+
+.fio-clientes {
+    margin: auto 0 0;
+    padding-top: 18px;
+    border-top: 1px solid var(--borda);
+    color: var(--texto);
+    font-size: 14px;
+}
+
+.fio-clientes strong {
+    color: var(--texto-forte);
+}
+
+/* --- quem deve e as maletas ---------------------------------------- */
+.painel-novo .painel-blocos {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.painel-novo .bloco {
+    border-radius: 18px;
+}
+
+/* sem atraso: a frase fica no alto e o rodapé desce para o pé do bloco */
+.bloco-vazio--tranquilo:not([hidden]) + .bloco-rodape {
+    margin-top: auto;
+}
+
+.bloco-vazio--tranquilo {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--sucesso-texto);
+}
+
+.bloco-vazio--tranquilo::before {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--sucesso-fundo);
+    content: "✓";
+    font-weight: 700;
+}
+
+/* as barras das maletas ficam mais altas, com as pontas de conta */
+.painel-novo .barra {
+    height: 10px;
+    gap: 3px;
+}
+
+/* --- divisa antes dos gráficos -------------------------------------- */
+.painel-divisa {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 36px 0 18px;
+    color: var(--texto-forte);
+    font-size: 24px;
+}
+
+.painel-divisa::after {
+    flex: 1;
+    height: 8px;
+    background: radial-gradient(circle at 6px 0, transparent 4px, var(--renda) 4px 5px, transparent 5px) 0 0 / 12px 8px repeat-x;
+    content: "";
+}
+
+.painel-novo .painel-grafico-largo {
+    margin-top: 0;
+}
+
+/* --- tema claro ------------------------------------------------------ */
+html[data-tema="claro"] .painel-novo {
+    --ouro-claro: #F3CF73;
+}
+
+html[data-tema="claro"] .carne,
+html[data-tema="claro"] .fio {
+    box-shadow: var(--sombra-leve), inset 0 0 0 1px var(--borda);
+}
+
+html[data-tema="claro"] .fio {
+    border-color: transparent;
+}
+
+html[data-tema="claro"] .medalhao {
+    box-shadow: 0 14px 30px rgba(18, 51, 65, 0.22);
+}
+
+/* --- tamanhos menores ------------------------------------------------ */
+@media (max-width: 1100px) {
+    .painel-linha--abre {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .abertura {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 16px;
+        margin-bottom: 22px;
+        padding-bottom: 22px;
+    }
+
+    .medalhao {
+        width: 92px;
+        padding: 4px;
+    }
+
+    .medalhao::before {
+        top: -11px;
+        width: 14px;
+        height: 14px;
+    }
+
+    .carne {
+        grid-template-columns: 1fr;
+    }
+
+    .carne-canhoto {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 14px;
+        border-radius: 18px 18px 0 0;
+    }
+
+    .carne-rotulo {
+        flex-basis: 100%;
+    }
+
+    .carne-data {
+        margin: 0;
+        font-size: 40px;
+    }
+
+    .carne-valor {
+        margin: 0;
+    }
+
+    .carne-nota {
+        flex-basis: 100%;
+    }
+
+    .carne-canhoto::after {
+        top: auto;
+        right: 14px;
+        bottom: -1px;
+        left: 14px;
+        width: auto;
+        height: 2px;
+        background: radial-gradient(circle, var(--superficie) 1.5px, transparent 2px) 0 0 / 9px 2px repeat-x;
+    }
+
+    .carne::before,
+    .carne::after {
+        display: none;
+    }
+
+    .carne-corpo,
+    .fio {
+        padding: 18px;
+    }
+
+    .fio-contas {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 420px) {
+    .fio-contas {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .medalhao,
+    .abertura-texto > * {
+        animation: none;
+    }
+}

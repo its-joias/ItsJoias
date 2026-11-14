@@ -15,6 +15,13 @@ function data(iso) {
     return `${dia}/${mes}/${ano}`;
 }
 
+// "2026-12-05" -> "05 dez", para o canhoto do carnê
+const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+function dataCurta(iso) {
+    const [, mes, dia] = iso.split("-");
+    return `${dia} ${MESES[Number(mes) - 1]}`;
+}
+
 function plural(quantidade, singular, pluralTexto) {
     return `${quantidade} ${quantidade === 1 ? singular : pluralTexto}`;
 }
@@ -40,6 +47,15 @@ const elPainel = document.getElementById("painel");
 const elAviso = document.getElementById("painel-aviso");
 const elConteudo = document.getElementById("painel-conteudo");
 const elData = document.getElementById("painel-data");
+
+// "Bom dia, Leide": pelo horário deste aparelho e o primeiro nome de quem entrou
+function saudar() {
+    const hora = new Date().getHours();
+    const cumprimento = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
+    const sessao = window.ItsJoias.lerSessao();
+    const nome = sessao && sessao.usuario && sessao.usuario.nome ? sessao.usuario.nome.trim().split(/\s+/)[0] : "";
+    document.getElementById("painel-saudacao").textContent = nome ? `${cumprimento}, ${nome}` : cumprimento;
+}
 
 function mostrarCarregando() {
     elPainel.setAttribute("aria-busy", "true");
@@ -113,15 +129,36 @@ function preencherCartoes(t) {
         : plural(t.atrasado.quantidadeParcelas, "parcela vencida", "parcelas vencidas"));
     document.querySelector('[data-cartao="atrasado"]')
         .classList.toggle("cartao--alerta", t.atrasado.quantidadeParcelas > 0);
+    desenharFio(t);
 
     preencher("clientesDevendo", String(t.clientesDevendo.quantidade));
+    preencher("clientesDevendoFrase", t.clientesDevendo.quantidade === 0
+        ? "Nenhuma cliente com parcela em aberto"
+        : plural(t.clientesDevendo.quantidade, "cliente com parcela em aberto", "clientes com parcela em aberto"));
     preencher("clientesDevendoNota", t.clientesDevendo.comParcelaAtrasada === 0
         ? "Nenhuma com atraso"
         : `${t.clientesDevendo.comParcelaAtrasada} com parcela atrasada`);
 
     preencher("proximoDia5", reais(t.proximoDia5.valor));
+    preencher("dataDia5Curta", dataCurta(t.proximoDia5.data));
     preencher("proximoDia5Nota",
         `${data(t.proximoDia5.data)} · ${plural(t.proximoDia5.quantidadeParcelas, "parcela", "parcelas")}`);
+}
+
+// O fio de ouro: a largura de cada trecho é a parte do total vendido (só para desenhar; os valores vêm da API).
+// O atrasado faz parte do a receber, então o trecho "a receber" mostra só o que ainda não venceu.
+function desenharFio(t) {
+    const total = t.totalVendido.valor;
+    const fio = document.getElementById("fio-linha");
+    if (!fio) return;
+    const parte = (valor) => (total > 0 ? Math.max(0, Math.min(100, (valor / total) * 100)) : 0);
+    const atrasado = parte(t.atrasado.valor);
+    const receber = Math.max(0, parte(t.aReceber.valor) - atrasado);
+    fio.style.setProperty("--recebido", parte(t.recebido.valor));
+    fio.style.setProperty("--receber", receber);
+    fio.style.setProperty("--atrasado", atrasado);
+    fio.setAttribute("aria-label", `De ${reais(total)} vendidos: ${reais(t.recebido.valor)} recebidos, `
+        + `${reais(t.aReceber.valor)} a receber, dos quais ${reais(t.atrasado.valor)} atrasados`);
 }
 
 function linhaParcela(nome, detalhe, valor) {
@@ -234,4 +271,7 @@ async function carregarPainel() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", carregarPainel);
+document.addEventListener("DOMContentLoaded", () => {
+    saudar();
+    carregarPainel();
+});

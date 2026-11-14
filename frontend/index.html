@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/visual.css">
+    <link rel="stylesheet" href="css/painel.css">
 </head>
 <body>
     <header>
@@ -29,46 +30,100 @@
         </nav>
     </header>
 
-    <main id="painel" aria-busy="true">
-        <h2>Painel</h2>
-        <p id="painel-data">Carregando o painel…</p>
+    <main id="painel" class="painel-novo" aria-busy="true">
+        <!-- abertura: saudação pelo horário e o nome de quem entrou (painel.js), a data e uma peça num medalhão -->
+        <section class="abertura" aria-labelledby="titulo-painel">
+            <div class="abertura-texto">
+                <p class="abertura-saudacao" id="painel-saudacao">Olá</p>
+                <h2 id="titulo-painel">Como está a maleta hoje</h2>
+                <p id="painel-data">Carregando o painel…</p>
+            </div>
+            <!-- foto provisória (Wikimedia Commons): trocar por uma peça da Leide -->
+            <figure class="medalhao" aria-hidden="true"><img src="img/colar.jpg" alt="" width="1280" height="960"></figure>
+        </section>
 
         <!-- carregando / erro / banco novo -->
         <div id="painel-aviso" class="painel-aviso" role="status" aria-live="polite" hidden></div>
 
         <div id="painel-conteudo" hidden>
-            <section class="painel-cartoes" aria-label="Resumo">
-                <article class="cartao">
-                    <h3 class="cartao-rotulo">Total vendido</h3>
-                    <p class="cartao-valor" data-campo="totalVendido"></p>
-                    <p class="cartao-nota" data-campo="totalVendidoNota"></p>
-                </article>
-                <article class="cartao">
-                    <h3 class="cartao-rotulo">Recebido</h3>
-                    <p class="cartao-valor" data-campo="recebido"></p>
-                    <p class="cartao-nota" data-campo="recebidoNota"></p>
-                </article>
-                <article class="cartao">
-                    <h3 class="cartao-rotulo">A receber</h3>
-                    <p class="cartao-valor" data-campo="aReceber"></p>
-                    <p class="cartao-nota" data-campo="aReceberNota"></p>
-                </article>
-                <article class="cartao" data-cartao="atrasado">
-                    <h3 class="cartao-rotulo">Atrasado</h3>
-                    <p class="cartao-valor" data-campo="atrasado"></p>
-                    <p class="cartao-nota" data-campo="atrasadoNota"></p>
-                </article>
-                <article class="cartao">
-                    <h3 class="cartao-rotulo">Clientes devendo</h3>
-                    <p class="cartao-valor" data-campo="clientesDevendo"></p>
-                    <p class="cartao-nota" data-campo="clientesDevendoNota"></p>
-                </article>
-                <article class="cartao">
-                    <h3 class="cartao-rotulo">Próximo dia 5</h3>
-                    <p class="cartao-valor" data-campo="proximoDia5"></p>
-                    <p class="cartao-nota" data-campo="proximoDia5Nota"></p>
-                </article>
-            </section>
+            <div class="painel-linha painel-linha--abre">
+                <!-- o carnê: o próximo dia 5, com quem paga nele -->
+                <section class="carne" aria-labelledby="titulo-dia5">
+                    <div class="carne-canhoto">
+                        <p class="carne-rotulo">Próximo dia 5</p>
+                        <p class="carne-data" data-campo="dataDia5Curta"></p>
+                        <p class="carne-valor" data-campo="proximoDia5"></p>
+                        <p class="carne-nota" data-campo="proximoDia5Nota"></p>
+                    </div>
+                    <div class="carne-corpo">
+                        <h3 id="titulo-dia5">Vencem em <span data-campo="dataDia5"></span></h3>
+                        <ul class="bloco-lista" id="lista-dia5"></ul>
+                        <p class="bloco-vazio" id="vazio-dia5" hidden>Nenhuma parcela vence nesse dia.</p>
+                        <footer class="bloco-rodape">
+                            <span>Total a vencer</span>
+                            <strong class="dinheiro" data-campo="rodapeDia5"></strong>
+                        </footer>
+                    </div>
+                </section>
+
+                <!-- o fio de ouro: tudo o que foi vendido, e quanto já entrou -->
+                <section class="fio" aria-labelledby="titulo-fio">
+                    <h3 id="titulo-fio" class="fio-rotulo">Total vendido</h3>
+                    <p class="fio-total" data-campo="totalVendido"></p>
+                    <p class="fio-nota" data-campo="totalVendidoNota"></p>
+
+                    <div class="fio-linha" id="fio-linha" role="img" aria-label="Recebido, a receber e atrasado sobre o total vendido">
+                        <span class="fio-parte fio-parte--recebido"></span>
+                        <span class="fio-parte fio-parte--receber"></span>
+                        <span class="fio-parte fio-parte--atrasado"></span>
+                    </div>
+
+                    <dl class="fio-contas">
+                        <div class="fio-conta fio-conta--recebido">
+                            <dt>Recebido</dt>
+                            <dd class="fio-conta-valor" data-campo="recebido"></dd>
+                            <dd class="fio-conta-nota" data-campo="recebidoNota"></dd>
+                        </div>
+                        <div class="fio-conta fio-conta--receber">
+                            <dt>A receber</dt>
+                            <dd class="fio-conta-valor" data-campo="aReceber"></dd>
+                            <dd class="fio-conta-nota" data-campo="aReceberNota"></dd>
+                        </div>
+                        <div class="fio-conta fio-conta--atrasado" data-cartao="atrasado">
+                            <dt>Atrasado</dt>
+                            <dd class="fio-conta-valor" data-campo="atrasado"></dd>
+                            <dd class="fio-conta-nota" data-campo="atrasadoNota"></dd>
+                        </div>
+                    </dl>
+
+                    <p class="fio-clientes"><strong data-campo="clientesDevendoFrase"></strong> <span class="texto-suave">· <span data-campo="clientesDevendoNota"></span></span></p>
+                </section>
+            </div>
+
+            <div class="painel-blocos">
+                <section class="bloco" aria-labelledby="titulo-atrasadas">
+                    <h3 id="titulo-atrasadas">Parcelas atrasadas</h3>
+                    <ul class="bloco-lista" id="lista-atrasadas"></ul>
+                    <p class="bloco-vazio bloco-vazio--tranquilo" id="vazio-atrasadas" hidden>Nenhuma parcela atrasada. Todas as clientes estão em dia.</p>
+                    <footer class="bloco-rodape">
+                        <span>Total atrasado</span>
+                        <strong class="dinheiro" data-campo="rodapeAtrasado"></strong>
+                    </footer>
+                </section>
+
+                <section class="bloco" aria-labelledby="titulo-maletas">
+                    <h3 id="titulo-maletas">Maletas ativas</h3>
+                    <ul class="legenda" aria-label="Legenda das barras">
+                        <li><span class="legenda-cor cor-vendidas" aria-hidden="true"></span>Vendidas</li>
+                        <li><span class="legenda-cor cor-disponiveis" aria-hidden="true"></span>Disponíveis</li>
+                        <li><span class="legenda-cor cor-perdidas" aria-hidden="true"></span>Perdidas ou devolvidas</li>
+                    </ul>
+                    <ul class="maletas" id="lista-maletas"></ul>
+                    <p class="bloco-vazio" id="vazio-maletas" hidden>Nenhuma maleta ativa no momento.</p>
+                </section>
+            </div>
+
+            <h3 class="painel-divisa">Os números do ano</h3>
 
             <div class="painel-blocos">
                 <section class="bloco" aria-labelledby="titulo-grafico-vendas">
@@ -87,39 +142,6 @@
                 <h3 id="titulo-grafico-recebimentos">Recebido × a receber</h3>
                 <p class="texto-suave grafico-subtitulo">Parcelas pelo mês de vencimento: o que já entrou e o que falta entrar.</p>
                 <div id="grafico-recebimentos"><p class="carregando-texto">Carregando gráfico…</p></div>
-            </section>
-
-            <div class="painel-blocos">
-                <section class="bloco" aria-labelledby="titulo-atrasadas">
-                    <h3 id="titulo-atrasadas">Parcelas atrasadas</h3>
-                    <ul class="bloco-lista" id="lista-atrasadas"></ul>
-                    <p class="bloco-vazio" id="vazio-atrasadas" hidden>Nenhuma parcela atrasada.</p>
-                    <footer class="bloco-rodape">
-                        <span>Total atrasado</span>
-                        <strong class="dinheiro" data-campo="rodapeAtrasado"></strong>
-                    </footer>
-                </section>
-
-                <section class="bloco" aria-labelledby="titulo-dia5">
-                    <h3 id="titulo-dia5">Vencem em <span data-campo="dataDia5"></span></h3>
-                    <ul class="bloco-lista" id="lista-dia5"></ul>
-                    <p class="bloco-vazio" id="vazio-dia5" hidden>Nenhuma parcela vence nesse dia.</p>
-                    <footer class="bloco-rodape">
-                        <span>Total a vencer</span>
-                        <strong class="dinheiro" data-campo="rodapeDia5"></strong>
-                    </footer>
-                </section>
-            </div>
-
-            <section class="bloco" aria-labelledby="titulo-maletas">
-                <h3 id="titulo-maletas">Maletas ativas</h3>
-                <ul class="legenda" aria-label="Legenda das barras">
-                    <li><span class="legenda-cor cor-vendidas" aria-hidden="true"></span>Vendidas</li>
-                    <li><span class="legenda-cor cor-disponiveis" aria-hidden="true"></span>Disponíveis</li>
-                    <li><span class="legenda-cor cor-perdidas" aria-hidden="true"></span>Perdidas ou devolvidas</li>
-                </ul>
-                <ul class="maletas" id="lista-maletas"></ul>
-                <p class="bloco-vazio" id="vazio-maletas" hidden>Nenhuma maleta ativa no momento.</p>
             </section>
         </div>
     </main>
