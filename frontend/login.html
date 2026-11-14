@@ -4,37 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entrar | Organização Its Joias</title>
+    <meta name="description" content="Acesso ao sistema da Leide Farias: maletas, vendas, clientes e parcelas.">
+    <meta name="robots" content="noindex">
     <meta name="theme-color" content="#0E1728">
     <script src="js/tema.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
-<body>
-    <main class="pagina-login">
-        <div class="tema-login" data-botao-tema></div>
-        <section class="cartao-login" aria-labelledby="titulo-login">
-            <h1 id="titulo-login">Its Joias</h1>
-            <p class="subtitulo">Entre para acessar o sistema da Leide Farias.</p>
+<body class="corpo-login">
+    <main class="login">
+        <!-- foto provisória (Wikimedia Commons): trocar por uma peça da Leide fotografada sobre fundo escuro -->
+        <figure class="login-foto" aria-hidden="true">
+            <img src="img/colar.jpg" alt="" width="1280" height="960">
+            <figcaption class="login-marca">
+                <span class="login-marca-nome">Leide Farias</span>
+                <span class="login-marca-lema">Joias com alma baiana</span>
+            </figcaption>
+        </figure>
 
-            <div id="login-mensagem" class="mensagem mensagem--erro" role="alert" hidden></div>
+        <div class="login-lado">
+            <div class="tema-login" data-botao-tema></div>
 
-            <form id="form-login" novalidate>
-                <div class="campo">
-                    <label for="email">E-mail</label>
-                    <input type="email" id="email" name="email" autocomplete="username" required autofocus>
-                </div>
+            <section class="cartao-login" aria-labelledby="titulo-login">
+                <p class="login-sobretitulo"><span class="login-selo" aria-hidden="true"></span>Its Joias</p>
+                <h1 id="titulo-login">Entre no sistema</h1>
+                <p class="subtitulo">Maletas, vendas, clientes e parcelas da Leide Farias num lugar só.</p>
 
-                <div class="campo">
-                    <label for="senha">Senha</label>
-                    <div class="senha-com-botao">
-                        <input type="password" id="senha" name="senha" autocomplete="current-password" required>
-                        <button type="button" id="mostrar-senha" class="botao-secundario" aria-pressed="false"
-                                aria-controls="senha">Mostrar</button>
+                <div id="login-mensagem" class="mensagem mensagem--erro" role="alert" hidden></div>
+
+                <form id="form-login" novalidate>
+                    <div class="campo">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" autocomplete="username" inputmode="email" required autofocus>
                     </div>
-                </div>
 
-                <button type="submit" id="botao-entrar">Entrar</button>
-            </form>
-        </section>
+                    <div class="campo">
+                        <label for="senha">Senha</label>
+                        <div class="senha-com-botao">
+                            <input type="password" id="senha" name="senha" autocomplete="current-password" required>
+                            <button type="button" id="mostrar-senha" class="botao-secundario" aria-pressed="false"
+                                    aria-controls="senha">Mostrar</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="botao-entrar">Entrar</button>
+                </form>
+            </section>
+
+            <p class="login-credito">Foto: JopkeB, CC BY-SA 4.0, via Wikimedia Commons</p>
+        </div>
     </main>
 
     <script src="js/config.js"></script>
