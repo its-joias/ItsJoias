@@ -387,3 +387,123 @@ footer {
 .venda-cartao-titulo .chip {
     margin-top: 0;
 }
+
+/* =====================================================================
+   Respiro: as telas tinham pouco espaço nas laterais e entre os blocos.
+   O cabeçalho continua como está; só o conteúdo (main) ganha margem e folga.
+   ===================================================================== */
+main {
+    max-width: 1280px;
+    padding: 24px clamp(8px, 3.5vw, 48px) 56px;
+}
+
+main > p {
+    margin-bottom: 28px;
+}
+
+main > div,
+main > section {
+    margin-bottom: 28px;
+}
+
+table {
+    margin: 24px 0 36px;
+}
+
+th {
+    padding: 16px 20px;
+}
+
+td {
+    padding: 16px 20px;
+}
+
+/* cartões e blocos: mais espaço dentro e entre eles */
+.bloco,
+.cartao-form,
+.venda-passo {
+    padding: 24px 26px;
+}
+
+.cartao {
+    padding: 20px 22px;
+}
+
+.painel-cartoes {
+    gap: 18px;
+}
+
+.painel-blocos,
+body .painel-novo .painel-blocos {
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+body .painel-linha--abre {
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+body .fio,
+body .carne-corpo {
+    padding: 26px 28px;
+}
+
+.historico-vendas {
+    gap: 14px;
+}
+
+.venda-cartao-topo {
+    padding: 16px 20px;
+}
+
+.venda-cartao-corpo {
+    padding: 6px 20px 18px;
+}
+
+.parcela {
+    padding: 12px 0;
+}
+
+.form-grade {
+    gap: 20px 24px;
+}
+
+.barra-ferramentas {
+    margin-bottom: 16px;
+}
+
+.cabecalho-pagina {
+    margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+    main {
+        padding: 20px 6px 40px;
+    }
+
+    main > div,
+    main > section {
+        margin-bottom: 22px;
+    }
+
+    .bloco,
+    .cartao-form,
+    .venda-passo,
+    body .fio,
+    body .carne-corpo {
+        padding: 20px;
+    }
+
+    body .painel-linha--abre,
+    .painel-blocos,
+    body .painel-novo .painel-blocos {
+        gap: 18px;
+        margin-bottom: 22px;
+    }
+
+    th,
+    td {
+        padding: 12px 14px;
+    }
+}
