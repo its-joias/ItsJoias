@@ -418,6 +418,17 @@
 }
 
 /* --- quem deve e as maletas ---------------------------------------- */
+/* nomes e detalhes compridos quebram a linha em vez de empurrar o valor para fora */
+.painel-novo .parcela-cliente,
+.painel-novo .parcela-detalhe,
+.painel-novo .maleta-nome {
+    overflow-wrap: anywhere;
+}
+
+.painel-novo .parcela-valor {
+    flex: none;
+}
+
 .painel-novo .painel-blocos {
     margin-top: 0;
     margin-bottom: 20px;
