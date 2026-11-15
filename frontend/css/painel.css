@@ -6,6 +6,32 @@
    Carregado depois de style.css e visual.css.
    ===================================================================== */
 
+/* --- link para pular o menu (aparece só com o foco do teclado) ------ */
+.pular-conteudo {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 100;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--dourado);
+    color: var(--sobre-dourado);
+    font-weight: 700;
+    text-decoration: none;
+    transform: translateY(-160%);
+    transition: transform 0.2s var(--curva);
+}
+
+.pular-conteudo:focus-visible {
+    transform: none;
+    outline: 2px solid var(--texto-forte);
+    outline-offset: 2px;
+}
+
+.painel-novo:focus {
+    outline: none;
+}
+
 .painel-novo {
     --ouro-claro: #F6D27A;
     --renda: var(--borda);
