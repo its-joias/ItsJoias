@@ -16,10 +16,12 @@
     --casario-celeste: #4FA3D9;
 
     /* ---- tema escuro (padrão): azul colonial ---- */
-    --fundo: #0E1F45;
-    --superficie: #16295A;
-    --superficie-hover: #1D3369;
-    --superficie-elevada: #1A2E61;
+    /* o cabeçalho fica no azul mais fundo; a página logo abaixo é um azul mais claro */
+    --cabecalho: #0E1F45;
+    --fundo: #1A3166;
+    --superficie: #223B78;
+    --superficie-hover: #2A4585;
+    --superficie-elevada: #26407E;
     --azul-menu: #2456B8;
     --dourado: #F4B41A;
     --dourado-hover: #E0A20C;
@@ -29,8 +31,8 @@
     --texto-forte: #FBF3E4;
     --texto: #DDE4F4;
     --texto-suave: #A9B6D6;
-    --borda: #2C4380;
-    --campo-borda: #6479AE;
+    --borda: #35508F;
+    --campo-borda: #6E84BA;
     --placeholder: #8695BD;
     --coral: #E8735A;
     --verde: #4FB98A;
@@ -55,6 +57,7 @@
 
 /* ---- tema claro: a cal dos casarões, o texto no azul do logo ---- */
 html[data-tema="claro"] {
+    --cabecalho: #FBF5EA;
     --fundo: #FBF5EA;
     --superficie: #FFFFFF;
     --superficie-hover: #F4EBDB;
@@ -262,4 +265,9 @@ nav a[aria-current="page"]::after {
     .login-marca-onda {
         width: 130px;
     }
+}
+
+/* --- o cabeçalho tem a cor própria (no escuro, mais fundo que a página) --- */
+header {
+    background: var(--cabecalho);
 }
