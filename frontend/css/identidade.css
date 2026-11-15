@@ -212,13 +212,9 @@ nav a[aria-current="page"]::after {
     letter-spacing: 0.26em;
 }
 
-/* --- painel: o medalhão e o fio nas cores do casario ------------------ */
+/* --- painel: o fio nas cores do casario ------------------ */
 .painel-novo {
     --ouro-claro: #FFD66B;
-}
-
-.medalhao {
-    background: linear-gradient(160deg, #FFD66B, var(--dourado) 45%, #B37A06);
 }
 
 .fio-parte--receber {
