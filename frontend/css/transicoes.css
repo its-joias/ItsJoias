@@ -100,18 +100,35 @@ table:not([hidden]) tbody tr:nth-child(n+6),
     animation: aparecer 0.35s ease backwards;
 }
 
-/* --- o canhoto amarelo do carnê abre da esquerda para a direita ---------- */
+/* --- a parte azul do carnê sai de trás do canhoto amarelo ---------------- */
+/* o canhoto fica na frente; o corpo azul começa escondido atrás dele e desliza para a direita
+   (no celular, onde o canhoto fica em cima, o corpo desce de trás dele) */
+#painel-conteudo:not([hidden]) .carne {
+    overflow: clip;
+}
+
 #painel-conteudo:not([hidden]) .carne-canhoto {
-    animation: canhoto-abrir 0.9s var(--transicao) 0.15s backwards;
+    z-index: 2;
 }
 
-#painel-conteudo:not([hidden]) .carne-canhoto > * {
-    animation: aparecer 0.4s ease 0.75s backwards;
+#painel-conteudo:not([hidden]) .carne-corpo {
+    position: relative;
+    z-index: 1;
+    animation: carne-sair-lado 0.85s var(--transicao) 0.2s backwards;
 }
 
-@keyframes canhoto-abrir {
-    from { clip-path: inset(0 100% 0 0); }
-    to { clip-path: inset(0 0 0 0); }
+@keyframes carne-sair-lado {
+    from { transform: translateX(-100%); }
+}
+
+@keyframes carne-sair-baixo {
+    from { transform: translateY(-100%); }
+}
+
+@media (max-width: 768px) {
+    #painel-conteudo:not([hidden]) .carne-corpo {
+        animation-name: carne-sair-baixo;
+    }
 }
 
 /* --- abrir e fechar ---------------------------------------------------- */
@@ -207,8 +224,7 @@ table:not([hidden]) tbody tr:nth-child(n+6),
     .bloco-lista > li,
     .maletas > li,
     .venda-cartao-corpo:not([hidden]),
-    #painel-conteudo:not([hidden]) .carne-canhoto,
-    #painel-conteudo:not([hidden]) .carne-canhoto > *,
+    #painel-conteudo:not([hidden]) .carne-corpo,
     .barra-parte,
     .vazio,
     .carregando-texto,
@@ -252,9 +268,9 @@ table:not([hidden]) tbody tr:nth-child(n+6),
     }
 }
 
-/* o canhoto do carnê abre no tempo dele (0,9 s), também com "menos animações" */
+/* a parte azul do carnê sai no tempo dela (0,85 s), também com "menos animações" */
 @media (prefers-reduced-motion: reduce) {
-    #painel-conteudo:not([hidden]) .carne-canhoto {
-        animation-duration: 0.9s !important;
+    #painel-conteudo:not([hidden]) .carne-corpo {
+        animation-duration: 0.85s !important;
     }
 }
