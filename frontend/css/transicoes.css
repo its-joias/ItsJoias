@@ -101,26 +101,30 @@ table:not([hidden]) tbody tr:nth-child(n+6),
 }
 
 /* --- o carnê abre em ordem, da esquerda para a direita ------------------- */
-/* 1º o canhoto amarelo se abre da esquerda para a direita; 2º a parte azul sai de trás dele
-   e desliza para a direita (no celular, onde o canhoto fica em cima, ela desce de trás dele) */
+/* rápido: 1º o canhoto amarelo chega inteiro da esquerda, sem mostrar o texto até parar;
+   2º o texto aparece e a parte azul sai de trás dele para a direita
+   (no celular, onde o canhoto fica em cima, ela desce de trás dele) */
 #painel-conteudo:not([hidden]) .carne {
     overflow: clip;
 }
 
 #painel-conteudo:not([hidden]) .carne-canhoto {
     z-index: 2;
-    animation: canhoto-abrir 0.6s var(--transicao) 0.15s backwards;
+    animation: canhoto-chegar 0.35s var(--transicao) 0.1s backwards;
 }
 
-@keyframes canhoto-abrir {
-    from { clip-path: inset(0 100% 0 0); }
-    to { clip-path: inset(0 0 0 0); }
+#painel-conteudo:not([hidden]) .carne-canhoto > * {
+    animation: aparecer 0.2s ease 0.45s backwards;
+}
+
+@keyframes canhoto-chegar {
+    from { transform: translateX(-100%); }
 }
 
 #painel-conteudo:not([hidden]) .carne-corpo {
     position: relative;
     z-index: 1;
-    animation: carne-sair-lado 0.8s var(--transicao) 0.7s backwards;
+    animation: carne-sair-lado 0.45s var(--transicao) 0.45s backwards;
 }
 
 @keyframes carne-sair-lado {
@@ -274,13 +278,17 @@ table:not([hidden]) tbody tr:nth-child(n+6),
     }
 }
 
-/* o carnê abre no tempo dele (0,6 s + 0,8 s), também com "menos animações" */
+/* o carnê abre no tempo dele (0,35 s + 0,45 s), também com "menos animações" */
 @media (prefers-reduced-motion: reduce) {
     #painel-conteudo:not([hidden]) .carne-canhoto {
-        animation-duration: 0.6s !important;
+        animation-duration: 0.35s !important;
+    }
+
+    #painel-conteudo:not([hidden]) .carne-canhoto > * {
+        animation-duration: 0.2s !important;
     }
 
     #painel-conteudo:not([hidden]) .carne-corpo {
-        animation-duration: 0.8s !important;
+        animation-duration: 0.45s !important;
     }
 }
