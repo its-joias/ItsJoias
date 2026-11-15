@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Figtree:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/visual.css">
+    <link rel="stylesheet" href="css/venda-rapida.css">
     <link rel="stylesheet" href="css/identidade.css">
 </head>
 <body>
@@ -161,7 +162,8 @@
         </section>
 
         <!-- ===================== MALETAS ATIVAS ===================== -->
-        <p>Maletas ativas, com as peças recebidas, vendidas e disponíveis, o custo e o total vendido.</p>
+        <p>Maletas ativas, com as peças recebidas, vendidas e disponíveis, o custo e o total vendido.
+            Clique no nome de uma maleta para ver as peças dela e vender.</p>
 
         <p id="estado" class="carregando-texto">Carregando maletas…</p>
         <table id="tabela" hidden>
@@ -181,6 +183,24 @@
             </thead>
             <tbody id="lista"></tbody>
         </table>
+
+        <!-- ===================== PEÇAS DE UMA MALETA ===================== -->
+        <section id="maleta-aberta" class="bloco maleta-aberta" aria-labelledby="maleta-aberta-titulo" hidden>
+            <div class="maleta-aberta-topo">
+                <div>
+                    <h3 id="maleta-aberta-titulo" tabindex="-1">Maleta</h3>
+                    <span class="texto-suave" id="maleta-aberta-info"></span>
+                </div>
+                <button type="button" class="botao-secundario botao-pequeno" id="maleta-fechar">Fechar a maleta</button>
+            </div>
+            <div class="barra-ferramentas">
+                <input type="search" id="maleta-busca" placeholder="Buscar por etiqueta ou nome…" aria-label="Buscar peça nesta maleta"
+                       autocomplete="off" spellcheck="false">
+                <label class="opcao"><input type="checkbox" id="maleta-so-disponiveis" checked> Só as disponíveis</label>
+            </div>
+            <p id="maleta-estado" class="carregando-texto">Carregando peças…</p>
+            <ul class="lista-pecas-maleta" id="maleta-pecas"></ul>
+        </section>
 
         <!-- ===================== HISTÓRICO ===================== -->
         <section class="bloco" aria-labelledby="titulo-historico">
@@ -209,6 +229,7 @@
     <script src="js/ui.js"></script>
     <script src="js/sessao.js"></script>
     <script src="js/mascaras.js"></script>
+    <script src="js/venda-rapida.js"></script>
     <script src="js/maletas.js"></script>
     <script src="js/importacao.js"></script>
 </body>

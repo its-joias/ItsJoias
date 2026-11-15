@@ -1,6 +1,8 @@
-// Peças disponíveis, direto do banco (GET /api/pecas), com filtro por categoria.
+// Peças disponíveis, direto do banco (GET /api/pecas), com filtro por categoria e o botão Vender
+// em cada peça (js/venda-rapida.js).
 (function () {
     const { api, formato, criar } = window.ItsJoias;
+    const venda = window.ItsJoiasVendaRapida;
     const el = (id) => document.getElementById(id);
     const estado = el("estado");
     const tabela = el("tabela");
@@ -28,8 +30,14 @@
             const tr = criar("tr");
             const etiqueta = criar("td");
             etiqueta.append(criar("strong", null, p.etiqueta));
+            const acoes = criar("td", "acoes-linha");
+            const vender = criar("button", "botao-pequeno", venda.tem(p.etiqueta) ? "Na venda" : "Vender");
+            vender.type = "button";
+            vender.setAttribute("aria-label", `Vender ${p.etiqueta}, ${p.produto}`);
+            vender.addEventListener("click", () => { venda.vender(p); desenhar(); });
+            acoes.append(vender);
             tr.append(etiqueta, criar("td", null, p.produto), criar("td", null, p.categoria), criar("td", null, p.maleta),
-                criar("td", "numero", formato.reais(p.preco)));
+                criar("td", "numero", formato.reais(p.preco)), acoes);
             return tr;
         }));
         tabela.hidden = visiveis.length === 0;
@@ -59,6 +67,7 @@
 
     let espera;
     busca.addEventListener("input", () => { clearTimeout(espera); espera = setTimeout(carregar, 300); });
+    document.addEventListener("itsjoias:venda-feita", carregar);
 
     carregar();
 })();

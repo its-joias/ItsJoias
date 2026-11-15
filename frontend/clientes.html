@@ -98,6 +98,46 @@
         </dialog>
 
         <!-- perfil da cliente: dados, totais e histórico de vendas -->
+        <dialog id="receber" class="modal" aria-labelledby="receber-titulo">
+            <div class="modal-cabecalho">
+                <div>
+                    <h3 id="receber-titulo">Receber pagamento</h3>
+                    <span class="texto-suave" id="receber-saldo"></span>
+                </div>
+                <button type="button" class="botao-fechar" data-fechar-modal aria-label="Fechar">✕</button>
+            </div>
+            <div class="modal-corpo">
+                <div id="receber-mensagem" class="mensagem mensagem--erro" role="alert" hidden></div>
+                <form id="form-receber" novalidate>
+                    <div class="form-grade">
+                        <div class="campo">
+                            <label for="receber-valor">Valor recebido</label>
+                            <input type="text" id="receber-valor" name="valor" inputmode="decimal" autocomplete="off" required>
+                            <span class="dica">Abate da parcela que vence primeiro.</span>
+                        </div>
+                        <div class="campo">
+                            <label for="receber-forma">Forma de pagamento</label>
+                            <select id="receber-forma" name="forma">
+                                <option value="PIX">Pix</option>
+                                <option value="DINHEIRO">Dinheiro</option>
+                                <option value="CARTAO">Cartão</option>
+                                <option value="TRANSFERENCIA">Transferência</option>
+                                <option value="OUTRO">Outro</option>
+                            </select>
+                        </div>
+                        <div class="campo">
+                            <label for="receber-data">Dia do pagamento</label>
+                            <input type="date" id="receber-data" name="data">
+                        </div>
+                    </div>
+                    <div class="acoes">
+                        <button type="submit" id="receber-confirmar">Registrar pagamento</button>
+                        <button type="button" class="botao-secundario" id="receber-quitar">Quitar tudo</button>
+                    </div>
+                </form>
+            </div>
+        </dialog>
+
         <dialog id="perfil" class="modal modal-largo" aria-labelledby="perfil-nome">
             <div class="modal-cabecalho">
                 <div>

@@ -1,0 +1,291 @@
+/* =====================================================================
+   Venda rápida (js/venda-rapida.js) e as peças de uma maleta (maletas.html).
+   A gaveta fica fixa à direita e não tapa a lista: dá para continuar
+   clicando em Vender nas outras peças. No celular ela sobe de baixo.
+   ===================================================================== */
+
+.gaveta-venda {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    width: min(420px, 100vw);
+    border-left: 1px solid var(--borda);
+    background: var(--superficie-elevada);
+    box-shadow: var(--sombra);
+    animation: gaveta-entrar 0.25s var(--curva, ease) both;
+}
+
+@keyframes gaveta-entrar {
+    from { opacity: 0; transform: translateX(24px); }
+}
+
+/* a página encolhe para a gaveta não cobrir a lista no computador */
+@media (min-width: 1100px) {
+    body.com-gaveta {
+        padding-right: calc(420px + 24px);
+    }
+}
+
+.gaveta-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--borda);
+}
+
+.gaveta-cabecalho h3 {
+    margin: 0;
+}
+
+.gaveta-cabecalho h3:focus {
+    outline: none;
+}
+
+.gaveta-corpo {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 16px;
+    padding: 18px 22px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.gaveta-pecas {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.gaveta-pecas li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--borda);
+}
+
+.gaveta-peca-info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.gaveta-peca-info strong {
+    color: var(--texto-forte);
+}
+
+.gaveta-pecas .dinheiro {
+    color: var(--texto-forte);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.gaveta-pecas .botao-fechar {
+    width: 32px;
+    min-height: 32px;
+    height: 32px;
+    font-size: 12px;
+}
+
+.gaveta-dica {
+    margin: -8px 0 0;
+    font-size: 13px;
+}
+
+.gaveta-forma {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.gaveta-forma .rotulo {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.gaveta-forma .formas-venda {
+    margin-bottom: 0;
+}
+
+.gaveta-linha {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.gaveta-linha:not(:has(.campo:not([hidden]))) {
+    display: none;
+}
+
+.gaveta-resumo:empty {
+    display: none;
+}
+
+.gaveta-resumo {
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: var(--superficie);
+}
+
+.gaveta-resumo p {
+    margin: 0 0 8px;
+    color: var(--texto);
+}
+
+.gaveta-rodape {
+    display: flex;
+    gap: 10px;
+    padding: 14px 22px calc(14px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--borda);
+}
+
+.gaveta-rodape button {
+    margin: 0;
+}
+
+.gaveta-rodape .confirmar {
+    flex: 1;
+    font-size: 14px;
+}
+
+@media (max-width: 700px) {
+    .gaveta-venda {
+        top: auto;
+        width: 100vw;
+        max-height: 88dvh;
+        border-top: 1px solid var(--borda);
+        border-left: 0;
+        border-radius: 18px 18px 0 0;
+        animation-name: gaveta-subir;
+    }
+
+    @keyframes gaveta-subir {
+        from { opacity: 0; transform: translateY(24px); }
+    }
+}
+
+/* --- as peças de uma maleta (maletas.html) ------------------------------- */
+.maleta-aberta {
+    margin: 8px 0 24px;
+}
+
+.maleta-aberta-topo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.maleta-aberta-topo h3 {
+    margin: 0;
+}
+
+.maleta-aberta .barra-ferramentas {
+    margin-top: 14px;
+}
+
+.lista-pecas-maleta {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lista-pecas-maleta li {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 6px 16px;
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--borda);
+}
+
+.lista-pecas-maleta li:last-child {
+    border-bottom: 0;
+}
+
+.lista-pecas-maleta .peca-etiqueta {
+    color: var(--texto-forte);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.lista-pecas-maleta .peca-nome {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.lista-pecas-maleta .peca-nome span {
+    display: block;
+    color: var(--texto-suave);
+    font-size: 12px;
+}
+
+.lista-pecas-maleta .dinheiro {
+    color: var(--texto-forte);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.lista-pecas-maleta li button {
+    margin: 0;
+}
+
+.lista-pecas-maleta li.na-venda {
+    background: var(--destaque-fundo);
+}
+
+.situacao-peca {
+    display: inline-block;
+    padding: 2px 10px;
+    border: 1px solid var(--borda);
+    border-radius: 999px;
+    color: var(--texto-suave);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .lista-pecas-maleta li {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .lista-pecas-maleta .peca-nome {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+}
+
+.nome-maleta-botao {
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--texto-forte);
+    font: inherit;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-align: left;
+    text-decoration: underline;
+    text-decoration-color: var(--borda);
+    text-underline-offset: 4px;
+    cursor: pointer;
+}
+
+.nome-maleta-botao:hover {
+    background: none;
+    color: var(--destaque);
+    text-decoration-color: currentColor;
+    transform: none;
+}

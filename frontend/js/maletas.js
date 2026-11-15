@@ -1,6 +1,8 @@
-// Maletas ativas, direto do banco (GET /api/maletas).
+// Maletas ativas, direto do banco (GET /api/maletas). Clicar no nome abre as peças da maleta
+// (GET /api/pecas?maletaId=), cada uma com o botão Vender (js/venda-rapida.js).
 (function () {
     const { api, formato, criar, perguntar, notificar } = window.ItsJoias;
+    const venda = window.ItsJoiasVendaRapida;
     const estado = document.getElementById("estado");
     const tabela = document.getElementById("tabela");
 
@@ -10,7 +12,11 @@
             document.getElementById("lista").replaceChildren(...maletas.map((m) => {
                 const tr = criar("tr");
                 const nome = criar("td");
-                nome.append(criar("strong", null, m.nome), criar("div", "texto-suave", m.codigo));
+                const abrir = criar("button", "nome-maleta-botao", m.nome);
+                abrir.type = "button";
+                abrir.title = "Ver as peças desta maleta";
+                abrir.addEventListener("click", () => abrirMaleta(m));
+                nome.append(abrir, criar("div", "texto-suave", m.codigo));
                 tr.append(nome, criar("td", null, m.fornecedor), criar("td", null, formato.data(m.dataEntrada)),
                     criar("td", "numero", String(m.pecasRecebidas)), criar("td", "numero", String(m.pecasVendidas)),
                     criar("td", "numero", String(m.pecasDisponiveis)), criar("td", "numero", String(m.pecasPerdidasOuDevolvidas)),
@@ -66,6 +72,85 @@
             notificar({ tipo: "erro", titulo: "Não foi possível descartar.", texto: erro.message });
         }
     }
+
+    // ---- peças de uma maleta ---------------------------------------------------------------
+
+    const SITUACOES = { DISPONIVEL: "Disponível", VENDIDA: "Vendida", PERDIDA: "Perdida", DEVOLVIDA: "Devolvida", SEM_ENTRADA: "Sem entrada" };
+    const secao = document.getElementById("maleta-aberta");
+    const buscaMaleta = document.getElementById("maleta-busca");
+    const soDisponiveis = document.getElementById("maleta-so-disponiveis");
+    const estadoMaleta = document.getElementById("maleta-estado");
+    const listaMaleta = document.getElementById("maleta-pecas");
+    let maletaAberta = null;
+    let pecasDaMaleta = [];
+
+    async function abrirMaleta(m) {
+        maletaAberta = m;
+        secao.hidden = false;
+        document.getElementById("maleta-aberta-titulo").textContent = m.nome;
+        document.getElementById("maleta-aberta-info").textContent = `${m.codigo} · ${m.fornecedor} · `
+            + `${formato.plural(m.pecasDisponiveis, "peça disponível", "peças disponíveis")} de ${m.pecasRecebidas}`;
+        secao.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+        document.getElementById("maleta-aberta-titulo").focus({ preventScroll: true });
+        await carregarPecas();
+    }
+
+    async function carregarPecas() {
+        if (!maletaAberta) return;
+        listaMaleta.replaceChildren();
+        estadoMaleta.hidden = false;
+        estadoMaleta.className = "carregando-texto";
+        estadoMaleta.textContent = "Carregando peças…";
+        try {
+            const pecas = await api(`/api/pecas?maletaId=${maletaAberta.maletaId}&situacao=TODAS&limite=200`);
+            // um servidor de antes do filtro ignora o maletaId e devolve peças de todas: fica só com as desta
+            pecasDaMaleta = pecas.filter((p) => p.maleta === maletaAberta.nome);
+            desenharPecas();
+        } catch (erro) {
+            estadoMaleta.className = "mensagem mensagem--erro";
+            estadoMaleta.textContent = "Não foi possível carregar as peças. " + erro.message;
+        }
+    }
+
+    function desenharPecas() {
+        const termo = buscaMaleta.value.trim().toLowerCase();
+        const visiveis = pecasDaMaleta.filter((p) => (!soDisponiveis.checked || p.situacao === "DISPONIVEL")
+            && (!termo || p.etiqueta.toLowerCase().includes(termo) || p.produto.toLowerCase().includes(termo)));
+        listaMaleta.replaceChildren(...visiveis.map((p) => {
+            const li = criar("li", venda.tem(p.etiqueta) ? "na-venda" : null);
+            const nome = criar("div", "peca-nome", p.produto);
+            nome.append(criar("span", null, p.categoria));
+            li.append(criar("span", "peca-etiqueta", p.etiqueta), nome, criar("span", "dinheiro", formato.reais(p.preco)));
+            if (p.situacao === "DISPONIVEL") {
+                const vender = criar("button", "botao-pequeno", venda.tem(p.etiqueta) ? "Na venda" : "Vender");
+                vender.type = "button";
+                vender.setAttribute("aria-label", `Vender ${p.etiqueta}, ${p.produto}`);
+                vender.addEventListener("click", () => {
+                    venda.vender(p);
+                    desenharPecas();
+                });
+                li.append(vender);
+            } else {
+                li.append(criar("span", "situacao-peca", SITUACOES[p.situacao] || p.situacao));
+            }
+            return li;
+        }));
+        estadoMaleta.hidden = visiveis.length > 0;
+        estadoMaleta.className = "vazio";
+        estadoMaleta.textContent = termo ? "Nenhuma peça desta maleta com essa busca."
+            : soDisponiveis.checked ? "Nenhuma peça disponível nesta maleta." : "Esta maleta não tem peças.";
+    }
+
+    buscaMaleta.addEventListener("input", desenharPecas);
+    soDisponiveis.addEventListener("change", desenharPecas);
+    document.getElementById("maleta-fechar").addEventListener("click", () => {
+        secao.hidden = true;
+        maletaAberta = null;
+    });
+    document.addEventListener("itsjoias:venda-feita", () => {
+        carregar();
+        carregarPecas();
+    });
 
     carregar();
     window.ItsJoiasMaletas = { recarregar: carregar };
