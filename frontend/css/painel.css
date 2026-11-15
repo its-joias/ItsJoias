@@ -111,7 +111,7 @@
 .carne {
     position: relative;
     display: grid;
-    grid-template-columns: 200px minmax(0, 1fr);
+    grid-template-columns: 168px minmax(0, 1fr);
     min-height: 100%;
     border-radius: 18px;
     background: var(--superficie);
@@ -122,7 +122,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 22px 22px 20px;
+    padding: 18px 18px 16px;
     border-radius: 18px 0 0 18px;
     background: var(--dourado);
     color: var(--sobre-dourado);
@@ -142,7 +142,7 @@
 .carne::before,
 .carne::after {
     position: absolute;
-    left: 191px;
+    left: 159px;
     z-index: 1;
     width: 18px;
     height: 18px;
@@ -168,15 +168,15 @@
     margin: 8px 0 auto;
     color: inherit;
     font-family: var(--fonte-titulo);
-    font-size: 52px;
+    font-size: 38px;
     line-height: 0.95;
     letter-spacing: -0.03em;
 }
 
 .carne-valor {
-    margin: 18px 0 2px;
+    margin: 14px 0 2px;
     color: inherit;
-    font-size: 24px;
+    font-size: 19px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
 }
@@ -485,7 +485,8 @@ html[data-tema="claro"] .fio {
         flex-direction: row;
         flex-wrap: wrap;
         align-items: baseline;
-        gap: 4px 14px;
+        gap: 2px 12px;
+        padding: 12px 18px;
         border-radius: 18px 18px 0 0;
     }
 
@@ -495,11 +496,17 @@ html[data-tema="claro"] .fio {
 
     .carne-data {
         margin: 0;
-        font-size: 40px;
+        font-size: 26px;
     }
 
     .carne-valor {
         margin: 0;
+        font-size: 17px;
+    }
+
+    /* no celular a faixa fica baixa: rótulo, data, valor e nota em letra menor */
+    .carne-nota {
+        font-size: 12px;
     }
 
     .carne-nota {
