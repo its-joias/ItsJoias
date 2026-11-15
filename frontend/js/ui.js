@@ -214,7 +214,7 @@
             b.setAttribute("aria-label", rotulo);
             b.title = escuro ? "Mudar para o tema claro" : "Mudar para o tema escuro";
         };
-        b.addEventListener("click", () => window.ItsJoiasTema.alternar());
+        b.addEventListener("click", () => window.ItsJoiasTema.alternar(b));
         document.addEventListener("itsjoias:tema", atualizar);
         atualizar();
         return b;

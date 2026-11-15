@@ -1,0 +1,237 @@
+/* =====================================================================
+   Transições do sistema (carregado por último em todas as telas).
+   - trocar claro/escuro: o tema novo se abre num círculo a partir do botão
+     (View Transitions; sem ela, as cores mudam devagar);
+   - a página entra subindo de leve; o que carrega depois (painel, listas,
+     tabelas) aparece em sequência;
+   - cartões respondem ao mouse; o detalhe de uma venda e a maleta abrem deslizando.
+   Só mexe em opacidade, transform e cores. Vale também com "menos animações"
+   ligado no sistema: a Leide pediu as transições (são curtas e sem piscar).
+   ===================================================================== */
+
+:root {
+    --transicao: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* --- trocar entre claro e escuro ---------------------------------------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+    z-index: 2;
+}
+
+/* sem View Transitions: as cores de tudo passam devagar de um tema para o outro */
+html.trocando-tema *,
+html.trocando-tema *::before,
+html.trocando-tema *::after {
+    transition: background-color 0.45s ease, color 0.45s ease, border-color 0.45s ease,
+        box-shadow 0.45s ease, fill 0.45s ease, stroke 0.45s ease !important;
+}
+
+/* --- a página entra --------------------------------------------------- */
+main {
+    animation: pagina-entrar 0.5s var(--transicao) backwards;
+}
+
+@keyframes pagina-entrar {
+    from { opacity: 0; transform: translateY(12px); }
+}
+
+@keyframes subir-suave {
+    from { opacity: 0; transform: translateY(10px); }
+}
+
+@keyframes aparecer {
+    from { opacity: 0; }
+}
+
+/* o que chega do servidor aparece em sequência, não tudo de uma vez */
+#painel-conteudo:not([hidden]) > * {
+    animation: subir-suave 0.5s var(--transicao) backwards;
+}
+
+#painel-conteudo:not([hidden]) > :nth-child(2) { animation-delay: 70ms; }
+#painel-conteudo:not([hidden]) > :nth-child(3) { animation-delay: 140ms; }
+#painel-conteudo:not([hidden]) > :nth-child(4) { animation-delay: 210ms; }
+#painel-conteudo:not([hidden]) > :nth-child(n+5) { animation-delay: 280ms; }
+
+table:not([hidden]) tbody tr,
+.historico-vendas > li,
+.lista-pecas-maleta > li,
+.bloco-lista > li,
+.maletas > li {
+    animation: subir-suave 0.4s var(--transicao) backwards;
+}
+
+table:not([hidden]) tbody tr:nth-child(2),
+.historico-vendas > li:nth-child(2),
+.lista-pecas-maleta > li:nth-child(2),
+.bloco-lista > li:nth-child(2),
+.maletas > li:nth-child(2) { animation-delay: 40ms; }
+
+table:not([hidden]) tbody tr:nth-child(3),
+.historico-vendas > li:nth-child(3),
+.lista-pecas-maleta > li:nth-child(3),
+.bloco-lista > li:nth-child(3),
+.maletas > li:nth-child(3) { animation-delay: 80ms; }
+
+table:not([hidden]) tbody tr:nth-child(4),
+.historico-vendas > li:nth-child(4),
+.lista-pecas-maleta > li:nth-child(4),
+.bloco-lista > li:nth-child(4) { animation-delay: 120ms; }
+
+table:not([hidden]) tbody tr:nth-child(5),
+.historico-vendas > li:nth-child(5),
+.lista-pecas-maleta > li:nth-child(5),
+.bloco-lista > li:nth-child(5) { animation-delay: 160ms; }
+
+table:not([hidden]) tbody tr:nth-child(n+6),
+.historico-vendas > li:nth-child(n+6),
+.lista-pecas-maleta > li:nth-child(n+6) { animation-delay: 200ms; }
+
+.vazio,
+.carregando-texto,
+.maleta-aberta:not([hidden]),
+.gaveta-resumo {
+    animation: aparecer 0.35s ease backwards;
+}
+
+/* --- abrir e fechar ---------------------------------------------------- */
+.venda-cartao-corpo:not([hidden]) {
+    animation: abrir-detalhe 0.35s var(--transicao) backwards;
+}
+
+@keyframes abrir-detalhe {
+    from { opacity: 0; transform: translateY(-6px); }
+}
+
+.venda-cartao-topo .venda-cartao-valores,
+.venda-cartao-topo .venda-cartao-titulo {
+    transition: transform 0.25s var(--transicao);
+}
+
+.venda-cartao-topo:hover .venda-cartao-titulo {
+    transform: translateX(3px);
+}
+
+/* --- cartões respondem ao mouse ---------------------------------------- */
+.venda-cartao,
+.cartao,
+.fio,
+.carne,
+.bloco,
+.cartao-form,
+.venda-passo,
+.formas-venda label {
+    transition: transform 0.3s var(--transicao), box-shadow 0.3s ease, border-color 0.25s ease,
+        background-color 0.3s ease;
+}
+
+.venda-cartao:hover,
+.cartao:hover,
+.formas-venda label:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-leve);
+}
+
+.fio:hover,
+.carne:hover,
+.bloco:hover {
+    box-shadow: var(--sombra-leve);
+}
+
+.venda-cartao:has(.venda-cartao-corpo:not([hidden])) {
+    transform: none;
+}
+
+/* linhas de lista e de tabela acendem devagar */
+.parcela,
+.lista-pecas-maleta li,
+.gaveta-pecas li,
+.venda-lista li {
+    transition: background-color 0.25s ease;
+}
+
+.lista-pecas-maleta li:hover,
+.parcela:hover {
+    background-color: var(--superficie-hover);
+}
+
+/* os traços do fio e as barras das maletas crescem ao aparecer */
+.barra-parte {
+    transform-origin: left center;
+    animation: crescer 0.8s var(--transicao) backwards;
+}
+
+@keyframes crescer {
+    from { transform: scaleX(0); }
+}
+
+/* o botão do tema: a bolinha já desliza; o ícone gira ao trocar */
+.botao-tema-sol,
+.botao-tema-lua {
+    transition: color 0.25s ease, transform 0.45s var(--transicao);
+}
+
+.botao-tema[aria-checked="true"] .botao-tema-lua,
+.botao-tema[aria-checked="false"] .botao-tema-sol {
+    transform: rotate(360deg);
+}
+
+/* --- valem mesmo com "menos animações" ligado no sistema ----------------- */
+/* style.css corta todas as transições nesse caso; aqui elas voltam para o que foi pedido acima. */
+@media (prefers-reduced-motion: reduce) {
+    main,
+    #painel-conteudo:not([hidden]) > *,
+    table:not([hidden]) tbody tr,
+    .historico-vendas > li,
+    .lista-pecas-maleta > li,
+    .bloco-lista > li,
+    .maletas > li,
+    .venda-cartao-corpo:not([hidden]),
+    .barra-parte,
+    .vazio,
+    .carregando-texto,
+    .maleta-aberta:not([hidden]),
+    .gaveta-resumo,
+    .fio-parte,
+    .cartao-login > *,
+    .login-foto img,
+    .abertura-texto > *,
+    .gaveta-venda,
+    dialog.janela[open],
+    dialog.modal[open],
+    .notificacao,
+    .mensagem {
+        animation-duration: 0.45s !important;
+        animation-iteration-count: 1 !important;
+    }
+
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    nav a::after,
+    .venda-cartao,
+    .cartao,
+    .fio,
+    .carne,
+    .bloco,
+    .cartao-form,
+    .venda-passo,
+    .formas-venda label,
+    .parcela,
+    .lista-pecas-maleta li,
+    .venda-cartao-titulo,
+    .botao-tema-sol,
+    .botao-tema-lua,
+    .botao-tema-bolinha,
+    tbody tr {
+        transition-duration: 0.3s !important;
+    }
+}

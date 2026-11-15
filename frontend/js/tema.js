@@ -49,10 +49,30 @@
         return document.documentElement.dataset.tema || "escuro";
     }
 
-    function alternar() {
+    /**
+     * Troca o tema com transição: o tema novo se abre num círculo a partir de "origem" (o botão),
+     * com a View Transitions API; sem ela, as cores passam devagar (classe trocando-tema, css/transicoes.css).
+     */
+    function alternar(origem) {
         const novo = atual() === "escuro" ? "claro" : "escuro";
         salvar(novo);
-        aplicar(novo);
+        const raiz = document.documentElement;
+        if (!document.startViewTransition) {
+            raiz.classList.add("trocando-tema");
+            aplicar(novo);
+            setTimeout(() => raiz.classList.remove("trocando-tema"), 500);
+            return novo;
+        }
+        const r = origem && origem.getBoundingClientRect ? origem.getBoundingClientRect() : null;
+        const x = r ? r.left + r.width / 2 : innerWidth - 40;
+        const y = r ? r.top + r.height / 2 : 40;
+        const raio = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+        const transicao = document.startViewTransition(() => aplicar(novo));
+        transicao.ready.then(() => {
+            raiz.animate(
+                { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${raio}px at ${x}px ${y}px)`] },
+                { duration: 650, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)", pseudoElement: "::view-transition-new(root)" });
+        }).catch(() => {});
         return novo;
     }
 
