@@ -120,7 +120,8 @@ main > h2::after {
     mask: url("../img/sol.png") center / contain no-repeat;
 }
 
-/* o sol gira devagar, uma volta a cada 40 segundos (parado para quem pede menos movimento) */
+/* o sol gira devagar, uma volta a cada 40 segundos, sempre: a Leide pediu que ele gire mesmo
+   com "menos animações" ligado no sistema (é um giro lento, sem piscar nem mudar de lugar) */
 .marca-selo,
 .login-selo,
 .login-marca-sol {
@@ -131,11 +132,13 @@ main > h2::after {
     to { transform: rotate(360deg); }
 }
 
+/* style.css encurta todas as animações quando o sistema pede menos movimento; o sol fica de fora */
 @media (prefers-reduced-motion: reduce) {
     .marca-selo,
     .login-selo,
     .login-marca-sol {
-        animation: none;
+        animation-duration: 40s !important;
+        animation-iteration-count: infinite !important;
     }
 }
 
