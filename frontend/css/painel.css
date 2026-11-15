@@ -460,7 +460,8 @@
 }
 
 /* --- divisa antes dos gráficos -------------------------------------- */
-.painel-divisa {
+/* um h2: o nível certo para os gráficos abaixo dele; o tamanho fica o de um subtítulo */
+.painel-novo .painel-divisa {
     display: flex;
     align-items: center;
     gap: 16px;
@@ -469,7 +470,7 @@
     font-size: 24px;
 }
 
-.painel-divisa::after {
+.painel-novo .painel-divisa::after {
     flex: 1;
     height: 8px;
     background: radial-gradient(circle at 6px 0, transparent 4px, var(--renda) 4px 5px, transparent 5px) 0 0 / 12px 8px repeat-x;
