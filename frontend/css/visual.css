@@ -374,3 +374,16 @@ footer {
         transform: none;
     }
 }
+
+/* --- cartão de venda: as etiquetas das peças na aba Vendas ----------- */
+.venda-cartao-etiquetas {
+    flex-basis: 100%;
+    color: var(--texto-suave);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.venda-cartao-titulo .chip {
+    margin-top: 0;
+}

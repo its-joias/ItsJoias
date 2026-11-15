@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendas | Organização Its Joias</title>
+    <meta name="theme-color" content="#0E1F45">
+    <script src="js/tema.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Figtree:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/visual.css">
+    <link rel="stylesheet" href="css/identidade.css">
+</head>
+<body>
+    <header>
+        <div class="topo">
+            <h1 class="marca" translate="no"><span class="marca-selo" aria-hidden="true"></span><span class="marca-nome">Leide Farias</span><span class="marca-lema">Joias com alma baiana</span></h1>
+            <div class="usuario-topo" id="usuario-topo"></div>
+        </div>
+        <nav aria-label="Menu principal">
+            <ul>
+                <li><a href="index.html">Visualização geral</a></li>
+                <li><a href="vendas.html">Nova venda</a></li>
+                <li><a href="historico-vendas.html" aria-current="page">Vendas</a></li>
+                <li><a href="clientes.html">Clientes</a></li>
+                <li><a href="maletas.html">Maletas</a></li>
+                <li><a href="produtos.html">Produtos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Vendas</h2>
+        <p>Todas as vendas, da mais nova para a mais antiga. Busque pela cliente, pela etiqueta da peça
+            (para achar a venda de uma peça devolvida) ou pelo número da venda.</p>
+
+        <div class="barra-ferramentas">
+            <input type="search" id="busca" placeholder="Cliente, etiqueta (C0001-02) ou nº da venda…" aria-label="Buscar venda"
+                   autocomplete="off" spellcheck="false">
+        </div>
+        <div id="filtros" class="acoes" role="group" aria-label="Filtrar vendas"></div>
+
+        <p id="estado" class="carregando-texto">Carregando vendas…</p>
+        <ul class="historico-vendas" id="lista"></ul>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Organização Its Joias. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/sessao.js"></script>
+    <script src="js/mascaras.js"></script>
+    <script src="js/venda-detalhe.js"></script>
+    <script src="js/historico-vendas.js"></script>
+</body>
+</html>

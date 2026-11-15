@@ -148,11 +148,9 @@
         return tr;
     }
 
-    // ---- perfil da cliente: histórico de vendas e cancelamento ------------------------------
+    // ---- perfil da cliente: histórico de vendas ------------------------------
 
     const perfil = el("perfil");
-    const SITUACAO = { FINALIZADA: "Finalizada", CANCELADA: "Cancelada" };
-    const FORMAS = { PIX: "Pix", DINHEIRO: "Dinheiro", CARTAO: "Cartão", TRANSFERENCIA: "Transferência", OUTRO: "Outro" };
     let clienteDoPerfil = null;
 
     function item(rotulo, valor, destaque) {
@@ -194,233 +192,15 @@
         }
     }
 
+    /** O cartão, o detalhe e as ações de cada venda ficam em js/venda-detalhe.js (o mesmo da aba Vendas). */
     function cartaoVenda(v) {
-        const li = criar("li", "venda-cartao" + (v.status === "CANCELADA" ? " venda-cartao--cancelada" : ""));
-        const topo = criar("button", "venda-cartao-topo");
-        topo.type = "button";
-        topo.setAttribute("aria-expanded", "false");
-        const esquerda = criar("span", "venda-cartao-titulo");
-        esquerda.append(criar("strong", null, `Venda #${v.vendaId}`), criar("span", "texto-suave", ` · ${formato.data(v.dataVenda)} · `
-            + formato.plural(v.quantidadePecas, "peça", "peças")),
-            criar("span", "etiqueta-situacao etiqueta-" + v.status.toLowerCase(), SITUACAO[v.status] || v.status));
-        const direita = criar("span", "venda-cartao-valores");
-        direita.append(criar("strong", "dinheiro", formato.reais(v.valorTotal)));
-        if (v.status === "FINALIZADA") {
-            direita.append(criar("span", "texto-suave", Number(v.saldo) > 0 ? `falta ${formato.reais(v.saldo)}` : "quitada"));
-        }
-        topo.append(esquerda, direita);
-        const corpo = criar("div", "venda-cartao-corpo");
-        corpo.hidden = true;
-        topo.addEventListener("click", async () => {
-            const abrir = corpo.hidden;
-            corpo.hidden = !abrir;
-            topo.setAttribute("aria-expanded", String(abrir));
-            if (abrir && !corpo.dataset.carregado) await detalharVenda(v.vendaId, corpo);
-        });
-        li.append(topo, corpo);
-        return li;
-    }
-
-    async function detalharVenda(vendaId, corpo) {
-        corpo.replaceChildren(criar("p", "carregando-texto", "Carregando detalhes…"));
-        try {
-            const d = await api("/api/vendas/" + vendaId);
-            corpo.dataset.carregado = "1";
-            const blocos = [];
-            if (d.status === "CANCELADA") {
-                const aviso = criar("div", "mensagem mensagem--alerta");
-                aviso.append(criar("strong", null, "Venda cancelada em " + new Date(d.canceladaEm).toLocaleString("pt-BR",
-                    { dateStyle: "short", timeStyle: "short" })), criar("p", null, "Motivo: " + d.motivoCancelamento));
-                blocos.push(aviso);
-            }
-            const pecas = criar("ul", "venda-lista");
-            d.itens.forEach((i) => {
-                const l = criar("li");
-                l.append(criar("span", null, `${i.etiqueta} · ${i.produto}`), criar("span", "texto-suave", i.maleta),
-                    criar("span", "dinheiro", formato.reais(i.preco)));
-                pecas.append(l);
-            });
-            blocos.push(criar("h5", null, "Peças"), pecas);
-            if (Number(d.acrescimo) > 0) blocos.push(criar("p", "texto-suave", "Acréscimo de 10%: " + formato.reais(d.acrescimo)));
-            const parcelas = criar("ul", "venda-lista");
-            d.parcelas.forEach((p) => {
-                const l = criar("li");
-                const situacao = p.status === "CANCELADA" ? "cancelada" : Number(p.pago) >= Number(p.valor) ? "paga"
-                    : Number(p.pago) > 0 ? `pago ${formato.reais(p.pago)}` : "em aberto";
-                l.append(criar("span", null, `${p.numero}ª · vence ${formato.data(p.vencimento)}`),
-                    criar("span", "texto-suave", situacao), criar("span", "dinheiro", formato.reais(p.valor)));
-                parcelas.append(l);
-            });
-            blocos.push(criar("h5", null, "Parcelas"), parcelas);
-            if (d.pagamentos.length) {
-                const pagamentos = criar("ul", "venda-lista");
-                d.pagamentos.forEach((p) => {
-                    const l = criar("li", p.estornado ? "estornado" : null);
-                    l.append(criar("span", null, `${formato.data(p.data)} · ${FORMAS[p.forma] || p.forma}`),
-                        criar("span", "texto-suave", p.estornado ? "estornado" : "recebido"), criar("span", "dinheiro", formato.reais(p.valor)));
-                    pagamentos.append(l);
-                });
-                blocos.push(criar("h5", null, "Pagamentos"), pagamentos);
-            }
-            blocos.push(criar("p", "texto-suave", "Registrada por " + (d.vendidaPor || "—") + "."));
-            if (d.status === "FINALIZADA") {
-                const acoesVenda = criar("div", "acoes");
-                if (saldoDaVenda(d) > 0) {
-                    const receber = criar("button", "botao-pequeno", "Receber pagamento");
-                    receber.type = "button";
-                    receber.addEventListener("click", () => receberPagamento(d));
-                    acoesVenda.append(receber);
-                }
-                const devolucao = criar("button", "botao-secundario botao-pequeno", "Devolução");
-                devolucao.type = "button";
-                devolucao.dataset.somente = "PROPRIETARIA";
-                devolucao.addEventListener("click", () => registrarDevolucao(d));
-                const cancelar = criar("button", "botao-perigo botao-pequeno", "Cancelar venda");
-                cancelar.type = "button";
-                cancelar.dataset.somente = "PROPRIETARIA";
-                cancelar.addEventListener("click", () => cancelarVenda(d));
-                acoesVenda.append(devolucao, cancelar);
-                blocos.push(acoesVenda);
-            }
-            corpo.replaceChildren(...blocos);
-        } catch (erro) {
-            corpo.replaceChildren(criar("p", "mensagem mensagem--erro", "Não foi possível carregar a venda. " + erro.message));
-        }
-    }
-
-    async function cancelarVenda(d) {
-        const recebido = d.pagamentos.filter((p) => !p.estornado).reduce((s, p) => s + Number(p.valor), 0);
-        const motivo = await perguntar({
-            tipo: "perigo",
-            titulo: `Cancelar a venda #${d.vendaId}?`,
-            texto: ["As peças voltam a ficar disponíveis na maleta de onde saíram e as parcelas deixam de ser cobradas.",
-                "A venda não é apagada: fica no histórico como cancelada, com o motivo."],
-            detalhes: [["Cliente", d.clienteNome], ["Total", formato.reais(d.valorTotal)],
-                ["Peças", String(d.itens.length)], ["Pagamentos estornados", formato.reais(recebido)]],
-            campo: { rotulo: "Motivo do cancelamento", placeholder: "Ex.: lançada para a cliente errada", minimo: 3 },
-            sim: "Cancelar venda", nao: "Manter venda",
-        });
-        if (!motivo) return;
-        try {
-            await api(`/api/vendas/${d.vendaId}/cancelar`, { metodo: "POST", corpo: { motivo } });
-            notificar({ tipo: "sucesso", titulo: `Venda #${d.vendaId} cancelada.`, texto: "As peças voltaram para a maleta." });
-            await carregar();
-            const atualizada = (await api("/api/clientes?incluirInativos=true")).find((c) => c.id === clienteDoPerfil.id);
-            if (atualizada) abrirPerfilAtualizado(atualizada);
-        } catch (erro) {
-            notificar({ tipo: "erro", titulo: "Não foi possível cancelar.", texto: erro.message });
-        }
-    }
-
-    /** O que falta pagar na venda (só para mostrar; quem confere o valor é o back-end). */
-    function saldoDaVenda(d) {
-        return d.parcelas.filter((p) => p.status === "ATIVA")
-            .reduce((s, p) => s + Math.max(0, Number(p.valor) - Number(p.pago)), 0);
+        return window.ItsJoiasVendas.cartao(v, { aoMudar: atualizarPerfil });
     }
 
     async function atualizarPerfil() {
         await carregar();
         const atualizada = (await api("/api/clientes?incluirInativos=true")).find((c) => c.id === clienteDoPerfil.id);
         if (atualizada) abrirPerfilAtualizado(atualizada);
-    }
-
-    // ---- receber pagamento (uma parcela, parte ou tudo) ------------------------------------
-
-    const janelaReceber = el("receber");
-    const formReceber = el("form-receber");
-    const inpValor = el("receber-valor");
-    const inpData = el("receber-data");
-    const msgReceber = el("receber-mensagem");
-    let vendaRecebendo = null;
-
-    function hojeISO() {
-        const d = new Date();
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-    }
-
-    function valorEmTexto(n) {
-        return n.toFixed(2).replace(".", ",");
-    }
-
-    function receberPagamento(d) {
-        vendaRecebendo = d;
-        const saldo = saldoDaVenda(d);
-        el("receber-titulo").textContent = `Receber da venda #${d.vendaId}`;
-        el("receber-saldo").textContent = `${d.clienteNome} · falta ${formato.reais(saldo)}`;
-        inpValor.value = valorEmTexto(saldo);
-        inpData.value = hojeISO();
-        inpData.max = hojeISO();
-        msgReceber.hidden = true;
-        modal.abrir(janelaReceber);
-        inpValor.focus();
-        inpValor.select();
-    }
-
-    el("receber-quitar").addEventListener("click", () => {
-        if (!vendaRecebendo) return;
-        // quitar = receber exatamente o que falta, já registrando
-        inpValor.value = valorEmTexto(saldoDaVenda(vendaRecebendo));
-        formReceber.requestSubmit();
-    });
-
-    formReceber.addEventListener("submit", async (evento) => {
-        evento.preventDefault();
-        const valor = mascaras.reaisDigitados(inpValor.value);
-        if (valor === null || Number.isNaN(valor) || Number(valor) <= 0) {
-            msgReceber.textContent = "Escreva o valor recebido, por exemplo 50,00.";
-            msgReceber.hidden = false;
-            inpValor.focus();
-            return;
-        }
-        const botao = el("receber-confirmar");
-        botao.disabled = true;
-        botao.classList.add("processando");
-        try {
-            const d = await api(`/api/vendas/${vendaRecebendo.vendaId}/pagamentos`, {
-                metodo: "POST", corpo: { valor, formaPagamento: el("receber-forma").value, data: inpData.value || null },
-            });
-            const falta = saldoDaVenda(d);
-            modal.fechar(janelaReceber);
-            notificar({
-                tipo: "sucesso", titulo: falta > 0 ? `Pagamento registrado na venda #${d.vendaId}.` : `Venda #${d.vendaId} quitada.`,
-                texto: falta > 0 ? `Recebido ${formato.reais(valor)}. Ainda falta ${formato.reais(falta)}.` : `Recebido ${formato.reais(valor)}.`,
-            });
-            await atualizarPerfil();
-        } catch (erro) {
-            msgReceber.textContent = erro.message;
-            msgReceber.hidden = false;
-        } finally {
-            botao.disabled = false;
-            botao.classList.remove("processando");
-        }
-    });
-
-    // ---- devolução: a cliente devolve as peças (com a etiqueta) ---------------------------
-
-    async function registrarDevolucao(d) {
-        const recebido = d.pagamentos.filter((p) => !p.estornado).reduce((s, p) => s + Number(p.valor), 0);
-        const motivo = await perguntar({
-            tipo: "alerta",
-            titulo: `Devolução da venda #${d.vendaId}?`,
-            texto: ["Só aceite a devolução com a etiqueta na peça.",
-                "Todas as peças desta venda voltam para a maleta de onde saíram e as parcelas deixam de ser cobradas."
-                + (recebido > 0 ? ` A cliente recebe de volta ${formato.reais(recebido)}.` : "")],
-            detalhes: [["Cliente", d.clienteNome], ["Peças", d.itens.map((i) => i.etiqueta).join(", ")],
-                ["Devolver à cliente", formato.reais(recebido)]],
-            campo: { rotulo: "Motivo da devolução", placeholder: "Ex.: não serviu, trocou de ideia…", minimo: 3 },
-            sim: "Registrar devolução", nao: "Voltar",
-        });
-        if (!motivo) return;
-        try {
-            await api(`/api/vendas/${d.vendaId}/cancelar`, { metodo: "POST", corpo: { motivo: "Devolução: " + motivo } });
-            notificar({
-                tipo: "sucesso", titulo: `Devolução da venda #${d.vendaId} registrada.`,
-                texto: "As peças voltaram para a maleta." + (recebido > 0 ? ` Devolva ${formato.reais(recebido)} à cliente.` : ""),
-            });
-            await atualizarPerfil();
-        } catch (erro) {
-            notificar({ tipo: "erro", titulo: "Não foi possível registrar a devolução.", texto: erro.message });
-        }
     }
 
     /** Recarrega o perfil aberto (totais e vendas) sem fechar o modal. */
