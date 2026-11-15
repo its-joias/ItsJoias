@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 /**
  * POST /api/vendas/previa   calcula total e parcelas, sem gravar
  * POST /api/vendas          grava a venda (FINALIZADA), baixa as peças, cria parcelas e pagamentos na hora
- * GET  /api/vendas          vendas recentes (?clienteId=)
+ * GET  /api/vendas          vendas recentes (?clienteId=&busca=cliente, etiqueta ou número da venda)
  * GET  /api/vendas/{id}     venda completa (peças, parcelas, pagamentos)
  * POST /api/vendas/{id}/cancelar  cancela a venda (só PROPRIETARIA): estorna, devolve as peças, mantém o registro
  * POST /api/vendas/{id}/pagamentos  recebe um pagamento depois da venda (abate das parcelas mais antigas)
@@ -54,8 +54,9 @@ public class VendaController {
 
 	@GetMapping("/vendas")
 	public List<VendaResumo> recentes(@RequestParam(required = false) Long clienteId,
+			@RequestParam(required = false) String busca,
 			@RequestParam(defaultValue = "30") int limite) {
-		return vendaService.recentes(clienteId, limite);
+		return vendaService.recentes(clienteId, busca, limite);
 	}
 
 	@GetMapping("/vendas/{id}")

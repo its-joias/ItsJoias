@@ -88,7 +88,14 @@ public class VendaService {
 
 	@Transactional(readOnly = true)
 	public List<VendaResumo> recentes(Long clienteId, int limite) {
-		return vendas.listarRecentes(clienteId, Math.clamp(limite, 1, 200));
+		return recentes(clienteId, null, limite);
+	}
+
+	/** busca: parte do nome da cliente, a etiqueta de uma peça vendida (C0001-02) ou o número da venda (#12). */
+	@Transactional(readOnly = true)
+	public List<VendaResumo> recentes(Long clienteId, String busca, int limite) {
+		String b = busca == null ? null : busca.trim();
+		return vendas.listarRecentes(clienteId, b == null || b.isEmpty() ? null : b, Math.clamp(limite, 1, 200));
 	}
 
 	public VendaDetalhe detalhe(long vendaId) {

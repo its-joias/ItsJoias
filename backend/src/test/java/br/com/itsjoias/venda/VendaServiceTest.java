@@ -436,4 +436,22 @@ class VendaServiceTest {
 				.hasMessageContaining("não encontrada");
 	}
 
+	@Test
+	void buscaDeVendasPorClienteEtiquetaENumero() {
+		long bia = id("INSERT INTO clientes (nome, telefone) VALUES ('Bia Teste', '(71) 90000-0002') RETURNING id");
+		long v1 = vendas.confirmar(aVista(ana, colar + "-01", brinco + "-01")).vendaId();
+		long v2 = vendas.confirmar(new VendaForm(bia, List.of(colar + "-03"), false, FormaVenda.PARCELADO, 2, null, null)).vendaId();
+		conferirComoNoCommit();
+
+		assertThat(vendas.recentes(null, "ana", 30)).extracting(r -> r.vendaId()).containsExactly(v1);
+		assertThat(vendas.recentes(null, brinco.toLowerCase() + "-01", 30)).extracting(r -> r.vendaId()).containsExactly(v1);
+		assertThat(vendas.recentes(null, "#" + v2, 30)).extracting(r -> r.vendaId()).containsExactly(v2);
+		assertThat(vendas.recentes(null, "  ", 30)).hasSize(2);
+		assertThat(vendas.recentes(null, null, 30)).filteredOn(r -> r.vendaId() == v1).singleElement()
+				.satisfies(r -> assertThat(r.etiquetas()).isEqualTo(colar + "-01, " + brinco + "-01"));
+		// nada vencido ainda: as parcelas vencem nos dias 5 seguintes
+		assertThat(vendas.recentes(bia, null, 30)).singleElement()
+				.satisfies(r -> assertThat(r.atrasado()).isEqualByComparingTo("0"));
+	}
+
 }

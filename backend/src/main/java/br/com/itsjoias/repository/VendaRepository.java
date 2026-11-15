@@ -278,25 +278,39 @@ public class VendaRepository {
 				.stream().findFirst();
 	}
 
-	public List<VendaResumo> listarRecentes(Long clienteId, int limite) {
+	public List<VendaResumo> listarRecentes(Long clienteId, String busca, int limite) {
 		Map<String, Object> p = new HashMap<>();
 		p.put("cliente", clienteId);
 		p.put("limite", limite);
+		String numero = busca == null ? null : busca.replaceFirst("^#", "");
+		p.put("busca", busca == null ? null : "%" + busca.toLowerCase().replace("%", "") + "%");
+		p.put("etiqueta", busca == null ? null : busca.toUpperCase().replace("%", "") + "%");
+		p.put("numero", numero != null && numero.matches("[0-9]{1,9}") ? Long.parseLong(numero) : null);
 		return jdbc.query("""
 				SELECT v.id, v.data_venda, v.cliente_id, c.nome AS cliente_nome, v.valor_total, v.status,
 				       (SELECT COUNT(*) FROM itens_venda iv WHERE iv.venda_id = v.id)              AS pecas,
-				       COALESCE(f.pago, 0) AS pago, COALESCE(f.saldo, 0) AS saldo, COALESCE(f.parcelas, 0) AS parcelas
+				       COALESCE(f.pago, 0) AS pago, COALESCE(f.saldo, 0) AS saldo, COALESCE(f.parcelas, 0) AS parcelas,
+				       COALESCE(f.atrasado, 0) AS atrasado,
+				       (SELECT string_agg(vp.codigo, ', ' ORDER BY iv.id) FROM itens_venda iv
+				        JOIN vw_pecas vp ON vp.peca_id = iv.peca_id WHERE iv.venda_id = v.id)       AS etiquetas
 				FROM vendas v
 				JOIN clientes c ON c.id = v.cliente_id
-				LEFT JOIN (SELECT venda_id, SUM(total_pago) AS pago, SUM(saldo) AS saldo, COUNT(*) AS parcelas
+				LEFT JOIN (SELECT venda_id, SUM(total_pago) AS pago, SUM(saldo) AS saldo, COUNT(*) AS parcelas,
+				                  SUM(saldo) FILTER (WHERE atrasada) AS atrasado
 				           FROM vw_saldo_parcelas GROUP BY venda_id) f ON f.venda_id = v.id
 				WHERE v.status <> 'RASCUNHO' AND (CAST(:cliente AS bigint) IS NULL OR v.cliente_id = :cliente)
+				  AND (CAST(:busca AS text) IS NULL
+				       OR lower(c.nome) LIKE :busca
+				       OR v.id = CAST(:numero AS bigint)
+				       OR EXISTS (SELECT 1 FROM itens_venda iv JOIN vw_pecas vp ON vp.peca_id = iv.peca_id
+				                  WHERE iv.venda_id = v.id AND vp.codigo LIKE :etiqueta))
 				ORDER BY v.data_venda DESC, v.id DESC
 				LIMIT :limite
 				""", p, (rs, i) -> new VendaResumo(
 				rs.getLong("id"), rs.getObject("data_venda", LocalDate.class), rs.getLong("cliente_id"),
 				rs.getString("cliente_nome"), rs.getInt("pecas"), dinheiro(rs, "valor_total"), dinheiro(rs, "pago"),
-				dinheiro(rs, "saldo"), rs.getInt("parcelas"), rs.getString("status")));
+				dinheiro(rs, "saldo"), rs.getInt("parcelas"), rs.getString("status"), dinheiro(rs, "atrasado"),
+				rs.getString("etiquetas")));
 	}
 
 	/** Busca de peças por etiqueta, código do modelo ou nome. situacao = null traz todas. */

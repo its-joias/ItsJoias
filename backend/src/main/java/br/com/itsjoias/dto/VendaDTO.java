@@ -94,7 +94,7 @@ public final class VendaDTO {
 	public record VendaCriada(long vendaId, Previa venda) {
 	}
 
-	/** Linha da lista de vendas recentes. */
+	/** Linha da lista de vendas (recentes, da cliente e a aba Vendas). */
 	public record VendaResumo(
 			long vendaId,
 			LocalDate dataVenda,
@@ -105,7 +105,11 @@ public final class VendaDTO {
 			BigDecimal pago,
 			BigDecimal saldo,
 			int parcelas,
-			String status) {
+			String status,
+			/** Parte do saldo em parcelas já vencidas. */
+			BigDecimal atrasado,
+			/** Etiquetas das peças, separadas por vírgula (C0001-01, B0002-03). */
+			String etiquetas) {
 	}
 
 	/** Peça para a busca da venda e para a tela de produtos. */
