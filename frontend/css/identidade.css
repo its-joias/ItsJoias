@@ -7,7 +7,7 @@
    ===================================================================== */
 
 :root {
-    /* as fachadas do casario, para a faixa e os detalhes */
+    /* as fachadas do casario, para os detalhes */
     --casario-azul: #2456B8;
     --casario-amarelo: #F2B21B;
     --casario-rosa: #E0457B;
@@ -107,31 +107,6 @@ main > h2::after {
     mask: url("../img/onda.svg") center / 100% 100% no-repeat;
 }
 
-/* --- a faixa do casario: as fachadas do Pelourinho lado a lado -------- */
-header::before,
-.login-lado::before {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    height: 4px;
-    background: linear-gradient(90deg,
-        var(--casario-azul) 0 16.6%, var(--casario-amarelo) 0 33.3%, var(--casario-rosa) 0 50%,
-        var(--casario-verde) 0 66.6%, var(--casario-terracota) 0 83.3%, var(--casario-celeste) 0);
-    background-size: 240px 100%;
-    content: "";
-}
-
-header {
-    position: sticky;
-}
-
-@media (max-width: 768px) {
-    header {
-        position: relative;
-    }
-}
-
 /* --- a marca no cabeçalho: o sol, o nome cursivo e o lema -------------- */
 .marca-selo,
 .login-selo,
@@ -179,10 +154,6 @@ nav a[aria-current="page"]::after {
 }
 
 /* --- login: a marca sobre a foto e o sol no lugar do selo ------------- */
-.login-lado::before {
-    background-size: 160px 100%;
-}
-
 .login-selo {
     width: 26px;
     height: 26px;
