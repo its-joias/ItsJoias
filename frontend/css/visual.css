@@ -1,13 +1,13 @@
 /* =====================================================================
    Visual novo das telas internas (carregado depois de style.css).
-   Mesma linguagem do login: Fraunces nos títulos, Figtree no texto,
+   Mesma linguagem do login, com as fontes do site publicado: Georgia nos títulos, Arial no texto,
    cabeçalho com a marca, campos e botões maiores e com resposta ao toque.
    Só muda a aparência: nenhuma classe usada pelos scripts foi trocada.
    ===================================================================== */
 
 :root {
-    --fonte-titulo: "Fraunces", Georgia, "Times New Roman", serif;
-    --fonte-texto: "Figtree", Arial, Helvetica, sans-serif;
+    --fonte-titulo: Georgia, "Times New Roman", serif;
+    --fonte-texto: Arial, Helvetica, sans-serif;
     --curva: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 

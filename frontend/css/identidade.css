@@ -14,7 +14,6 @@
     --casario-verde: #2E9E6A;
     --casario-terracota: #D9692F;
     --casario-celeste: #4FA3D9;
-    --fonte-cursiva: "Great Vibes", "Brush Script MT", cursive;
 
     /* ---- tema escuro (padrão): azul colonial ---- */
     --fundo: #0E1F45;
@@ -107,7 +106,7 @@ main > h2::after {
     mask: url("../img/onda.svg") center / 100% 100% no-repeat;
 }
 
-/* --- a marca no cabeçalho: o sol do logo (img/sol.png, recortado do logo), o nome cursivo e o lema --- */
+/* --- a marca no cabeçalho: o sol do logo (img/sol.png, recortado do logo), o nome e o lema --- */
 .marca-selo,
 .login-selo,
 .login-marca-sol {
@@ -153,10 +152,10 @@ header h1.marca {
 }
 
 header .marca-nome {
-    font-family: var(--fonte-cursiva);
-    font-size: 36px;
+    font-family: var(--fonte-titulo);
+    font-size: 28px;
     font-weight: 400;
-    line-height: 0.95;
+    line-height: 1.05;
     letter-spacing: 0;
 }
 
@@ -193,9 +192,9 @@ nav a[aria-current="page"]::after {
 }
 
 .login-marca-nome {
-    font-family: var(--fonte-cursiva);
-    font-size: clamp(54px, 5.4vw, 80px);
-    line-height: 0.9;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(40px, 4vw, 58px);
+    line-height: 1;
     letter-spacing: 0;
 }
 
@@ -248,7 +247,7 @@ nav a[aria-current="page"]::after {
     }
 
     header .marca-nome {
-        font-size: 30px;
+        font-size: 24px;
     }
 
     header .marca-lema {
@@ -261,7 +260,7 @@ nav a[aria-current="page"]::after {
     }
 
     .login-marca-nome {
-        font-size: 46px;
+        font-size: 36px;
     }
 
     .login-marca-onda {
