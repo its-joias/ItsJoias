@@ -107,7 +107,7 @@ main > h2::after {
     mask: url("../img/onda.svg") center / 100% 100% no-repeat;
 }
 
-/* --- a marca no cabeçalho: o sol, o nome cursivo e o lema -------------- */
+/* --- a marca no cabeçalho: o sol do logo (img/sol.png, recortado do logo), o nome cursivo e o lema --- */
 .marca-selo,
 .login-selo,
 .login-marca-sol {
@@ -116,8 +116,27 @@ main > h2::after {
     border-radius: 0;
     background: var(--dourado);
     box-shadow: none;
-    -webkit-mask: url("../img/sol.svg") center / contain no-repeat;
-    mask: url("../img/sol.svg") center / contain no-repeat;
+    -webkit-mask: url("../img/sol.png") center / contain no-repeat;
+    mask: url("../img/sol.png") center / contain no-repeat;
+}
+
+/* o sol gira devagar, uma volta a cada 40 segundos (parado para quem pede menos movimento) */
+.marca-selo,
+.login-selo,
+.login-marca-sol {
+    animation: sol-girar 40s linear infinite;
+}
+
+@keyframes sol-girar {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .marca-selo,
+    .login-selo,
+    .login-marca-sol {
+        animation: none;
+    }
 }
 
 header h1.marca {
