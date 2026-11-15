@@ -160,11 +160,30 @@ public class VendaRepository {
 	}
 
 	public void inserirPagamento(long parcelaId, long usuarioId, BigDecimal valor, LocalDate data, FormaPagamento forma) {
+		inserirPagamento(parcelaId, usuarioId, valor, data, forma, "Pago no ato da venda");
+	}
+
+	public void inserirPagamento(long parcelaId, long usuarioId, BigDecimal valor, LocalDate data, FormaPagamento forma,
+			String observacao) {
 		jdbc.update("""
 				INSERT INTO pagamentos (parcela_id, usuario_id, valor, data_pagamento, forma_pagamento, observacao)
-				VALUES (:parcela, :usuario, :valor, :data, :forma, 'Pago no ato da venda')
+				VALUES (:parcela, :usuario, :valor, :data, :forma, :observacao)
 				""", new MapSqlParameterSource("parcela", parcelaId).addValue("usuario", usuarioId)
-				.addValue("valor", valor).addValue("data", data).addValue("forma", forma.name()));
+				.addValue("valor", valor).addValue("data", data).addValue("forma", forma.name())
+				.addValue("observacao", observacao));
+	}
+
+	public record ParcelaEmAberto(long parcelaId, int numero, BigDecimal saldo) {
+	}
+
+	/** Parcelas ativas com saldo, da que vence primeiro para a última (a ordem em que um pagamento abate). */
+	public List<ParcelaEmAberto> parcelasEmAberto(long vendaId) {
+		return jdbc.query("""
+				SELECT parcela_id, numero_parcela, saldo FROM vw_saldo_parcelas
+				WHERE venda_id = :v AND saldo > 0
+				ORDER BY data_vencimento, numero_parcela
+				""", Map.of("v", vendaId), (rs, i) -> new ParcelaEmAberto(rs.getLong("parcela_id"),
+				rs.getInt("numero_parcela"), dinheiro(rs, "saldo")));
 	}
 
 	// ---- cancelar ------------------------------------------------------------------------
@@ -281,8 +300,9 @@ public class VendaRepository {
 	}
 
 	/** Busca de peças por etiqueta, código do modelo ou nome. situacao = null traz todas. */
-	public List<PecaResumo> buscarPecas(String busca, String situacao, int limite) {
-		MapSqlParameterSource p = new MapSqlParameterSource("limite", limite).addValue("situacao", situacao);
+	public List<PecaResumo> buscarPecas(String busca, String situacao, Long maletaId, int limite) {
+		MapSqlParameterSource p = new MapSqlParameterSource("limite", limite).addValue("situacao", situacao)
+				.addValue("maleta", maletaId);
 		StringBuilder sql = new StringBuilder("""
 				SELECT vp.peca_id, vp.codigo AS etiqueta, p.codigo AS produto_codigo, p.nome AS produto,
 				       c.nome AS categoria, m.nome AS maleta, p.preco_venda, vp.situacao
@@ -291,6 +311,7 @@ public class VendaRepository {
 				JOIN categorias c ON c.id = p.categoria_id
 				JOIN maletas    m ON m.id = vp.maleta_id
 				WHERE (CAST(:situacao AS text) IS NULL OR vp.situacao = :situacao)
+				  AND (CAST(:maleta AS bigint) IS NULL OR vp.maleta_id = :maleta)
 				""");
 		if (busca != null && !busca.isBlank()) {
 			// etiqueta (C0001-02), modelo (C0001), nome ou código de barras da etiqueta do fornecedor

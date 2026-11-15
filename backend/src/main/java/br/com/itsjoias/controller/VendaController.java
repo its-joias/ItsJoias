@@ -16,6 +16,7 @@ import br.com.itsjoias.dto.VendaDTO.CancelamentoForm;
 import br.com.itsjoias.dto.VendaDTO.VendaDetalhe;
 import br.com.itsjoias.dto.VendaDTO.PecaResumo;
 import br.com.itsjoias.dto.VendaDTO.Previa;
+import br.com.itsjoias.dto.VendaDTO.RecebimentoForm;
 import br.com.itsjoias.dto.VendaDTO.VendaCriada;
 import br.com.itsjoias.dto.VendaDTO.VendaForm;
 import br.com.itsjoias.dto.VendaDTO.VendaResumo;
@@ -28,7 +29,8 @@ import jakarta.validation.Valid;
  * GET  /api/vendas          vendas recentes (?clienteId=)
  * GET  /api/vendas/{id}     venda completa (peças, parcelas, pagamentos)
  * POST /api/vendas/{id}/cancelar  cancela a venda (só PROPRIETARIA): estorna, devolve as peças, mantém o registro
- * GET  /api/pecas           busca peças (?busca=C0001&situacao=DISPONIVEL)
+ * POST /api/vendas/{id}/pagamentos  recebe um pagamento depois da venda (abate das parcelas mais antigas)
+ * GET  /api/pecas           busca peças (?busca=C0001&situacao=DISPONIVEL&maletaId=3)
  */
 @RestController
 @RequestMapping("/api")
@@ -66,11 +68,18 @@ public class VendaController {
 		return vendaService.cancelar(id, form.motivo());
 	}
 
+	@PostMapping("/vendas/{id}/pagamentos")
+	public VendaDetalhe receber(@PathVariable long id, @Valid @RequestBody RecebimentoForm form) {
+		return vendaService.receber(id, form);
+	}
+
 	@GetMapping("/pecas")
 	public List<PecaResumo> pecas(@RequestParam(required = false) String busca,
 			@RequestParam(defaultValue = "DISPONIVEL") String situacao,
+			@RequestParam(required = false) Long maletaId,
 			@RequestParam(defaultValue = "30") int limite) {
-		return vendaService.buscarPecas(busca, "TODAS".equalsIgnoreCase(situacao) ? null : situacao.toUpperCase(), limite);
+		return vendaService.buscarPecas(busca, "TODAS".equalsIgnoreCase(situacao) ? null : situacao.toUpperCase(), maletaId,
+				limite);
 	}
 
 }

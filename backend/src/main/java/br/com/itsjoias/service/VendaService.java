@@ -19,6 +19,7 @@ import br.com.itsjoias.dto.VendaDTO.ItemPrevia;
 import br.com.itsjoias.dto.VendaDTO.ParcelaPrevia;
 import br.com.itsjoias.dto.VendaDTO.PecaResumo;
 import br.com.itsjoias.dto.VendaDTO.Previa;
+import br.com.itsjoias.dto.VendaDTO.RecebimentoForm;
 import br.com.itsjoias.dto.VendaDTO.VendaCriada;
 import br.com.itsjoias.dto.VendaDTO.VendaDetalhe;
 import br.com.itsjoias.dto.VendaDTO.VendaForm;
@@ -27,6 +28,7 @@ import br.com.itsjoias.exception.NaoEncontradoException;
 import br.com.itsjoias.exception.RegraNegocioException;
 import br.com.itsjoias.repository.VendaRepository;
 import br.com.itsjoias.repository.VendaRepository.PecaParaVenda;
+import br.com.itsjoias.repository.VendaRepository.ParcelaEmAberto;
 import br.com.itsjoias.repository.VendaRepository.PecaVendida;
 import br.com.itsjoias.seguranca.UsuarioAtual;
 
@@ -127,9 +129,50 @@ public class VendaService {
 		return detalhe(vendaId);
 	}
 
+	/**
+	 * Recebe um pagamento depois da venda (uma parcela, parte dela ou tudo de uma vez, para quitar).
+	 * O valor abate das parcelas em aberto na ordem de vencimento: primeiro a mais antiga. Nunca passa
+	 * do que falta pagar; o banco confere de novo, parcela por parcela, ao gravar cada pagamento.
+	 */
+	@Transactional
+	public VendaDetalhe receber(long vendaId, RecebimentoForm form) {
+		String status = vendas.travarVenda(vendaId).orElseThrow(() -> new NaoEncontradoException("Venda não encontrada."));
+		if (!"FINALIZADA".equals(status)) {
+			throw new RegraNegocioException("CANCELADA".equals(status) ? "Esta venda está cancelada e não recebe pagamento."
+					: "Só uma venda finalizada recebe pagamento.");
+		}
+		LocalDate hoje = calendario.hoje();
+		LocalDate data = form.data() == null ? hoje : form.data();
+		if (data.isAfter(hoje)) {
+			throw new RegraNegocioException("A data do pagamento não pode ser depois de hoje.");
+		}
+		List<ParcelaEmAberto> abertas = vendas.parcelasEmAberto(vendaId);
+		BigDecimal saldo = abertas.stream().map(ParcelaEmAberto::saldo).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2);
+		if (saldo.signum() == 0) {
+			throw new RegraNegocioException("Esta venda já está quitada.");
+		}
+		BigDecimal valor = form.valor().setScale(2);
+		if (valor.compareTo(saldo) > 0) {
+			throw new RegraNegocioException("O valor passa do que falta pagar nesta venda (R$ "
+					+ saldo.toPlainString().replace('.', ',') + ").");
+		}
+		long usuario = usuarioAtual.obter().id();
+		String observacao = valor.compareTo(saldo) == 0 ? "Quitação da venda" : "Recebido depois da venda";
+		BigDecimal falta = valor;
+		for (ParcelaEmAberto parcela : abertas) {
+			if (falta.signum() == 0) {
+				break;
+			}
+			BigDecimal parte = falta.min(parcela.saldo());
+			vendas.inserirPagamento(parcela.parcelaId(), usuario, parte, data, form.formaPagamento(), observacao);
+			falta = falta.subtract(parte);
+		}
+		return detalhe(vendaId);
+	}
+
 	@Transactional(readOnly = true)
-	public List<PecaResumo> buscarPecas(String busca, String situacao, int limite) {
-		return vendas.buscarPecas(busca, situacao, Math.clamp(limite, 1, 200));
+	public List<PecaResumo> buscarPecas(String busca, String situacao, Long maletaId, int limite) {
+		return vendas.buscarPecas(busca, situacao, maletaId, Math.clamp(limite, 1, 200));
 	}
 
 	// ------------------------------------------------------------------------------------------

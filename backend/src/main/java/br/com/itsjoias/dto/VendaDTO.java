@@ -151,4 +151,18 @@ public final class VendaDTO {
 	public record CancelamentoForm(String motivo) {
 	}
 
+	/** Pagamento recebido depois da venda: abate das parcelas em aberto, da mais antiga para a mais nova. */
+	public record RecebimentoForm(
+			@NotNull(message = "Informe o valor recebido.")
+			@DecimalMin(value = "0.01", message = "O valor precisa ser maior que zero.")
+			@Digits(integer = 10, fraction = 2, message = "Use no máximo 2 casas decimais.")
+			BigDecimal valor,
+
+			@NotNull(message = "Escolha a forma de pagamento.")
+			FormaPagamento formaPagamento,
+
+			/** Dia em que a cliente pagou; sem data, vale hoje. */
+			LocalDate data) {
+	}
+
 }

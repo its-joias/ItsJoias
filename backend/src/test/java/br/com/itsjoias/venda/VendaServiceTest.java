@@ -28,6 +28,7 @@ import br.com.itsjoias.dto.VendaDTO.FormaVenda;
 import br.com.itsjoias.dto.VendaDTO.ItemPrevia;
 import br.com.itsjoias.dto.VendaDTO.ParcelaPrevia;
 import br.com.itsjoias.dto.VendaDTO.Previa;
+import br.com.itsjoias.dto.VendaDTO.RecebimentoForm;
 import br.com.itsjoias.dto.VendaDTO.VendaCriada;
 import br.com.itsjoias.dto.VendaDTO.VendaForm;
 import br.com.itsjoias.exception.RegraNegocioException;
@@ -330,7 +331,7 @@ class VendaServiceTest {
 	@Test
 	void codigoDeBarrasAchaAsPecasDeCadaMaletaNaBusca() {
 		// a tela usa esta busca para perguntar de qual maleta a peça saiu quando há mais de uma
-		assertThat(vendas.buscarPecas("48480079", "DISPONIVEL", 30)).extracting(p -> p.etiqueta(), p -> p.maleta())
+		assertThat(vendas.buscarPecas("48480079", "DISPONIVEL", null, 30)).extracting(p -> p.etiqueta(), p -> p.maleta())
 				.containsExactly(tuple(colar + "-01", "Maleta Agosto"), tuple(colar + "-02", "Maleta Agosto"),
 						tuple(colar + "-03", "Maleta Outubro"), tuple(colar + "-04", "Maleta Outubro"));
 	}
@@ -371,14 +372,68 @@ class VendaServiceTest {
 	void buscaDePecasDisponiveis() {
 		vendas.confirmar(aVista(ana, colar + "-01"));
 
-		assertThat(vendas.buscarPecas(colar, "DISPONIVEL", 30)).extracting(p -> p.etiqueta())
+		assertThat(vendas.buscarPecas(colar, "DISPONIVEL", null, 30)).extracting(p -> p.etiqueta())
 				.containsExactly(colar + "-02", colar + "-03", colar + "-04");
-		assertThat(vendas.buscarPecas("argola", "DISPONIVEL", 30)).hasSize(1);
+		assertThat(vendas.buscarPecas("argola", "DISPONIVEL", null, 30)).hasSize(1);
 		assertThat(vendas.recentes(null, 30)).singleElement()
 				.satisfies(r -> {
 					assertThat(r.clienteNome()).isEqualTo("Ana Teste");
 					assertThat(r.saldo()).isEqualTo(new BigDecimal("0.00"));
 				});
+	}
+
+	@Test
+	void buscaDePecasDeUmaMaleta() {
+		long outubro = jdbc.queryForObject("SELECT id FROM maletas WHERE codigo = 'T-OUT'", Long.class);
+		vendas.confirmar(aVista(ana, brinco + "-01"));
+
+		assertThat(vendas.buscarPecas(null, null, outubro, 200)).extracting(p -> p.etiqueta(), p -> p.situacao())
+				.containsExactly(tuple(brinco + "-01", "VENDIDA"), tuple(colar + "-03", "DISPONIVEL"),
+						tuple(colar + "-04", "DISPONIVEL"));
+		assertThat(vendas.buscarPecas(null, "DISPONIVEL", outubro, 200)).hasSize(2);
+	}
+
+	@Test
+	void receberAbateDaParcelaMaisAntigaEQuitarZeraOSaldo() {
+		// R$ 100,00 em 2x de R$ 50,00 (dias 5/12 e 5/1), sem entrada
+		VendaForm form = new VendaForm(ana, List.of(colar + "-03"), false, FormaVenda.PARCELADO, 2, null, null);
+		long v = vendas.confirmar(form).vendaId();
+		conferirComoNoCommit();
+
+		var parcial = vendas.receber(v, new RecebimentoForm(r("70.00"), FormaPagamento.PIX, null));
+		conferirComoNoCommit();
+		assertThat(parcial.parcelas()).extracting(pa -> pa.numero(), pa -> pa.pago())
+				.containsExactly(tuple(1, r("50.00")), tuple(2, r("20.00")));
+		assertThat(parcial.pagamentos()).extracting(pg -> pg.data()).containsOnly(HOJE);
+
+		var quitada = vendas.receber(v, new RecebimentoForm(r("30.00"), FormaPagamento.DINHEIRO, LocalDate.of(2026, 11, 10)));
+		conferirComoNoCommit();
+		assertThat(quitada.parcelas()).allSatisfy(pa -> assertThat(pa.pago()).isEqualTo(pa.valor()));
+		assertThat(jdbc.queryForObject("SELECT total_em_aberto FROM vw_saldo_clientes WHERE cliente_id = ?", BigDecimal.class, ana))
+				.isEqualByComparingTo("0");
+		assertThat(jdbc.queryForList("SELECT observacao FROM pagamentos ORDER BY id", String.class))
+				.containsExactly("Recebido depois da venda", "Recebido depois da venda", "Quitação da venda");
+	}
+
+	@Test
+	void recebimentoComMensagemClara() {
+		VendaForm form = new VendaForm(ana, List.of(brinco), false, FormaVenda.PARCELADO, 2, null, null);
+		long v = vendas.confirmar(form).vendaId();
+
+		assertThatThrownBy(() -> vendas.receber(v, new RecebimentoForm(r("49.91"), FormaPagamento.PIX, null)))
+				.isInstanceOf(RegraNegocioException.class).hasMessageContaining("R$ 49,90");
+		assertThatThrownBy(() -> vendas.receber(v, new RecebimentoForm(r("10.00"), FormaPagamento.PIX, HOJE.plusDays(1))))
+				.hasMessageContaining("depois de hoje");
+		vendas.receber(v, new RecebimentoForm(r("49.90"), FormaPagamento.PIX, null));
+		assertThatThrownBy(() -> vendas.receber(v, new RecebimentoForm(r("1.00"), FormaPagamento.PIX, null)))
+				.hasMessageContaining("já está quitada");
+
+		long aVista = vendas.confirmar(aVista(ana, colar)).vendaId();
+		vendas.cancelar(aVista, "Teste");
+		assertThatThrownBy(() -> vendas.receber(aVista, new RecebimentoForm(r("1.00"), FormaPagamento.PIX, null)))
+				.hasMessageContaining("cancelada");
+		assertThatThrownBy(() -> vendas.receber(999999, new RecebimentoForm(r("1.00"), FormaPagamento.PIX, null)))
+				.hasMessageContaining("não encontrada");
 	}
 
 }
