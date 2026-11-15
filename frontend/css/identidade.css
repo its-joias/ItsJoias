@@ -16,12 +16,12 @@
     --casario-celeste: #4FA3D9;
 
     /* ---- tema escuro (padrão): azul colonial ---- */
-    /* o cabeçalho fica no azul mais fundo; a página logo abaixo é um azul um pouco mais claro */
+    /* noite: a página num azul bem escuro e o cabeçalho no azul colonial, um pouco mais claro que ela */
     --cabecalho: #0E1F45;
-    --fundo: #13254F;
-    --superficie: #1A2F63;
-    --superficie-hover: #20386F;
-    --superficie-elevada: #1D3369;
+    --fundo: #0A1632;
+    --superficie: #12224A;
+    --superficie-hover: #182A57;
+    --superficie-elevada: #152650;
     --azul-menu: #2456B8;
     --dourado: #F4B41A;
     --dourado-hover: #E0A20C;
@@ -31,8 +31,8 @@
     --texto-forte: #FBF3E4;
     --texto: #DDE4F4;
     --texto-suave: #A9B6D6;
-    --borda: #2E4684;
-    --campo-borda: #6479AE;
+    --borda: #24386B;
+    --campo-borda: #5B70A6;
     --placeholder: #8695BD;
     --coral: #E8735A;
     --verde: #4FB98A;
