@@ -9,17 +9,26 @@ function reais(valor) {
     return formatoReais.format(valor);
 }
 
-// "2026-12-05" -> "05/12/2026" (sem new Date(), que trocaria o dia por causa do fuso)
+// As datas da API vêm como "2026-12-05". Lidas e formatadas em UTC, para o fuso não trocar o dia.
+const formatoData = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
+const formatoDiaMes = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", timeZone: "UTC" });
+
+function dataUTC(iso) {
+    const [ano, mes, dia] = iso.split("-").map(Number);
+    return new Date(Date.UTC(ano, mes - 1, dia));
+}
+
+// "2026-12-05" -> "05/12/2026"
 function data(iso) {
-    const [ano, mes, dia] = iso.split("-");
-    return `${dia}/${mes}/${ano}`;
+    return formatoData.format(dataUTC(iso));
 }
 
 // "2026-12-05" -> "05 dez", para o canhoto do carnê
-const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 function dataCurta(iso) {
-    const [, mes, dia] = iso.split("-");
-    return `${dia} ${MESES[Number(mes) - 1]}`;
+    const partes = formatoDiaMes.formatToParts(dataUTC(iso));
+    const dia = partes.find((p) => p.type === "day").value;
+    const mes = partes.find((p) => p.type === "month").value.replace(".", "");
+    return `${dia} ${mes}`;
 }
 
 function plural(quantidade, singular, pluralTexto) {

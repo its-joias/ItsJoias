@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Entrar | Organização Its Joias</title>
     <meta name="description" content="Acesso ao sistema da Leide Farias: maletas, vendas, clientes e parcelas.">
     <meta name="robots" content="noindex">
@@ -18,9 +18,9 @@
     <main class="login">
         <!-- foto provisória (Wikimedia Commons): trocar por uma peça da Leide fotografada sobre fundo escuro -->
         <figure class="login-foto" aria-hidden="true">
-            <img src="img/colar.jpg" alt="" width="1280" height="960">
+            <img src="img/colar.jpg" alt="" width="1280" height="960" fetchpriority="high">
             <figcaption class="login-marca">
-                <span class="login-marca-nome">Leide Farias</span>
+                <span class="login-marca-nome" translate="no">Leide Farias</span>
                 <span class="login-marca-lema">Joias com alma baiana</span>
             </figcaption>
         </figure>
@@ -29,7 +29,7 @@
             <div class="tema-login" data-botao-tema></div>
 
             <section class="cartao-login" aria-labelledby="titulo-login">
-                <p class="login-sobretitulo"><span class="login-selo" aria-hidden="true"></span>Its Joias</p>
+                <p class="login-sobretitulo"><span class="login-selo" aria-hidden="true"></span><span translate="no">Its Joias</span></p>
                 <h1 id="titulo-login">Entre no sistema</h1>
                 <p class="subtitulo">Maletas, vendas, clientes e parcelas da Leide Farias num lugar só.</p>
 
@@ -38,7 +38,7 @@
                 <form id="form-login" novalidate>
                     <div class="campo">
                         <label for="email">E-mail</label>
-                        <input type="email" id="email" name="email" autocomplete="username" inputmode="email" required autofocus>
+                        <input type="email" id="email" name="email" autocomplete="username" inputmode="email" spellcheck="false" autocapitalize="none" required>
                     </div>
 
                     <div class="campo">

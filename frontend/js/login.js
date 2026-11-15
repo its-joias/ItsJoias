@@ -20,6 +20,9 @@
     const mensagem = document.getElementById("login-mensagem");
     const mostrar = document.getElementById("mostrar-senha");
 
+    // foco no e-mail só com mouse: no celular o teclado abriria sozinho e cobriria a tela
+    if (window.matchMedia && matchMedia("(pointer: fine)").matches) email.focus();
+
     mostrar.addEventListener("click", () => {
         const visivel = senha.type === "text";
         senha.type = visivel ? "password" : "text";
