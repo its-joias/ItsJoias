@@ -100,6 +100,20 @@ table:not([hidden]) tbody tr:nth-child(n+6),
     animation: aparecer 0.35s ease backwards;
 }
 
+/* --- o canhoto amarelo do carnê abre da esquerda para a direita ---------- */
+#painel-conteudo:not([hidden]) .carne-canhoto {
+    animation: canhoto-abrir 0.9s var(--transicao) 0.15s backwards;
+}
+
+#painel-conteudo:not([hidden]) .carne-canhoto > * {
+    animation: aparecer 0.4s ease 0.75s backwards;
+}
+
+@keyframes canhoto-abrir {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
+}
+
 /* --- abrir e fechar ---------------------------------------------------- */
 .venda-cartao-corpo:not([hidden]) {
     animation: abrir-detalhe 0.35s var(--transicao) backwards;
@@ -193,6 +207,8 @@ table:not([hidden]) tbody tr:nth-child(n+6),
     .bloco-lista > li,
     .maletas > li,
     .venda-cartao-corpo:not([hidden]),
+    #painel-conteudo:not([hidden]) .carne-canhoto,
+    #painel-conteudo:not([hidden]) .carne-canhoto > *,
     .barra-parte,
     .vazio,
     .carregando-texto,
@@ -233,5 +249,12 @@ table:not([hidden]) tbody tr:nth-child(n+6),
     .botao-tema-bolinha,
     tbody tr {
         transition-duration: 0.3s !important;
+    }
+}
+
+/* o canhoto do carnê abre no tempo dele (0,9 s), também com "menos animações" */
+@media (prefers-reduced-motion: reduce) {
+    #painel-conteudo:not([hidden]) .carne-canhoto {
+        animation-duration: 0.9s !important;
     }
 }
