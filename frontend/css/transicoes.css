@@ -100,21 +100,27 @@ table:not([hidden]) tbody tr:nth-child(n+6),
     animation: aparecer 0.35s ease backwards;
 }
 
-/* --- a parte azul do carnê sai de trás do canhoto amarelo ---------------- */
-/* o canhoto fica na frente; o corpo azul começa escondido atrás dele e desliza para a direita
-   (no celular, onde o canhoto fica em cima, o corpo desce de trás dele) */
+/* --- o carnê abre em ordem, da esquerda para a direita ------------------- */
+/* 1º o canhoto amarelo se abre da esquerda para a direita; 2º a parte azul sai de trás dele
+   e desliza para a direita (no celular, onde o canhoto fica em cima, ela desce de trás dele) */
 #painel-conteudo:not([hidden]) .carne {
     overflow: clip;
 }
 
 #painel-conteudo:not([hidden]) .carne-canhoto {
     z-index: 2;
+    animation: canhoto-abrir 0.6s var(--transicao) 0.15s backwards;
+}
+
+@keyframes canhoto-abrir {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
 }
 
 #painel-conteudo:not([hidden]) .carne-corpo {
     position: relative;
     z-index: 1;
-    animation: carne-sair-lado 0.85s var(--transicao) 0.2s backwards;
+    animation: carne-sair-lado 0.8s var(--transicao) 0.7s backwards;
 }
 
 @keyframes carne-sair-lado {
@@ -268,9 +274,13 @@ table:not([hidden]) tbody tr:nth-child(n+6),
     }
 }
 
-/* a parte azul do carnê sai no tempo dela (0,85 s), também com "menos animações" */
+/* o carnê abre no tempo dele (0,6 s + 0,8 s), também com "menos animações" */
 @media (prefers-reduced-motion: reduce) {
+    #painel-conteudo:not([hidden]) .carne-canhoto {
+        animation-duration: 0.6s !important;
+    }
+
     #painel-conteudo:not([hidden]) .carne-corpo {
-        animation-duration: 0.85s !important;
+        animation-duration: 0.8s !important;
     }
 }
