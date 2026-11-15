@@ -1,0 +1,277 @@
+/* =====================================================================
+   Identidade Leide Farias: o logo (sol de raios ondulados, o nome em letra
+   cursiva, a onda e "joias com alma baiana") nas cores do Pelourinho.
+   Escuro: o azul colonial das noites no Pelô. Claro: a cal dos casarões.
+   Os destaques são as fachadas: amarelo, azul, rosa, verde e terracota.
+   Carregado por último em todas as telas: só troca cores e a marca.
+   ===================================================================== */
+
+:root {
+    /* as fachadas do casario, para a faixa e os detalhes */
+    --casario-azul: #2456B8;
+    --casario-amarelo: #F2B21B;
+    --casario-rosa: #E0457B;
+    --casario-verde: #2E9E6A;
+    --casario-terracota: #D9692F;
+    --casario-celeste: #4FA3D9;
+    --fonte-cursiva: "Great Vibes", "Brush Script MT", cursive;
+
+    /* ---- tema escuro (padrão): azul colonial ---- */
+    --fundo: #0E1F45;
+    --superficie: #16295A;
+    --superficie-hover: #1D3369;
+    --superficie-elevada: #1A2E61;
+    --azul-menu: #2456B8;
+    --dourado: #F4B41A;
+    --dourado-hover: #E0A20C;
+    --sobre-dourado: #10224A;
+    --destaque: #F7C443;
+    --creme: #FBF3E4;
+    --texto-forte: #FBF3E4;
+    --texto: #DDE4F4;
+    --texto-suave: #A9B6D6;
+    --borda: #2C4380;
+    --campo-borda: #6479AE;
+    --placeholder: #8695BD;
+    --coral: #E8735A;
+    --verde: #4FB98A;
+    --sucesso-texto: #5CC79A;
+    --rosa: #EE6F9C;
+    --vermelho: #F0716B;
+    --perigo-texto: #F48A84;
+    --sobre-vermelho: #10224A;
+    --info: #7FA8F0;
+    --perigo-fundo: rgba(240, 113, 107, 0.14);
+    --perigo-fundo-suave: rgba(240, 113, 107, 0.07);
+    --sucesso-fundo: rgba(79, 185, 138, 0.13);
+    --destaque-fundo: rgba(244, 180, 26, 0.10);
+    --alerta-fundo: rgba(244, 180, 26, 0.14);
+    --info-fundo: rgba(127, 168, 240, 0.14);
+    --fundo-modal: rgba(5, 12, 30, 0.7);
+
+    --barra-vendidas: #F4B41A;
+    --barra-disponiveis: #5E8FE6;
+    --barra-perdidas: #EE6F9C;
+}
+
+/* ---- tema claro: a cal dos casarões, o texto no azul do logo ---- */
+html[data-tema="claro"] {
+    --fundo: #FBF5EA;
+    --superficie: #FFFFFF;
+    --superficie-hover: #F4EBDB;
+    --superficie-elevada: #FFFFFF;
+    --azul-menu: #1D4FA8;
+    --dourado: #F2B21B;
+    --dourado-hover: #DC9C0A;
+    --sobre-dourado: #14254D;
+    --destaque: #8F5E00;
+    --creme: #FBF5EA;
+    --texto-forte: #14254D;
+    --texto: #2B3A5E;
+    --texto-suave: #5A6684;
+    --borda: #E6D9C2;
+    --campo-borda: #A39478;
+    --placeholder: #6E7690;
+    --coral: #C4502F;
+    --verde: #24805A;
+    --sucesso-texto: #1D6B4B;
+    --rosa: #C2386C;
+    --vermelho: #C43D30;
+    --perigo-texto: #A52A1E;
+    --sobre-vermelho: #FFFFFF;
+    --info: #2457A8;
+    --perigo-fundo: rgba(196, 61, 48, 0.10);
+    --perigo-fundo-suave: rgba(196, 61, 48, 0.05);
+    --sucesso-fundo: rgba(36, 128, 90, 0.10);
+    --destaque-fundo: rgba(242, 178, 27, 0.14);
+    --alerta-fundo: rgba(242, 178, 27, 0.18);
+    --info-fundo: rgba(36, 87, 168, 0.09);
+    --fundo-modal: rgba(20, 37, 77, 0.38);
+    --sombra: 0 22px 60px rgba(20, 37, 77, 0.18);
+    --sombra-leve: 0 8px 24px rgba(20, 37, 77, 0.10);
+
+    --barra-vendidas: #E0A20C;
+    --barra-disponiveis: #2456B8;
+    --barra-perdidas: #C2386C;
+}
+
+/* --- a onda do logo no lugar do 〜〜〜 sob os títulos ----------------- */
+h1::after,
+main > h2::after {
+    width: 72px;
+    height: 8px;
+    margin-top: 10px;
+    background: var(--coral);
+    content: "";
+    -webkit-mask: url("../img/onda.svg") center / 100% 100% no-repeat;
+    mask: url("../img/onda.svg") center / 100% 100% no-repeat;
+}
+
+/* --- a faixa do casario: as fachadas do Pelourinho lado a lado -------- */
+header::before,
+.login-lado::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg,
+        var(--casario-azul) 0 16.6%, var(--casario-amarelo) 0 33.3%, var(--casario-rosa) 0 50%,
+        var(--casario-verde) 0 66.6%, var(--casario-terracota) 0 83.3%, var(--casario-celeste) 0);
+    background-size: 240px 100%;
+    content: "";
+}
+
+header {
+    position: sticky;
+}
+
+@media (max-width: 768px) {
+    header {
+        position: relative;
+    }
+}
+
+/* --- a marca no cabeçalho: o sol, o nome cursivo e o lema -------------- */
+.marca-selo,
+.login-selo,
+.login-marca-sol {
+    display: inline-block;
+    border: 0;
+    border-radius: 0;
+    background: var(--dourado);
+    box-shadow: none;
+    -webkit-mask: url("../img/sol.svg") center / contain no-repeat;
+    mask: url("../img/sol.svg") center / contain no-repeat;
+}
+
+header h1.marca {
+    column-gap: 10px;
+    row-gap: 0;
+}
+
+.marca-selo {
+    width: 46px;
+    height: 46px;
+}
+
+header .marca-nome {
+    font-family: var(--fonte-cursiva);
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: 0;
+}
+
+header .marca-lema {
+    margin-top: 2px;
+    color: var(--texto-suave);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+}
+
+nav a::after {
+    background: var(--casario-rosa);
+}
+
+nav a[aria-current="page"]::after {
+    background: var(--dourado);
+}
+
+/* --- login: a marca sobre a foto e o sol no lugar do selo ------------- */
+.login-lado::before {
+    background-size: 160px 100%;
+}
+
+.login-selo {
+    width: 26px;
+    height: 26px;
+}
+
+.login-marca {
+    align-items: flex-start;
+}
+
+.login-marca-sol {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 4px;
+    background: #F4B41A;
+}
+
+.login-marca-nome {
+    font-family: var(--fonte-cursiva);
+    font-size: clamp(54px, 5.4vw, 80px);
+    line-height: 0.9;
+    letter-spacing: 0;
+}
+
+.login-marca-onda {
+    width: 180px;
+    height: 10px;
+    margin: 6px 0 4px;
+    background: #E8735A;
+    -webkit-mask: url("../img/onda.svg") center / 100% 100% no-repeat;
+    mask: url("../img/onda.svg") center / 100% 100% no-repeat;
+}
+
+.login-marca-lema {
+    color: #FBF3E4;
+    letter-spacing: 0.26em;
+}
+
+/* --- painel: o medalhão e o fio nas cores do casario ------------------ */
+.painel-novo {
+    --ouro-claro: #FFD66B;
+}
+
+.medalhao {
+    background: linear-gradient(160deg, #FFD66B, var(--dourado) 45%, #B37A06);
+}
+
+.fio-parte--receber {
+    background: var(--barra-disponiveis);
+}
+
+.fio-parte--atrasado {
+    background: var(--rosa);
+}
+
+.fio-conta--receber { border-left-color: var(--barra-disponiveis); }
+.fio-conta--atrasado { border-left-color: var(--rosa); }
+
+.abertura::after,
+.painel-novo .painel-divisa::after {
+    background: var(--casario-terracota);
+    opacity: 0.55;
+    -webkit-mask: url("../img/onda.svg") 0 0 / 48px 8px repeat-x;
+    mask: url("../img/onda.svg") 0 0 / 48px 8px repeat-x;
+}
+
+@media (max-width: 768px) {
+    .marca-selo {
+        width: 38px;
+        height: 38px;
+    }
+
+    header .marca-nome {
+        font-size: 30px;
+    }
+
+    header .marca-lema {
+        font-size: 9px;
+    }
+
+    .login-marca-sol {
+        width: 44px;
+        height: 44px;
+    }
+
+    .login-marca-nome {
+        font-size: 46px;
+    }
+
+    .login-marca-onda {
+        width: 130px;
+    }
+}

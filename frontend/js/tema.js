@@ -41,7 +41,7 @@
     function aplicar(tema) {
         document.documentElement.dataset.tema = tema;
         const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.content = tema === "claro" ? "#FBF7EE" : "#0E1728";
+        if (meta) meta.content = tema === "claro" ? "#FBF5EA" : "#0E1F45";
         document.dispatchEvent(new CustomEvent("itsjoias:tema", { detail: tema }));
     }
 
