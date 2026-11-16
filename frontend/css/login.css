@@ -213,13 +213,6 @@
     margin-bottom: 20px;
 }
 
-.login-credito {
-    margin: 40px 0 0;
-    color: var(--texto-suave);
-    font-size: 11px;
-    opacity: 0.8;
-}
-
 /* --- entrada: uma vez, ao abrir ------------------------------------- */
 .cartao-login > * {
     animation: subir 0.6s var(--curva) both;
@@ -291,10 +284,6 @@ html[data-tema="claro"] .corpo-login #botao-entrar:hover {
     .login-marca {
         left: max(24px, env(safe-area-inset-left));
         right: max(24px, env(safe-area-inset-right));
-    }
-
-    .login-credito {
-        margin-top: 32px;
     }
 }
 

@@ -271,3 +271,52 @@ nav a[aria-current="page"]::after {
 header {
     background: var(--cabecalho);
 }
+
+/* --- login: a marca sobre o rascunho (papel claro, então o nome vai em tinta escura) --- */
+.login-foto {
+    background: #F3EADA;
+}
+
+.login-foto img {
+    object-position: 50% 0%;
+}
+
+/* um véu de papel embaixo, para o nome ficar legível sobre o desenho */
+.login-foto::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 42%;
+    background: linear-gradient(to bottom, rgba(243, 234, 218, 0), rgba(243, 234, 218, 0.92) 55%, #F3EADA);
+    content: "";
+    pointer-events: none;
+}
+
+.login-marca {
+    z-index: 1;
+}
+
+.login-marca-nome {
+    color: #14254D;
+}
+
+.login-marca-lema {
+    color: #A9481F;
+}
+
+.login-marca-sol {
+    background: #C8901A;
+}
+
+@media (max-width: 900px) {
+    .login-foto img {
+        object-position: 50% 4%;
+    }
+
+    /* na faixa do celular o nome ocupa metade da altura: o véu sobe e fica mais firme */
+    .login-foto::after {
+        height: 72%;
+        background: linear-gradient(to bottom, rgba(243, 234, 218, 0), rgba(243, 234, 218, 0.96) 42%, #F3EADA);
+    }
+}
