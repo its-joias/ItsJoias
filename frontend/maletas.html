@@ -167,23 +167,26 @@
             Clique no nome de uma maleta para ver as peças dela e vender.</p>
 
         <p id="estado" class="carregando-texto">Carregando maletas…</p>
-        <table id="tabela" hidden>
-            <thead>
-                <tr>
-                    <th>Maleta</th>
-                    <th>Fornecedor</th>
-                    <th>Entrada</th>
-                    <th class="numero">Recebidas</th>
-                    <th class="numero">Vendidas</th>
-                    <th class="numero">Disponíveis</th>
-                    <th class="numero">Perdidas / devolvidas</th>
-                    <th class="numero">Custo</th>
-                    <th class="numero">Vendido</th>
-                    <th class="numero" data-somente="PROPRIETARIA" aria-label="Ações"></th>
-                </tr>
-            </thead>
-            <tbody id="lista"></tbody>
-        </table>
+        <div class="tabela-rolavel">
+            <table id="tabela" hidden>
+                <thead>
+                    <tr>
+                        <th>Maleta</th>
+                        <th>Fornecedor</th>
+                        <th>Entrada</th>
+                        <th>Acerto</th>
+                        <th class="numero">Recebidas</th>
+                        <th class="numero">Vendidas</th>
+                        <th class="numero">Disponíveis</th>
+                        <th class="numero">Perdidas / devolvidas</th>
+                        <th class="numero">Custo</th>
+                        <th class="numero">Vendido</th>
+                        <th class="numero" data-somente="PROPRIETARIA" aria-label="Ações"></th>
+                    </tr>
+                </thead>
+                <tbody id="lista"></tbody>
+            </table>
+        </div>
 
         <!-- ===================== PEÇAS DE UMA MALETA ===================== -->
         <section id="maleta-aberta" class="bloco maleta-aberta" aria-labelledby="maleta-aberta-titulo" hidden>

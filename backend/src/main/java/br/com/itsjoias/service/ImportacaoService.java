@@ -484,8 +484,7 @@ public class ImportacaoService {
 		LocalDate entrada = doc.dataCriacao() != null ? doc.dataCriacao() : calendario.hoje();
 		String codigo = doc.pedido() != null ? cortar("PED" + doc.pedido(), 20)
 				: "IMP" + calendario.hoje().format(DateTimeFormatter.BASIC_ISO_DATE);
-		String nome = doc.dataAcerto() != null ? "Maleta acerto " + doc.dataAcerto().format(BR)
-				: "Maleta de " + entrada.format(BR);
+		String nome = "Maleta importada em " + calendario.hoje().format(BR);
 		return new DadosMaleta(fornecedorId, novoNome, fornecedorId == null ? doc.cnpj() : null, codigo, nome, entrada,
 				doc.dataAcerto());
 	}

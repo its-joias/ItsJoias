@@ -169,7 +169,7 @@ class ImportacaoServiceTest {
 		assertThat(p.documento().dataAcerto()).isEqualTo(LocalDate.of(2026, 12, 1));
 		assertThat(p.documento().valorTotalDocumento()).isEqualByComparingTo("458.90");
 		assertThat(p.maleta().codigo()).isEqualTo("PED99001");
-		assertThat(p.maleta().nome()).isEqualTo("Maleta acerto 01/12/2026");
+		assertThat(p.maleta().nome()).isEqualTo("Maleta importada em 13/11/2026");
 		assertThat(p.maleta().fornecedorNovoNome()).isEqualTo("Fornecedora Teste Semijoias Ltda.");
 
 		assertThat(p.linhas()).extracting(c -> c.linha().codigo(), c -> c.linha().descricao(), c -> c.linha().quantidade(),

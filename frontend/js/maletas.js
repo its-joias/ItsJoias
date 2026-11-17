@@ -6,9 +6,33 @@
     const estado = document.getElementById("estado");
     const tabela = document.getElementById("tabela");
 
+    /** "Maleta acerto 07/12/2026" -> "2026-12-07" (servidor antigo, que ainda não manda dataAcerto). */
+    function acertoPeloNome(nome) {
+        const d = /acerto\D{0,3}(\d{2})\/(\d{2})\/(\d{4})/i.exec(nome || "");
+        return d ? `${d[3]}-${d[2]}-${d[1]}` : null;
+    }
+
+    /** Dia da importação de cada maleta pelo histórico (servidor antigo, que ainda não manda importadaEm). */
+    async function importacoesPorMaleta() {
+        const dias = new Map();
+        try {
+            const lista = await api("/api/importacoes?limite=100");
+            lista.forEach((h) => {
+                if (!dias.has(h.maletaId)) {
+                    dias.set(h.maletaId, new Date(h.data).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" }));
+                }
+            });
+        } catch (erro) {
+            // sem o histórico, a linha só não mostra o dia da importação
+        }
+        return dias;
+    }
+
     async function carregar() {
         try {
             const maletas = await api("/api/maletas");
+            const precisaHistorico = maletas.some((m) => m.importadaEm === undefined);
+            const historico = precisaHistorico ? await importacoesPorMaleta() : new Map();
             document.getElementById("lista").replaceChildren(...maletas.map((m) => {
                 const tr = criar("tr");
                 const nome = criar("td");
@@ -16,8 +40,15 @@
                 abrir.type = "button";
                 abrir.title = "Ver as peças desta maleta";
                 abrir.addEventListener("click", () => abrirMaleta(m));
-                nome.append(abrir, criar("div", "texto-suave", m.codigo));
+                const importada = m.importadaEm ? formato.data(m.importadaEm) : historico.get(m.maletaId);
+                nome.append(abrir);
+                if (importada) {
+                    nome.append(criar("div", "maleta-importada", "Importada em " + importada));
+                }
+                nome.append(criar("div", "texto-suave", m.codigo));
+                const acerto = m.dataAcerto !== undefined ? m.dataAcerto : acertoPeloNome(m.nome);
                 tr.append(nome, criar("td", null, m.fornecedor), criar("td", null, formato.data(m.dataEntrada)),
+                    criar("td", null, acerto ? formato.data(acerto) : "—"),
                     criar("td", "numero", String(m.pecasRecebidas)), criar("td", "numero", String(m.pecasVendidas)),
                     criar("td", "numero", String(m.pecasDisponiveis)), criar("td", "numero", String(m.pecasPerdidasOuDevolvidas)),
                     criar("td", "numero", formato.reais(m.custoTotal)), criar("td", "numero", formato.reais(m.totalVendido)),

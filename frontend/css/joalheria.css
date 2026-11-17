@@ -166,3 +166,26 @@ html:not([data-tema="claro"]) th {
 .grafico-linha-detalhe:not([hidden]) {
     animation: aparecer 0.25s ease backwards;
 }
+
+/* --- maletas: o dia em que a maleta entrou no sistema, logo abaixo do nome --- */
+.maleta-importada {
+    margin-top: 3px;
+    color: var(--destaque);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* a tabela das maletas tem muitas colunas: menos folga entre elas para caber na tela */
+#tabela :is(th, td) {
+    padding-right: 12px;
+    padding-left: 12px;
+}
+
+#tabela :is(th, td):first-child {
+    padding-left: 20px;
+}
+
+#tabela th {
+    white-space: normal;
+}

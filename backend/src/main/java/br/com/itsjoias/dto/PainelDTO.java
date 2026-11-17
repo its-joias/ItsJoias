@@ -81,6 +81,10 @@ public record PainelDTO(
 			String nome,
 			String fornecedor,
 			LocalDate dataEntrada,
+			/** Data do acerto com o fornecedor (pode faltar). */
+			LocalDate dataAcerto,
+			/** Dia em que a maleta entrou no sistema (importação ou cadastro). */
+			LocalDate importadaEm,
 			int pecasRecebidas,
 			int pecasVendidas,
 			int pecasDisponiveis,

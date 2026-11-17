@@ -96,7 +96,8 @@ public class PainelRepository {
 
 	private static final String SQL_MALETAS_ATIVAS = """
 			WITH ativas AS (
-			    SELECT m.id, m.codigo, m.nome, m.data_entrada, f.nome AS fornecedor
+			    SELECT m.id, m.codigo, m.nome, m.data_entrada, m.data_acerto,
+			           CAST(m.criado_em AT TIME ZONE 'America/Sao_Paulo' AS date) AS importada_em, f.nome AS fornecedor
 			    FROM maletas m
 			    JOIN fornecedores f ON f.id = m.fornecedor_id
 			    WHERE m.status = 'ATIVA'
@@ -123,7 +124,7 @@ public class PainelRepository {
 			    WHERE mi.maleta_id IN (SELECT id FROM ativas)
 			    GROUP BY mi.maleta_id
 			)
-			SELECT  a.id, a.codigo, a.nome, a.fornecedor, a.data_entrada,
+			SELECT  a.id, a.codigo, a.nome, a.fornecedor, a.data_entrada, a.data_acerto, a.importada_em,
 			        COALESCE(p.recebidas, 0)    AS recebidas,
 			        COALESCE(p.vendidas, 0)     AS vendidas,
 			        COALESCE(p.disponiveis, 0)  AS disponiveis,
@@ -198,6 +199,8 @@ public class PainelRepository {
 							rs.getString("nome"),
 							rs.getString("fornecedor"),
 							rs.getObject("data_entrada", LocalDate.class),
+							rs.getObject("data_acerto", LocalDate.class),
+							rs.getObject("importada_em", LocalDate.class),
 							rs.getInt("recebidas"),
 							rs.getInt("vendidas"),
 							rs.getInt("disponiveis"),
