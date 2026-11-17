@@ -1,0 +1,846 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Parisienne&display=swap");
+
+/* =====================================================================
+   Ateliê: o front-end novo do ITS Joias (carregado por último em todas as telas).
+   - menu lateral em ardósia, com ícones; a tela aberta é uma pílula salmão;
+   - papel pêssego com rascunhos de ourives (anel, pedra, corrente, brincos, hibisco e búzio);
+   - salmão para ação e destaque, verde para "deu certo"; sem amarelo;
+   - títulos em Cormorant Garamond, texto em Inter, a assinatura "Leide Farias" em Parisienne.
+   Só muda a aparência: as classes e os ids que os scripts usam continuam os mesmos.
+   ===================================================================== */
+
+:root {
+    --fonte-titulo: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --fonte-texto: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    --fonte-assinatura: "Parisienne", "Brush Script MT", cursive;
+
+    /* ---- claro (padrão do modelo): papel pêssego ---- */
+    --fundo: #F8ECDF;
+    --cabecalho: #2F3B42;
+    --lateral: #2F3B42;
+    --lateral-texto: #E7E0D7;
+    --lateral-suave: #A7B1B5;
+    --lateral-hover: rgba(255, 255, 255, 0.07);
+    --superficie: #FFFAF5;
+    --superficie-sutil: #FBF2E8;
+    --superficie-hover: #F6E7D9;
+    --superficie-elevada: #FFFFFF;
+    --borda: #EBD8C6;
+    --campo-borda: #C4A48E;
+    --placeholder: #9A8E86;
+    --texto-forte: #2F3B42;
+    --texto: #3F4A50;
+    --texto-suave: #6E6862;
+    --dourado: #D2654A;
+    --dourado-hover: #BF5539;
+    --sobre-dourado: #FFFFFF;
+    --destaque: #B2492E;
+    --creme: #FFFAF5;
+    --coral: #E07A5F;
+    --salmao-claro: #F4C9B6;
+    --verde: #6E9F86;
+    --sucesso-texto: #3C7259;
+    --rosa: #8F5D5D;
+    --vermelho: #C24A35;
+    --perigo-texto: #A53A25;
+    --sobre-vermelho: #FFFFFF;
+    --info: #4F6A73;
+    --azul-menu: #2F3B42;
+    --perigo-fundo: rgba(194, 74, 53, 0.10);
+    --perigo-fundo-suave: rgba(194, 74, 53, 0.05);
+    --sucesso-fundo: #E2EFE6;
+    --destaque-fundo: rgba(224, 122, 95, 0.12);
+    --alerta-fundo: rgba(224, 122, 95, 0.16);
+    --info-fundo: rgba(79, 106, 115, 0.10);
+    --fundo-modal: rgba(47, 59, 66, 0.42);
+    --sombra: 0 22px 60px rgba(90, 55, 35, 0.16);
+    --sombra-leve: 0 8px 24px rgba(90, 55, 35, 0.09);
+    --sombra-cartao: 0 1px 2px rgba(90, 55, 35, 0.05), 0 6px 18px rgba(90, 55, 35, 0.05);
+    --kpi-salmao: #F7D9CB;
+    --kpi-pessego: #FBE7D6;
+    --kpi-verde: #E2EFE6;
+    --kpi-areia: #F3E6D8;
+
+    --barra-vendidas: #E07A5F;
+    --barra-disponiveis: #81B29A;
+    --barra-perdidas: #2F3B42;
+    --fatia-outras: #C9B8A8;
+
+    --raio: 10px;
+    --rascunho-opacidade: 0.8;
+}
+
+/* ---- escuro: a noite em ardósia, os rascunhos em salmão apagado ---- */
+html[data-tema="escuro"],
+html:not([data-tema="claro"]) {
+    --fundo: #263037;
+    --cabecalho: #1D262B;
+    --lateral: #1D262B;
+    --lateral-texto: #E7E0D7;
+    --lateral-suave: #97A2A7;
+    --lateral-hover: rgba(255, 255, 255, 0.06);
+    --superficie: #2E393F;
+    --superficie-sutil: #2A343A;
+    --superficie-hover: #36434A;
+    --superficie-elevada: #34414A;
+    --borda: #3F4D55;
+    --campo-borda: #7E8C92;
+    --placeholder: #8F9A9E;
+    --texto-forte: #F6EEE5;
+    --texto: #DED6CC;
+    --texto-suave: #A9B1B4;
+    --dourado: #E07A5F;
+    --dourado-hover: #E88E75;
+    --sobre-dourado: #1D262B;
+    --destaque: #F0A68F;
+    --creme: #F6EEE5;
+    --coral: #E07A5F;
+    --verde: #81B29A;
+    --sucesso-texto: #9CCBB3;
+    --rosa: #E6A7A0;
+    --vermelho: #EA846B;
+    --perigo-texto: #F2A08B;
+    --sobre-vermelho: #1D262B;
+    --info: #A9C3CB;
+    --azul-menu: #F6EEE5;
+    --perigo-fundo: rgba(234, 132, 107, 0.15);
+    --perigo-fundo-suave: rgba(234, 132, 107, 0.07);
+    --sucesso-fundo: rgba(129, 178, 154, 0.16);
+    --destaque-fundo: rgba(224, 122, 95, 0.13);
+    --alerta-fundo: rgba(224, 122, 95, 0.18);
+    --info-fundo: rgba(169, 195, 203, 0.12);
+    --fundo-modal: rgba(10, 14, 17, 0.66);
+    --sombra: 0 22px 60px rgba(0, 0, 0, 0.45);
+    --sombra-leve: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --sombra-cartao: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --kpi-salmao: rgba(224, 122, 95, 0.20);
+    --kpi-pessego: rgba(244, 201, 182, 0.12);
+    --kpi-verde: rgba(129, 178, 154, 0.16);
+    --kpi-areia: rgba(255, 255, 255, 0.05);
+    --barra-vendidas: #E07A5F;
+    --barra-disponiveis: #81B29A;
+    --barra-perdidas: #C9B8A8;
+    --fatia-outras: #6F7C82;
+    --rascunho-opacidade: 0.35;
+}
+
+html[data-tema="claro"] {
+    --fundo: #F8ECDF;
+    --cabecalho: #2F3B42;
+    --lateral: #2F3B42;
+    --lateral-texto: #E7E0D7;
+    --lateral-suave: #A7B1B5;
+    --lateral-hover: rgba(255, 255, 255, 0.07);
+    --superficie: #FFFAF5;
+    --superficie-sutil: #FBF2E8;
+    --superficie-hover: #F6E7D9;
+    --superficie-elevada: #FFFFFF;
+    --borda: #EBD8C6;
+    --campo-borda: #C4A48E;
+    --placeholder: #9A8E86;
+    --texto-forte: #2F3B42;
+    --texto: #3F4A50;
+    --texto-suave: #6E6862;
+    --dourado: #D2654A;
+    --dourado-hover: #BF5539;
+    --sobre-dourado: #FFFFFF;
+    --destaque: #B2492E;
+    --creme: #FFFAF5;
+    --coral: #E07A5F;
+    --verde: #6E9F86;
+    --sucesso-texto: #3C7259;
+    --rosa: #8F5D5D;
+    --vermelho: #C24A35;
+    --perigo-texto: #A53A25;
+    --sobre-vermelho: #FFFFFF;
+    --info: #4F6A73;
+    --azul-menu: #2F3B42;
+    --perigo-fundo: rgba(194, 74, 53, 0.10);
+    --perigo-fundo-suave: rgba(194, 74, 53, 0.05);
+    --sucesso-fundo: #E2EFE6;
+    --destaque-fundo: rgba(224, 122, 95, 0.12);
+    --alerta-fundo: rgba(224, 122, 95, 0.16);
+    --info-fundo: rgba(79, 106, 115, 0.10);
+    --fundo-modal: rgba(47, 59, 66, 0.42);
+    --sombra: 0 22px 60px rgba(90, 55, 35, 0.16);
+    --sombra-leve: 0 8px 24px rgba(90, 55, 35, 0.09);
+    --sombra-cartao: 0 1px 2px rgba(90, 55, 35, 0.05), 0 6px 18px rgba(90, 55, 35, 0.05);
+    --kpi-salmao: #F7D9CB;
+    --kpi-pessego: #FBE7D6;
+    --kpi-verde: #E2EFE6;
+    --kpi-areia: #F3E6D8;
+    --barra-vendidas: #E07A5F;
+    --barra-disponiveis: #81B29A;
+    --barra-perdidas: #2F3B42;
+    --fatia-outras: #C9B8A8;
+    --rascunho-opacidade: 0.8;
+}
+
+/* --- a página: papel com os rascunhos de ourives ------------------------ */
+html:not(#_) body {
+    font-family: var(--fonte-texto);
+    font-size: 14px;
+    background-color: var(--fundo);
+}
+
+body:not(.corpo-login) {
+    position: relative;
+}
+
+/* os rascunhos ficam atrás de tudo, no alto e no pé da área de conteúdo */
+body:not(.corpo-login)::before,
+body:not(.corpo-login)::after {
+    position: fixed;
+    z-index: 0;
+    content: "";
+    opacity: var(--rascunho-opacidade);
+    pointer-events: none;
+}
+
+body:not(.corpo-login)::before {
+    top: 0;
+    right: 12px;
+    width: min(560px, 48vw);
+    aspect-ratio: 560 / 230;
+    background: url("../img/rascunho-joias.svg") top right / contain no-repeat;
+}
+
+body:not(.corpo-login)::after {
+    right: -12px;
+    bottom: -8px;
+    width: min(300px, 30vw);
+    aspect-ratio: 320 / 300;
+    background: url("../img/rascunho-folhas.svg") bottom right / contain no-repeat;
+}
+
+/* o enfeite em gravura de cada tela sai: quem enfeita agora são os rascunhos */
+html:not(#_) main::before {
+    display: none;
+}
+
+/* --- títulos ------------------------------------------------------------- */
+html:not(#_) :is(h1, h2, h3, .fio-total, .carne-valor, .carne-data) {
+    font-family: var(--fonte-titulo);
+    font-weight: 600;
+    font-variant-numeric: lining-nums;
+    letter-spacing: 0;
+}
+
+html:not(#_) :is(h1, main > h2)::after {
+    display: none;
+}
+
+html:not(#_) main > h2,
+html:not(#_) .cabecalho-pagina h2,
+html:not(#_) .abertura h2 {
+    margin: 0 0 6px;
+    color: var(--texto-forte);
+    font-size: clamp(30px, 3vw, 40px);
+    line-height: 1.1;
+}
+
+html:not(#_) h3 {
+    font-size: 21px;
+}
+
+html:not(#_) p {
+    font-size: 14px;
+}
+
+html:not(#_) .subtitulo-pagina {
+    margin: 0 0 24px;
+    color: var(--texto-suave);
+}
+
+/* =====================================================================
+   O menu lateral
+   ===================================================================== */
+html:not(#_) .pular-conteudo {
+    position: absolute;
+}
+
+@media (min-width: 900px) {
+    html:not(#_) body:not(.corpo-login) {
+        display: grid;
+        grid-template-columns: 232px minmax(0, 1fr);
+        grid-template-rows: 1fr auto;
+        min-height: 100vh;
+        padding: 0;
+    }
+
+    html:not(#_) body > header {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        grid-row: 1 / 3;
+        grid-column: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+        height: 100vh;
+        margin: 0;
+        padding: 28px 16px 20px;
+        overflow-y: auto;
+        border: 0;
+        background: var(--lateral);
+        color: var(--lateral-texto);
+    }
+
+    html:not(#_) body > header .topo {
+        display: contents;
+    }
+
+    html:not(#_) body > main {
+        grid-column: 2;
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 1320px;
+        margin: 0;
+        padding: 34px clamp(20px, 3.2vw, 44px) 40px;
+    }
+
+    html:not(#_) body > footer {
+        grid-column: 2;
+        position: relative;
+        z-index: 1;
+    }
+
+    html:not(#_) body > header nav ul {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 3px;
+    }
+
+    html:not(#_) body > header nav a {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    html:not(#_) .usuario-topo {
+        order: 3;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-top: auto;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    html:not(#_) .usuario-topo-nome {
+        flex-basis: 100%;
+        order: -1;
+        align-items: flex-start;
+    }
+}
+
+/* a marca: "ITS Joias" e a assinatura da Leide */
+html:not(#_) header h1.marca {
+    display: grid;
+    grid-template-columns: auto;
+    gap: 0;
+    margin: 0;
+    padding: 0 8px;
+}
+
+html:not(#_) header .marca-selo {
+    display: none;
+}
+
+html:not(#_) header .marca-nome {
+    color: var(--lateral-texto);
+    font-family: var(--fonte-titulo);
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+html:not(#_) header .marca-lema {
+    margin-top: 6px;
+    color: var(--coral);
+    font-family: var(--fonte-assinatura);
+    font-size: 21px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1;
+    text-transform: none;
+}
+
+/* os itens do menu, com ícone em traço */
+html:not(#_) body > header nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 42px;
+    margin: 0;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    box-shadow: none;
+    color: var(--lateral-texto);
+    font-family: var(--fonte-texto);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+html:not(#_) body > header nav a::after {
+    display: none;
+}
+
+html:not(#_) body > header nav a::before {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    background: currentColor;
+    content: "";
+    opacity: 0.85;
+    -webkit-mask: var(--icone) center / contain no-repeat;
+    mask: var(--icone) center / contain no-repeat;
+}
+
+html:not(#_) body > header nav a:hover,
+html:not(#_) body > header nav a:focus-visible {
+    background: var(--lateral-hover);
+    color: #FFFFFF;
+}
+
+html:not(#_) body > header nav a[aria-current="page"] {
+    background: #E07A5F;
+    box-shadow: 0 6px 16px rgba(224, 122, 95, 0.28);
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+html:not(#_) body > header nav a[aria-current="page"]::before {
+    opacity: 1;
+}
+
+nav a[href="index.html"] { --icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7' height='9' rx='1.5'/%3E%3Crect x='14' y='3' width='7' height='5' rx='1.5'/%3E%3Crect x='14' y='12' width='7' height='9' rx='1.5'/%3E%3Crect x='3' y='16' width='7' height='5' rx='1.5'/%3E%3C/svg%3E"); }
+nav a[href="vendas.html"] { --icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8h14l-1.2 12H6.2z'/%3E%3Cpath d='M9 8V6a3 3 0 0 1 6 0v2'/%3E%3Cpath d='M12 12v5M9.5 14.5h5'/%3E%3C/svg%3E"); }
+nav a[href="historico-vendas.html"] { --icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h12v18l-3-2-3 2-3-2-3 2z'/%3E%3Cpath d='M9 8h6M9 12h6M9 16h3'/%3E%3C/svg%3E"); }
+nav a[href="clientes.html"] { --icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3.5'/%3E%3Cpath d='M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5'/%3E%3Cpath d='M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.8.8 3 2.5 3.5 5.2'/%3E%3C/svg%3E"); }
+nav a[href="maletas.html"] { --icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='18' height='13' rx='2'/%3E%3Cpath d='M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2M3 13h18M11 13v2h2v-2'/%3E%3C/svg%3E"); }
+nav a[href="produtos.html"] { --icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 4h10l4 5-9 11L3 9z'/%3E%3Cpath d='M3 9h18M9.5 4 8 9l4 11 4-11-1.5-5'/%3E%3C/svg%3E"); }
+
+/* quem está usando e os botões, no pé do menu */
+html:not(#_) .usuario-topo-nome strong {
+    color: var(--lateral-texto);
+}
+
+html:not(#_) .usuario-topo-nome span {
+    color: var(--lateral-suave);
+}
+
+html:not(#_) body > header .botao-secundario {
+    border-color: rgba(255, 255, 255, 0.22);
+    background: transparent;
+    color: var(--lateral-texto);
+}
+
+html:not(#_) body > header .botao-secundario:hover {
+    background: var(--lateral-hover);
+    color: #FFFFFF;
+}
+
+/* --- celular e tablet: o menu vira uma faixa no alto, que rola para o lado --- */
+@media (max-width: 899px) {
+    html:not(#_) body:not(.corpo-login) {
+        padding: 0 14px 24px;
+    }
+
+    html:not(#_) body > header {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        margin: 0 -14px 18px;
+        padding: 14px 14px 10px;
+        border: 0;
+        background: var(--lateral);
+    }
+
+    html:not(#_) body > header .topo {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    html:not(#_) header .marca-nome {
+        font-size: 24px;
+    }
+
+    html:not(#_) header .marca-lema {
+        margin-top: 2px;
+        font-size: 17px;
+    }
+
+    html:not(#_) .usuario-topo-nome {
+        display: none;
+    }
+
+    html:not(#_) body > header nav ul {
+        flex-wrap: nowrap;
+        gap: 4px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    html:not(#_) body > header nav a {
+        min-height: 40px;
+        padding: 8px 12px;
+        white-space: nowrap;
+    }
+
+    html:not(#_) body > main {
+        position: relative;
+        z-index: 1;
+        padding: 8px 0 32px;
+    }
+
+    body:not(.corpo-login)::before {
+        top: 110px;
+        width: 70vw;
+        opacity: calc(var(--rascunho-opacidade) * 0.5);
+    }
+}
+
+/* =====================================================================
+   Cartões, tabelas, campos e botões
+   ===================================================================== */
+html:not(#_) :is(.bloco, .cartao, .cartao-form, .venda-passo, .venda-cartao, .gaveta-venda, .fio, .carne,
+    .resumo-venda, .painel-aviso, .topico-conteudo) {
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    background: var(--superficie);
+    box-shadow: var(--sombra-cartao);
+}
+
+html:not(#_) .tabela-rolavel,
+html:not(#_) main table {
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    background: var(--superficie);
+    box-shadow: var(--sombra-cartao);
+}
+
+html:not(#_) .tabela-rolavel table {
+    border: 0;
+    box-shadow: none;
+}
+
+html:not(#_) th {
+    background: var(--superficie-sutil);
+    color: var(--texto-suave);
+    font-family: var(--fonte-texto);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: none;
+}
+
+html:not(#_) td {
+    color: var(--texto);
+    font-size: 13.5px;
+    font-variant-numeric: tabular-nums;
+}
+
+html:not(#_) tbody tr:hover td {
+    background: var(--superficie-hover);
+}
+
+html:not(#_) :is(input, select, textarea) {
+    border-color: var(--campo-borda);
+    border-radius: 8px;
+    background: var(--superficie-elevada);
+    color: var(--texto-forte);
+    font-family: var(--fonte-texto);
+    font-size: 14px;
+}
+
+html:not(#_) :is(input, select, textarea):focus {
+    border-color: var(--coral);
+    box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.2);
+    outline: none;
+}
+
+html:not(#_) label {
+    font-family: var(--fonte-texto);
+}
+
+html:not(#_) button {
+    border-radius: 8px;
+    font-family: var(--fonte-texto);
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+html:not(#_) button.botao-pequeno {
+    font-size: 12px;
+}
+
+html:not(#_) .botao-secundario {
+    border-color: var(--campo-borda);
+    background: var(--superficie-elevada);
+    color: var(--texto-forte);
+}
+
+html:not(#_) .botao-perigo {
+    border-color: var(--vermelho);
+    background: transparent;
+    color: var(--perigo-texto);
+}
+
+html:not(#_) :is(button, a, input, select, textarea):focus-visible {
+    outline: 2px solid var(--coral);
+    outline-offset: 2px;
+}
+
+/* situação em pílula: finalizada / paga / ativa em verde, pendente e atrasada em salmão */
+html:not(#_) :is(.etiqueta, .chip) {
+    border-radius: 999px;
+    font-family: var(--fonte-texto);
+    font-weight: 600;
+}
+
+/* o rodapé */
+html:not(#_) body > footer {
+    border-top: 1px solid var(--borda);
+    background: transparent;
+    color: var(--texto-suave);
+}
+
+/* a tabela das maletas tem muitas colunas: mais justa ao lado do menu */
+html:not(#_) #tabela :is(th, td) {
+    padding-right: 8px;
+    padding-left: 8px;
+}
+
+html:not(#_) #tabela td {
+    font-size: 13px;
+}
+
+/* =====================================================================
+   Painel
+   ===================================================================== */
+html:not(#_) .abertura {
+    padding: 0 0 8px;
+    border: 0;
+    background: none;
+}
+
+html:not(#_) .abertura::after,
+html:not(#_) .painel-novo .painel-divisa::after {
+    display: none;
+}
+
+html:not(#_) .abertura-saudacao {
+    color: var(--destaque);
+    font-family: var(--fonte-texto);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+}
+
+html:not(#_) .painel-novo .painel-divisa {
+    margin-top: 12px;
+    font-size: 26px;
+}
+
+/* o "fio": total vendido e as três contas em cartões coloridos, como os indicadores do modelo */
+html:not(#_) .fio-contas {
+    gap: 10px;
+}
+
+html:not(#_) .fio-conta {
+    padding: 12px 14px;
+    border: 0;
+    border-radius: 8px;
+}
+
+html:not(#_) .fio-conta--recebido { background: var(--kpi-verde); }
+html:not(#_) .fio-conta--receber { background: var(--kpi-pessego); }
+html:not(#_) .fio-conta--atrasado { background: var(--kpi-salmao); }
+
+html:not(#_) .fio-parte--recebido { background: var(--barra-disponiveis); }
+html:not(#_) .fio-parte--receber { background: var(--salmao-claro); }
+html:not(#_) .fio-parte--atrasado { background: var(--coral); }
+
+html:not(#_) .fio-total {
+    color: var(--texto-forte);
+    font-size: clamp(32px, 3.2vw, 42px);
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+/* o carnê do próximo dia 5: canhoto salmão */
+html:not(#_) .carne-canhoto {
+    background: #E07A5F;
+    color: #FFFFFF;
+}
+
+html:not(#_) .carne-canhoto :is(p, .carne-rotulo, .carne-data, .carne-valor, .carne-nota) {
+    color: #FFFFFF;
+}
+
+html:not(#_) .carne-valor {
+    font-size: clamp(22px, 2vw, 28px);
+    overflow-wrap: anywhere;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+html:not(#_) .carne-data {
+    font-size: 22px;
+    line-height: 1.1;
+}
+
+/* =====================================================================
+   Login: papel pêssego, a gravura salmão à esquerda e o formulário à direita
+   ===================================================================== */
+html:not(#_) .corpo-login {
+    background: var(--fundo);
+}
+
+html:not(#_) .login-foto {
+    background: #F8ECDF;
+}
+
+html:not(#_) .login-foto .arte-clara {
+    display: block;
+}
+
+html:not(#_) .login-foto .arte-escura {
+    display: none;
+}
+
+html:not(#_):not([data-tema="claro"]) .login-foto {
+    background: #283239;
+}
+
+html:not(#_):not([data-tema="claro"]) .login-foto .arte-clara {
+    display: none;
+}
+
+html:not(#_):not([data-tema="claro"]) .login-foto .arte-escura {
+    display: block;
+}
+
+html:not(#_) .login-foto::after {
+    background: linear-gradient(to bottom, rgba(248, 236, 223, 0), rgba(248, 236, 223, 0.9) 62%, #F8ECDF);
+}
+
+html:not(#_):not([data-tema="claro"]) .login-foto::after {
+    background: linear-gradient(to bottom, rgba(40, 50, 57, 0), rgba(40, 50, 57, 0.9) 62%, #283239);
+}
+
+html:not(#_) .login-lado,
+html:not(#_):not([data-tema="claro"]) .login-lado {
+    background: var(--fundo);
+}
+
+html:not(#_) .login-marca-nome {
+    color: var(--texto-forte);
+    font-family: var(--fonte-titulo);
+    font-size: clamp(44px, 4.6vw, 64px);
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+html:not(#_) .login-marca-lema {
+    color: var(--texto-suave);
+    font-family: var(--fonte-titulo);
+    font-size: clamp(18px, 1.6vw, 22px);
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+html:not(#_) .login-assinatura {
+    color: var(--coral);
+    font-family: var(--fonte-assinatura);
+    font-size: clamp(26px, 2.4vw, 34px);
+    line-height: 1.2;
+}
+
+html:not(#_) .login-marca-onda {
+    display: none;
+}
+
+/* o formulário num cartão de papel */
+html:not(#_) .corpo-login .cartao-login {
+    max-width: 400px;
+    padding: 34px 32px;
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    background: var(--superficie);
+    box-shadow: var(--sombra-cartao);
+}
+
+html:not(#_) .corpo-login .cartao-login h1 {
+    margin: 0 0 6px;
+    font-size: 30px;
+}
+
+html:not(#_) .login-logo {
+    display: none;
+}
+
+html:not(#_) .login-cabeca {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0 0 18px;
+}
+
+html:not(#_) .login-cabeca strong {
+    color: var(--texto-forte);
+    font-family: var(--fonte-titulo);
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+html:not(#_) .login-cabeca span {
+    color: var(--coral);
+    font-family: var(--fonte-assinatura);
+    font-size: 20px;
+    line-height: 1;
+}
+
+html:not(#_) .corpo-login #form-login button[type="submit"] {
+    width: 100%;
+    min-height: 46px;
+    font-size: 15px;
+}
+
+/* os rascunhos também no login, no canto do formulário */
+html:not(#_) .login-lado {
+    position: relative;
+}
+
+html:not(#_) .login-lado::after {
+    position: absolute;
+    right: -10px;
+    bottom: -6px;
+    width: min(260px, 40%);
+    aspect-ratio: 320 / 300;
+    background: url("../img/rascunho-folhas.svg") bottom right / contain no-repeat;
+    content: "";
+    opacity: var(--rascunho-opacidade);
+    pointer-events: none;
+}
+
+/* =====================================================================
+   Movimento: só o essencial
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    body:not(.corpo-login)::before,
+    body:not(.corpo-login)::after {
+        transition: none;
+    }
+}

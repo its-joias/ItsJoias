@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 300" fill="none" stroke="#B9785C" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+  <!-- ramo de hibisco e um búzio, em traço de lápis -->
+  <path d="M318 296C258 246 214 200 180 120"/>
+  <path d="M268 254c-30-6-50 4-64 22 26 4 48-4 64-22z"/>
+  <path d="M268 254c-22 4-40 12-64 22" opacity=".6"/>
+  <path d="M236 214c-6-30-24-46-50-52 2 28 20 44 50 52z"/>
+  <path d="M236 214c-14-18-30-34-50-52" opacity=".6"/>
+  <path d="M214 176c26-14 50-14 70 0-22 16-46 16-70 0z"/>
+  <path d="M214 176c24-2 48-2 70 0" opacity=".6"/>
+  <!-- a flor -->
+  <g transform="translate(176 110)">
+    <path d="M0 0c-8-22-30-30-46-20 4 18 22 26 46 20z"/>
+    <path d="M0 0c-24-6-42 8-42 26 18 4 36-6 42-26z"/>
+    <path d="M0 0c-10 22-4 42 14 48 10-14 6-34-14-48z"/>
+    <path d="M0 0c22 2 38 18 32 36-18 0-32-14-32-36z"/>
+    <path d="M0 0c14-18 36-20 46-6-10 14-30 16-46 6z"/>
+    <path d="M0 0c-6-16-6-34 4-50"/>
+    <circle cx="6" cy="-52" r="2.4"/><circle cx="-1" cy="-54" r="2"/><circle cx="11" cy="-47" r="2"/>
+  </g>
+  <!-- búzio -->
+  <g transform="translate(70 230) rotate(-30)">
+    <ellipse cx="0" cy="0" rx="22" ry="34"/>
+    <path d="M0-28c-5 8 4 14-1 20s5 12-1 18 5 12-1 18"/>
+    <path d="M-5-18h-5M-5-8h-6M-5 2h-6M-5 12h-5M5-18h5M5-8h6M5 2h6M5 12h5" opacity=".7"/>
+  </g>
+  <path d="M30 288h80M120 288h20" opacity=".5"/>
+</svg>
