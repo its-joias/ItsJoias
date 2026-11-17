@@ -111,8 +111,7 @@ main > h2::after {
 
 /* --- a marca no cabeçalho: o sol do logo (img/sol.png, recortado do logo), o nome e o lema --- */
 .marca-selo,
-.login-selo,
-.login-marca-sol {
+.login-selo {
     display: inline-block;
     border: 0;
     border-radius: 0;
@@ -125,8 +124,7 @@ main > h2::after {
 /* o sol gira devagar, uma volta a cada 40 segundos, sempre: a Leide pediu que ele gire mesmo
    com "menos animações" ligado no sistema (é um giro lento, sem piscar nem mudar de lugar) */
 .marca-selo,
-.login-selo,
-.login-marca-sol {
+.login-selo {
     animation: sol-girar 40s linear infinite;
 }
 
@@ -137,8 +135,7 @@ main > h2::after {
 /* style.css encurta todas as animações quando o sistema pede menos movimento; o sol fica de fora */
 @media (prefers-reduced-motion: reduce) {
     .marca-selo,
-    .login-selo,
-    .login-marca-sol {
+    .login-selo {
         animation-duration: 40s !important;
         animation-iteration-count: infinite !important;
     }
@@ -187,11 +184,19 @@ nav a[aria-current="page"]::after {
     align-items: flex-start;
 }
 
-.login-marca-sol {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 4px;
-    background: #F4B41A;
+/* na arte do login, a marca é o hibisco de ouro recortado da própria gravura (img/flor-marca.webp) */
+.login-marca-flor {
+    display: block;
+    width: 84px;
+    height: 84px;
+    margin: 0 0 2px -6px;
+    background: url("../img/flor-marca.webp") center / contain no-repeat;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
+    animation: flor-abrir 1.2s var(--transicao, ease) 0.15s backwards;
+}
+
+@keyframes flor-abrir {
+    from { opacity: 0; transform: scale(0.82) rotate(-12deg); }
 }
 
 .login-marca-nome {
@@ -253,9 +258,9 @@ nav a[aria-current="page"]::after {
         font-size: 9px;
     }
 
-    .login-marca-sol {
-        width: 44px;
-        height: 44px;
+    .login-marca-flor {
+        width: 56px;
+        height: 56px;
     }
 
     .login-marca-nome {
@@ -359,7 +364,10 @@ html[data-tema="claro"] .login-marca-lema {
     color: #8F5E00;
 }
 
-html[data-tema="claro"] .login-marca-sol,
+html[data-tema="claro"] .login-marca-flor {
+    filter: drop-shadow(0 4px 10px rgba(120, 80, 10, 0.18));
+}
+
 html[data-tema="claro"] .login-marca-onda {
     background: #C8901A;
 }
