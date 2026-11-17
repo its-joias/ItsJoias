@@ -194,12 +194,13 @@ nav a[aria-current="page"]::after {
     align-items: flex-start;
 }
 
-/* no login, a pulseira com búzio desenhada (img/pulseira.webp), acima de "Its Joias" */
+/* no login, a pulseira com búzio desenhada (img/pulseira.webp), com "Its Joias" dentro da corrente */
 .login-logo {
+    position: relative;
     display: block;
-    width: clamp(96px, 8vw, 118px);
+    width: clamp(150px, 13vw, 190px);
     aspect-ratio: 420 / 494;
-    margin-bottom: 20px;
+    margin: 0 auto 22px;
     background: url("../img/pulseira.webp") left center / contain no-repeat;
     filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
     animation: logo-entrar 1.2s var(--transicao, ease) 0.15s backwards;
@@ -208,6 +209,20 @@ nav a[aria-current="page"]::after {
 html[data-tema="claro"] .login-logo {
     background-image: url("../img/pulseira-clara.webp");
     filter: none;
+}
+
+/* o nome no meio do círculo da corrente (o centro fica a 41% da altura da imagem) */
+.login-logo span {
+    position: absolute;
+    top: 41.5%;
+    left: 48.6%;
+    transform: translate(-50%, -50%);
+    color: var(--texto-forte);
+    font-family: var(--fonte-titulo);
+    font-size: clamp(15px, 1.35vw, 19px);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
 }
 
 @keyframes logo-entrar {
@@ -278,7 +293,11 @@ html[data-tema="claro"] .login-logo {
     }
 
     .login-logo {
-        width: 80px;
+        width: 130px;
+    }
+
+    .login-logo span {
+        font-size: 13px;
     }
 
     .login-marca-nome {
