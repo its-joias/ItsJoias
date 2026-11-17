@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.itsjoias.dto.GraficoDTO.PecasDaCategoria;
 import br.com.itsjoias.dto.GraficoDTO.RecebimentosDoMes;
+import br.com.itsjoias.dto.GraficoDTO.VendasDoDia;
 import br.com.itsjoias.dto.GraficoDTO.VendasDoMes;
 import br.com.itsjoias.dto.GraficoDTO.VendidoDaCategoria;
 
@@ -36,6 +37,18 @@ public class GraficoRepository {
 				GROUP BY m.mes ORDER BY m.mes
 				""", Map.of("hoje", hoje, "meses", meses),
 				(rs, i) -> new VendasDoMes(rs.getString("mes"), dinheiro(rs, "vendido"), rs.getInt("vendas")));
+	}
+
+	/** Cada dia do mês (todos, com zero nos dias sem venda): o mesmo total de vendasPorMes, dia a dia. */
+	public List<VendasDoDia> vendasPorDia(LocalDate primeiroDia) {
+		return jdbc.query("""
+				SELECT to_char(d.dia, 'YYYY-MM-DD') AS dia, COALESCE(SUM(v.valor_total), 0) AS vendido, COUNT(v.id) AS vendas
+				FROM generate_series(CAST(:inicio AS date), CAST(:inicio AS date) + interval '1 month' - interval '1 day',
+				                     interval '1 day') AS d(dia)
+				LEFT JOIN vendas v ON v.status = 'FINALIZADA' AND v.data_venda = CAST(d.dia AS date)
+				GROUP BY d.dia ORDER BY d.dia
+				""", Map.of("inicio", primeiroDia),
+				(rs, i) -> new VendasDoDia(rs.getString("dia"), dinheiro(rs, "vendido"), rs.getInt("vendas")));
 	}
 
 	/** Por mês de vencimento das parcelas: de N meses atrás até N meses à frente (as regras vêm de vw_saldo_parcelas). */

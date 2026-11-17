@@ -9,6 +9,10 @@ public final class GraficoDTO {
 	}
 
 	/** Mês no formato "2026-11". */
+	/** Um dia do mês: "2026-11-03", o total vendido (vendas finalizadas) e quantas vendas. */
+	public record VendasDoDia(String dia, BigDecimal vendido, int vendas) {
+	}
+
 	public record VendasDoMes(String mes, BigDecimal vendido, int vendas) {
 	}
 

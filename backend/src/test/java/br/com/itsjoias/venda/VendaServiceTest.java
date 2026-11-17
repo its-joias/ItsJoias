@@ -454,4 +454,24 @@ class VendaServiceTest {
 				.satisfies(r -> assertThat(r.atrasado()).isEqualByComparingTo("0"));
 	}
 
+	@Test
+	void vendasPorDiaSomamOMesEDiasSemVendaVemComZero() {
+		vendas.confirmar(aVista(ana, colar + "-01"));
+		vendas.confirmar(aVista(ana, brinco + "-01"));
+		long cancelada = vendas.confirmar(aVista(ana, colar + "-02")).vendaId();
+		vendas.cancelar(cancelada, "Teste");
+		conferirComoNoCommit();
+
+		var dias = graficos.vendasPorDia(LocalDate.of(2026, 11, 1));
+		assertThat(dias).hasSize(30);
+		assertThat(dias.get(0).dia()).isEqualTo("2026-11-01");
+		assertThat(dias.get(10)).satisfies(d -> {
+			assertThat(d.dia()).isEqualTo("2026-11-11");
+			assertThat(d.vendido()).isEqualByComparingTo("149.90");
+			assertThat(d.vendas()).isEqualTo(2);
+		});
+		assertThat(dias.get(9).vendido()).isEqualByComparingTo("0");
+		assertThat(graficos.vendasPorDia(LocalDate.of(2026, 2, 1))).hasSize(28);
+	}
+
 }

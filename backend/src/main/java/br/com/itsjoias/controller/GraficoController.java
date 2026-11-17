@@ -1,5 +1,11 @@
 package br.com.itsjoias.controller;
 
+import java.time.YearMonth;
+import java.time.format.DateTimeParseException;
+import org.springframework.web.bind.annotation.RequestParam;
+import br.com.itsjoias.dto.GraficoDTO.VendasDoDia;
+import br.com.itsjoias.exception.RegraNegocioException;
+
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +22,7 @@ import br.com.itsjoias.service.CalendarioCobranca;
 
 /**
  * GET /api/graficos/vendas-por-mes        últimos 12 meses
+ * GET /api/graficos/vendas-por-dia?mes=2026-11  cada dia de um mês (o detalhe de uma linha da tabela)
  * GET /api/graficos/recebimentos-por-mes  5 meses antes até 6 meses depois (mês de vencimento das parcelas)
  * GET /api/graficos/pecas-por-categoria   peças das maletas ativas
  * GET /api/graficos/vendido-por-categoria valor vendido por categoria, últimos 12 meses (pizza)
@@ -36,6 +43,17 @@ public class GraficoController {
 	@GetMapping("/vendas-por-mes")
 	public List<VendasDoMes> vendasPorMes() {
 		return graficos.vendasPorMes(calendario.hoje(), 12);
+	}
+
+	@GetMapping("/vendas-por-dia")
+	public List<VendasDoDia> vendasPorDia(@RequestParam String mes) {
+		YearMonth m;
+		try {
+			m = YearMonth.parse(mes);
+		} catch (DateTimeParseException e) {
+			throw new RegraNegocioException("Mês inválido. Use o formato 2026-11.");
+		}
+		return graficos.vendasPorDia(m.atDay(1));
 	}
 
 	@GetMapping("/recebimentos-por-mes")
