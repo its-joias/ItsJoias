@@ -329,3 +329,42 @@ html:not([data-tema="claro"]) .login-lado {
         height: 70%;
     }
 }
+
+/* --- a arte segue o tema: azul no escuro, papel claro no claro ------------------- */
+.login-foto .arte-clara {
+    display: none;
+}
+
+html[data-tema="claro"] .login-foto .arte-escura {
+    display: none;
+}
+
+html[data-tema="claro"] .login-foto .arte-clara {
+    display: block;
+}
+
+html[data-tema="claro"] .login-foto {
+    background: #FBF5EA;
+}
+
+html[data-tema="claro"] .login-foto::after {
+    background: linear-gradient(to bottom, rgba(251, 245, 234, 0), rgba(251, 245, 234, 0.88) 60%, #FBF5EA);
+}
+
+html[data-tema="claro"] .login-marca-nome {
+    color: #14254D;
+}
+
+html[data-tema="claro"] .login-marca-lema {
+    color: #8F5E00;
+}
+
+html[data-tema="claro"] .login-marca-sol,
+html[data-tema="claro"] .login-marca-onda {
+    background: #C8901A;
+}
+
+/* no claro o formulário fica solto no papel, sem a sombra de cartão do style.css */
+html[data-tema="claro"] .corpo-login .cartao-login {
+    box-shadow: none;
+}
