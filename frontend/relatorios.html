@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios | Organização Its Joias</title>
+    <meta name="theme-color" content="#2F3B42">
+    <script src="js/tema.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/visual.css">
+    <link rel="stylesheet" href="css/painel.css">
+    <link rel="stylesheet" href="css/identidade.css">
+    <link rel="stylesheet" href="css/joalheria.css">
+    <link rel="stylesheet" href="css/transicoes.css">
+    <link rel="stylesheet" href="css/atelie.css">
+</head>
+<body class="pagina-relatorios">
+    <a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+    <header>
+        <div class="topo">
+            <h1 class="marca" translate="no"><span class="marca-selo" aria-hidden="true"></span><span class="marca-nome">ITS Joias</span><span class="marca-lema">Leide Farias</span></h1>
+            <div class="usuario-topo" id="usuario-topo"></div>
+        </div>
+        <nav aria-label="Menu principal">
+            <ul>
+                <li><a href="index.html">Painel</a></li>
+                <li><a href="vendas.html">Nova venda</a></li>
+                <li><a href="historico-vendas.html">Vendas</a></li>
+                <li><a href="clientes.html">Clientes</a></li>
+                <li><a href="maletas.html">Maletas</a></li>
+                <li><a href="produtos.html">Produtos</a></li>
+                <li><a href="relatorios.html" aria-current="page">Relatórios</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="conteudo" tabindex="-1">
+        <div class="cabecalho-pagina">
+            <h2>Relatórios</h2>
+        </div>
+        <p class="subtitulo-pagina">Os números do negócio e as preferências do sistema.</p>
+
+        <div class="abas" role="tablist" aria-label="Relatórios e configurações">
+            <button type="button" role="tab" id="aba-relatorios" aria-controls="painel-relatorios" aria-selected="true">Relatórios</button>
+            <button type="button" role="tab" id="aba-config" aria-controls="painel-config" aria-selected="false">Configurações</button>
+        </div>
+
+        <section class="aba-conteudo" id="painel-relatorios" role="tabpanel" aria-labelledby="aba-relatorios">
+            <div class="indicadores" id="rel-indicadores" aria-live="polite">
+                <p class="carregando-texto">Carregando os números…</p>
+            </div>
+
+            <div class="painel-blocos">
+                <section class="bloco" aria-labelledby="titulo-grafico-vendas">
+                    <h3 id="titulo-grafico-vendas">Vendas por mês</h3>
+                    <p class="texto-suave grafico-subtitulo">Total vendido nos últimos 12 meses (vendas canceladas não contam).</p>
+                    <div id="grafico-vendas"><p class="carregando-texto">Carregando gráfico…</p></div>
+                </section>
+                <section class="bloco" aria-labelledby="titulo-grafico-categorias-vendidas">
+                    <h3 id="titulo-grafico-categorias-vendidas">Vendido por categoria</h3>
+                    <p class="texto-suave grafico-subtitulo">Parte de cada categoria no total vendido dos últimos 12 meses.</p>
+                    <div id="grafico-pizza"><p class="carregando-texto">Carregando gráfico…</p></div>
+                </section>
+            </div>
+
+            <section class="bloco painel-grafico-largo" aria-labelledby="titulo-grafico-recebimentos">
+                <h3 id="titulo-grafico-recebimentos">Recebido × a receber</h3>
+                <p class="texto-suave grafico-subtitulo">Parcelas pelo mês de vencimento: o que já entrou e o que falta entrar.</p>
+                <div id="grafico-recebimentos"><p class="carregando-texto">Carregando gráfico…</p></div>
+            </section>
+
+            <section class="bloco painel-grafico-largo" aria-labelledby="titulo-grafico-categorias">
+                <h3 id="titulo-grafico-categorias">Peças por categoria</h3>
+                <p class="texto-suave grafico-subtitulo">Peças das maletas ativas: disponíveis, vendidas e perdidas ou devolvidas.</p>
+                <div id="grafico-categorias"><p class="carregando-texto">Carregando gráfico…</p></div>
+            </section>
+        </section>
+
+        <section class="aba-conteudo" id="painel-config" role="tabpanel" aria-labelledby="aba-config" hidden>
+            <div class="config-grade">
+                <section class="bloco" aria-labelledby="titulo-tema">
+                    <h3 id="titulo-tema">Aparência</h3>
+                    <p class="texto-suave">O tema fica guardado neste aparelho, só para você.</p>
+                    <fieldset class="opcoes-tema">
+                        <legend>Tema</legend>
+                        <label><input type="radio" name="tema" value="claro"> Claro <span class="texto-suave">(papel pêssego)</span></label>
+                        <label><input type="radio" name="tema" value="escuro"> Escuro <span class="texto-suave">(ardósia)</span></label>
+                    </fieldset>
+                </section>
+
+                <section class="bloco" aria-labelledby="titulo-conta">
+                    <h3 id="titulo-conta">Sua conta</h3>
+                    <dl class="dados-cadastrais" id="conta-dados"></dl>
+                    <p class="texto-suave">A senha é trocada no painel de login do sistema (Supabase), não aqui.</p>
+                    <button type="button" class="botao-secundario" id="conta-sair">Sair do sistema</button>
+                </section>
+
+                <section class="bloco" aria-labelledby="titulo-sistema">
+                    <h3 id="titulo-sistema">Sistema</h3>
+                    <dl class="dados-cadastrais">
+                        <div><dt>Servidor</dt><dd id="sistema-servidor">Conferindo…</dd></div>
+                        <div><dt>Marca</dt><dd>Leide Farias · joias com alma baiana</dd></div>
+                    </dl>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Organização Its Joias. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/sessao.js"></script>
+    <script src="js/graficos.js"></script>
+    <script src="js/painel-graficos.js"></script>
+    <script src="js/produtos-graficos.js"></script>
+    <script src="js/abas.js"></script>
+    <script src="js/relatorios.js"></script>
+</body>
+</html>

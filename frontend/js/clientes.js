@@ -129,10 +129,10 @@
         if (c.maiorAtrasoDias > 0) atrasado.title = `Maior atraso: ${formato.plural(c.maiorAtrasoDias, "dia", "dias")}`;
 
         const acoes = criar("td", "acoes-linha");
-        const ver = criar("button", "botao-pequeno", "Ver");
-        ver.type = "button";
-        ver.setAttribute("aria-label", `Ver perfil e vendas de ${c.nome}`);
-        ver.addEventListener("click", () => abrirPerfil(c));
+        // "Ver" abre a ficha da cliente (cliente.html), com o histórico, as parcelas e os dados
+        const ver = criar("a", "botao-link botao-pequeno", "Ver");
+        ver.href = "cliente.html?id=" + c.id;
+        ver.setAttribute("aria-label", `Ver a ficha de ${c.nome}`);
         const editar = criar("button", "botao-secundario botao-pequeno", "Editar");
         editar.type = "button";
         editar.addEventListener("click", () => abrirForm(c));
@@ -243,5 +243,17 @@
     busca.addEventListener("input", () => { clearTimeout(espera); espera = setTimeout(carregar, 300); });
     mostrarInativas.addEventListener("change", carregar);
 
+    // vindo da ficha da cliente com "Editar dados" (clientes.html?editar=3): abre o formulário dela
+    async function editarPeloEndereco() {
+        const editar = Number(new URLSearchParams(location.search).get("editar"));
+        if (!editar) return;
+        try {
+            abrirForm(await api("/api/clientes/" + editar));
+        } catch (erro) {
+            notificar({ tipo: "erro", titulo: "Não foi possível abrir a cliente.", texto: erro.message });
+        }
+    }
+
     carregar();
+    editarPeloEndereco();
 })();

@@ -844,3 +844,389 @@ html:not(#_) .login-lado::after {
         transition: none;
     }
 }
+
+/* =====================================================================
+   Fichas (cliente.html e maleta.html) e Relatórios
+   ===================================================================== */
+nav a[href="relatorios.html"] { --icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20V4M4 20h16'/%3E%3Cpath d='M8 16v-4M12 16V8M16 16v-6M20 16V6'/%3E%3C/svg%3E"); }
+
+html:not(#_) .voltar {
+    margin: 0 0 14px;
+}
+
+html:not(#_) .voltar a {
+    color: var(--texto-suave);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+html:not(#_) .voltar a:hover {
+    color: var(--destaque);
+}
+
+html:not(#_) .ficha {
+    display: grid;
+    gap: 18px;
+    margin-bottom: 22px;
+    padding: 22px 24px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    background: var(--superficie);
+    box-shadow: var(--sombra-cartao);
+}
+
+html:not(#_) .ficha-topo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 18px;
+}
+
+html:not(#_) .ficha-avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: var(--kpi-salmao);
+    color: var(--destaque);
+    font-family: var(--fonte-titulo);
+    font-size: 22px;
+    font-weight: 700;
+}
+
+html:not(#_) .ficha-quem {
+    flex: 1 1 260px;
+    min-width: 0;
+}
+
+html:not(#_) .ficha-quem h2 {
+    margin: 0;
+    font-size: clamp(26px, 2.6vw, 34px);
+    overflow-wrap: anywhere;
+}
+
+html:not(#_) .ficha-quem p {
+    margin: 4px 0 0;
+}
+
+html:not(#_) .ficha-situacao {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+html:not(#_) .ficha-acoes button {
+    margin: 0;
+}
+
+/* pílulas de situação */
+html:not(#_) .pilula {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+html:not(#_) .pilula--verde { background: var(--sucesso-fundo); color: var(--sucesso-texto); }
+html:not(#_) .pilula--salmao { background: var(--kpi-salmao); color: var(--destaque); }
+html:not(#_) .pilula--neutra { background: var(--kpi-areia); color: var(--texto-suave); }
+
+/* indicadores coloridos, como no modelo */
+html:not(#_) .indicadores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+html:not(#_) .indicador {
+    display: grid;
+    gap: 2px;
+    align-content: start;
+    min-width: 0;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: var(--kpi-areia);
+}
+
+html:not(#_) .indicador--salmao { background: var(--kpi-salmao); }
+html:not(#_) .indicador--pessego { background: var(--kpi-pessego); }
+html:not(#_) .indicador--verde { background: var(--kpi-verde); }
+html:not(#_) .indicador--areia { background: var(--kpi-areia); }
+
+html:not(#_) .indicador-rotulo {
+    color: var(--texto-suave);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+html:not(#_) .indicador-valor {
+    color: var(--texto-forte);
+    font-family: var(--fonte-titulo);
+    font-size: clamp(22px, 2vw, 28px);
+    font-variant-numeric: lining-nums;
+    font-weight: 700;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+}
+
+html:not(#_) .indicador--salmao .indicador-valor { color: var(--destaque); }
+
+html:not(#_) .indicador-nota {
+    color: var(--texto-suave);
+    font-size: 12px;
+}
+
+/* abas: sublinhado salmão na aba aberta */
+html:not(#_) .abas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 0 0 16px;
+    border-bottom: 1px solid var(--borda);
+}
+
+html:not(#_) .abas[hidden] {
+    display: none;
+}
+
+html:not(#_) .abas [role="tab"] {
+    position: relative;
+    min-height: 42px;
+    margin: 0;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 8px 8px 0 0;
+    background: transparent;
+    color: var(--texto-suave);
+    font-size: 14px;
+    font-weight: 600;
+    transform: none;
+}
+
+html:not(#_) .abas [role="tab"]:hover {
+    background: var(--superficie-hover);
+    color: var(--texto-forte);
+}
+
+html:not(#_) .abas [role="tab"][aria-selected="true"] {
+    color: var(--destaque);
+}
+
+html:not(#_) .abas [role="tab"][aria-selected="true"]::after {
+    position: absolute;
+    right: 10px;
+    bottom: -1px;
+    left: 10px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--coral);
+    content: "";
+}
+
+html:not(#_) .aba-conteudo {
+    margin-bottom: 28px;
+}
+
+/* dados cadastrais e da conta */
+html:not(#_) .dados-cadastrais {
+    display: grid;
+    gap: 0;
+    margin: 0 0 16px;
+    padding: 4px 20px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    background: var(--superficie);
+}
+
+html:not(#_) .bloco .dados-cadastrais {
+    padding: 0;
+    border: 0;
+    background: none;
+}
+
+html:not(#_) .dados-cadastrais > div {
+    display: grid;
+    grid-template-columns: minmax(110px, 160px) 1fr;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--borda);
+}
+
+html:not(#_) .dados-cadastrais > div:last-child {
+    border-bottom: 0;
+}
+
+html:not(#_) .dados-cadastrais dt {
+    color: var(--texto-suave);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+html:not(#_) .dados-cadastrais dd {
+    margin: 0;
+    color: var(--texto-forte);
+    overflow-wrap: anywhere;
+}
+
+/* um link com cara de botão */
+html:not(#_) .botao-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 9px 18px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: var(--dourado);
+    color: var(--sobre-dourado);
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+html:not(#_) .botao-link:hover {
+    background: var(--dourado-hover);
+    color: var(--sobre-dourado);
+}
+
+html:not(#_) .botao-link.botao-pequeno {
+    min-height: 32px;
+    margin: 0 6px 0 0;
+    padding: 5px 14px;
+    font-size: 12px;
+}
+
+html:not(#_) .botao-link--secundario {
+    border-color: var(--campo-borda);
+    background: var(--superficie-elevada);
+    color: var(--texto-forte);
+}
+
+html:not(#_) .botao-link--secundario:hover {
+    background: var(--superficie-hover);
+    color: var(--texto-forte);
+}
+
+html:not(#_) .botao-link[hidden] {
+    display: none;
+}
+
+/* o nome da maleta na lista vira link para a ficha */
+html:not(#_) a.nome-maleta-botao {
+    color: var(--texto-forte);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: var(--salmao-claro);
+    text-underline-offset: 3px;
+}
+
+html:not(#_) a.nome-maleta-botao:hover {
+    color: var(--destaque);
+}
+
+html:not(#_) .etiqueta-codigo {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+}
+
+html:not(#_) .barra-ferramentas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+html:not(#_) .barra-ferramentas select {
+    width: auto;
+    min-width: 190px;
+}
+
+/* configurações */
+html:not(#_) .config-grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    align-items: start;
+}
+
+html:not(#_) .opcoes-tema {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+html:not(#_) .opcoes-tema legend {
+    margin-bottom: 8px;
+    color: var(--texto-forte);
+    font-weight: 600;
+}
+
+html:not(#_) .opcoes-tema label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    padding: 6px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    color: var(--texto-forte);
+    cursor: pointer;
+}
+
+html:not(#_) .opcoes-tema input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--coral);
+}
+
+html:not(#_) .opcoes-tema label:has(input:checked) {
+    border-color: var(--coral);
+    background: var(--destaque-fundo);
+}
+
+@media (max-width: 600px) {
+    html:not(#_) .ficha {
+        padding: 18px 16px;
+    }
+
+    html:not(#_) .dados-cadastrais > div {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+}
+
+/* impressão da lista de peças da maleta: só a ficha e a tabela */
+@media print {
+    body::before,
+    body::after,
+    body > header,
+    body > footer,
+    .voltar,
+    .abas,
+    .barra-ferramentas,
+    .ficha-acoes,
+    #painel-resumo,
+    td.acoes-linha,
+    #painel-pecas th:last-child {
+        display: none !important;
+    }
+
+    html:not(#_) body {
+        display: block !important;
+        background: #FFFFFF !important;
+    }
+
+    html:not(#_) :is(.ficha, .tabela-rolavel, table) {
+        box-shadow: none !important;
+    }
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliente | Organização Its Joias</title>
+    <meta name="theme-color" content="#2F3B42">
+    <script src="js/tema.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/visual.css">
+    <link rel="stylesheet" href="css/painel.css">
+    <link rel="stylesheet" href="css/identidade.css">
+    <link rel="stylesheet" href="css/joalheria.css">
+    <link rel="stylesheet" href="css/transicoes.css">
+    <link rel="stylesheet" href="css/atelie.css">
+</head>
+<body class="pagina-clientes pagina-ficha">
+    <a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+    <header>
+        <div class="topo">
+            <h1 class="marca" translate="no"><span class="marca-selo" aria-hidden="true"></span><span class="marca-nome">ITS Joias</span><span class="marca-lema">Leide Farias</span></h1>
+            <div class="usuario-topo" id="usuario-topo"></div>
+        </div>
+        <nav aria-label="Menu principal">
+            <ul>
+                <li><a href="index.html">Painel</a></li>
+                <li><a href="vendas.html">Nova venda</a></li>
+                <li><a href="historico-vendas.html">Vendas</a></li>
+                <li><a href="clientes.html" aria-current="page">Clientes</a></li>
+                <li><a href="maletas.html">Maletas</a></li>
+                <li><a href="produtos.html">Produtos</a></li>
+                <li><a href="relatorios.html">Relatórios</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="conteudo" tabindex="-1">
+        <p class="voltar"><a href="clientes.html">← Clientes</a></p>
+
+        <section class="ficha" aria-labelledby="ficha-nome">
+            <div class="ficha-topo">
+                <span class="ficha-avatar" id="ficha-avatar" aria-hidden="true"></span>
+                <div class="ficha-quem">
+                    <h2 id="ficha-nome">Carregando…</h2>
+                    <p id="ficha-contato" class="texto-suave"></p>
+                </div>
+                <div class="ficha-situacao" id="ficha-situacao"></div>
+                <a class="botao-link" id="ficha-nova-venda" href="vendas.html" hidden>+ Nova venda</a>
+            </div>
+
+            <div class="indicadores" id="ficha-indicadores" aria-live="polite"></div>
+        </section>
+
+        <p id="ficha-estado" class="carregando-texto">Carregando a cliente…</p>
+
+        <div class="abas" role="tablist" aria-label="Partes da ficha" hidden id="ficha-abas">
+            <button type="button" role="tab" id="aba-compras" aria-controls="painel-compras" aria-selected="true">Histórico de compras</button>
+            <button type="button" role="tab" id="aba-parcelas" aria-controls="painel-parcelas" aria-selected="false">Parcelas em aberto</button>
+            <button type="button" role="tab" id="aba-dados" aria-controls="painel-dados" aria-selected="false">Dados cadastrais</button>
+        </div>
+
+        <section class="aba-conteudo" id="painel-compras" role="tabpanel" aria-labelledby="aba-compras" hidden>
+            <p id="compras-estado" class="carregando-texto">Carregando compras…</p>
+            <ul class="historico-vendas" id="compras-lista"></ul>
+        </section>
+
+        <section class="aba-conteudo" id="painel-parcelas" role="tabpanel" aria-labelledby="aba-parcelas" hidden>
+            <p id="parcelas-estado" class="carregando-texto">Carregando parcelas…</p>
+            <div class="tabela-rolavel" id="parcelas-caixa" hidden>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Venda</th>
+                            <th>Parcela</th>
+                            <th>Vencimento</th>
+                            <th class="numero">Valor</th>
+                            <th class="numero">Pago</th>
+                            <th>Situação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="parcelas-lista"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="aba-conteudo" id="painel-dados" role="tabpanel" aria-labelledby="aba-dados" hidden>
+            <dl class="dados-cadastrais" id="dados-lista"></dl>
+            <a class="botao-link botao-link--secundario" id="dados-editar" href="clientes.html">Editar dados</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Organização Its Joias. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/sessao.js"></script>
+    <script src="js/mascaras.js"></script>
+    <script src="js/venda-detalhe.js"></script>
+    <script src="js/abas.js"></script>
+    <script src="js/cliente.js"></script>
+</body>
+</html>

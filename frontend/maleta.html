@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maleta | Organização Its Joias</title>
+    <meta name="theme-color" content="#2F3B42">
+    <script src="js/tema.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/visual.css">
+    <link rel="stylesheet" href="css/painel.css">
+    <link rel="stylesheet" href="css/venda-rapida.css">
+    <link rel="stylesheet" href="css/identidade.css">
+    <link rel="stylesheet" href="css/joalheria.css">
+    <link rel="stylesheet" href="css/transicoes.css">
+    <link rel="stylesheet" href="css/atelie.css">
+</head>
+<body class="pagina-maletas pagina-ficha">
+    <a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+    <header>
+        <div class="topo">
+            <h1 class="marca" translate="no"><span class="marca-selo" aria-hidden="true"></span><span class="marca-nome">ITS Joias</span><span class="marca-lema">Leide Farias</span></h1>
+            <div class="usuario-topo" id="usuario-topo"></div>
+        </div>
+        <nav aria-label="Menu principal">
+            <ul>
+                <li><a href="index.html">Painel</a></li>
+                <li><a href="vendas.html">Nova venda</a></li>
+                <li><a href="historico-vendas.html">Vendas</a></li>
+                <li><a href="clientes.html">Clientes</a></li>
+                <li><a href="maletas.html" aria-current="page">Maletas</a></li>
+                <li><a href="produtos.html">Produtos</a></li>
+                <li><a href="relatorios.html">Relatórios</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="conteudo" tabindex="-1">
+        <p class="voltar"><a href="maletas.html">← Maletas</a></p>
+
+        <section class="ficha" aria-labelledby="maleta-nome">
+            <div class="ficha-topo">
+                <div class="ficha-quem">
+                    <h2 id="maleta-nome">Carregando…</h2>
+                    <p id="maleta-info" class="texto-suave"></p>
+                </div>
+                <div class="ficha-situacao" id="maleta-situacao"></div>
+                <div class="ficha-acoes">
+                    <button type="button" class="botao-secundario" id="maleta-imprimir" hidden>Imprimir lista de peças</button>
+                </div>
+            </div>
+            <div class="indicadores" id="maleta-indicadores" aria-live="polite"></div>
+        </section>
+
+        <p id="maleta-estado-pagina" class="carregando-texto">Carregando a maleta…</p>
+
+        <div class="abas" role="tablist" aria-label="Partes da maleta" hidden id="maleta-abas">
+            <button type="button" role="tab" id="aba-pecas" aria-controls="painel-pecas" aria-selected="true">Peças da maleta</button>
+            <button type="button" role="tab" id="aba-resumo" aria-controls="painel-resumo" aria-selected="false">Resumo por categoria</button>
+        </div>
+
+        <section class="aba-conteudo" id="painel-pecas" role="tabpanel" aria-labelledby="aba-pecas" hidden>
+            <div class="barra-ferramentas">
+                <input type="search" id="pecas-busca" placeholder="Etiqueta ou nome da peça" aria-label="Buscar peça desta maleta"
+                       autocomplete="off" spellcheck="false">
+                <select id="pecas-situacao" aria-label="Situação das peças">
+                    <option value="">Todas as situações</option>
+                    <option value="DISPONIVEL">Disponíveis</option>
+                    <option value="VENDIDA">Vendidas</option>
+                    <option value="PERDIDA">Perdidas</option>
+                    <option value="DEVOLVIDA">Devolvidas</option>
+                </select>
+            </div>
+            <p id="pecas-estado" class="carregando-texto">Carregando peças…</p>
+            <div class="tabela-rolavel" id="pecas-caixa" hidden>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Etiqueta</th>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Situação</th>
+                            <th class="numero">Preço</th>
+                            <th class="numero"><span class="texto-suave">Ação</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="pecas-lista"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="aba-conteudo" id="painel-resumo" role="tabpanel" aria-labelledby="aba-resumo" hidden>
+            <div class="tabela-rolavel">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Categoria</th>
+                            <th class="numero">Peças</th>
+                            <th class="numero">Disponíveis</th>
+                            <th class="numero">Vendidas</th>
+                            <th class="numero">Perdidas ou devolvidas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resumo-lista"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Organização Its Joias. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/sessao.js"></script>
+    <script src="js/mascaras.js"></script>
+    <script src="js/venda-rapida.js"></script>
+    <script src="js/abas.js"></script>
+    <script src="js/maleta.js"></script>
+</body>
+</html>

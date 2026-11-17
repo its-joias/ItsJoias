@@ -36,10 +36,10 @@
             document.getElementById("lista").replaceChildren(...maletas.map((m) => {
                 const tr = criar("tr");
                 const nome = criar("td");
-                const abrir = criar("button", "nome-maleta-botao", m.nome);
-                abrir.type = "button";
+                // o nome abre a ficha da maleta (maleta.html), com as peças e o resumo
+                const abrir = criar("a", "nome-maleta-botao", m.nome);
+                abrir.href = "maleta.html?id=" + m.maletaId;
                 abrir.title = "Ver as peças desta maleta";
-                abrir.addEventListener("click", () => abrirMaleta(m));
                 const importada = m.importadaEm ? formato.data(m.importadaEm) : historico.get(m.maletaId);
                 nome.append(abrir);
                 if (importada) {
