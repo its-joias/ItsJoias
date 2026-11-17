@@ -77,7 +77,7 @@
 }
 
 .login-marca-lema {
-    color: #F0B735;
+    color: #EAB69F;
     font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.14em;
@@ -201,7 +201,7 @@
 
 .corpo-login #botao-entrar:hover {
     transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(242, 204, 143, 0.22);
+    box-shadow: 0 8px 20px rgba(224, 122, 95, 0.25);
 }
 
 .corpo-login #botao-entrar:active {
@@ -236,7 +236,7 @@ html[data-tema="claro"] .corpo-login .campo input {
 }
 
 html[data-tema="claro"] .corpo-login #botao-entrar:hover {
-    box-shadow: 0 8px 20px rgba(227, 168, 43, 0.28);
+    box-shadow: 0 8px 20px rgba(224, 122, 95, 0.25);
 }
 
 /* --- tablet e celular ------------------------------------------------ */

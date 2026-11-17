@@ -33,7 +33,7 @@
 }
 
 .painel-novo {
-    --ouro-claro: #F6D27A;
+    --ouro-claro: #EAB69F;
     --renda: var(--borda);
 }
 
@@ -455,7 +455,7 @@
 
 /* --- tema claro ------------------------------------------------------ */
 html[data-tema="claro"] .painel-novo {
-    --ouro-claro: #F3CF73;
+    --ouro-claro: #E4A288;
 }
 
 html[data-tema="claro"] .carne {

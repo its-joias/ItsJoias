@@ -1,8 +1,9 @@
 /* =====================================================================
    Identidade Leide Farias: a pulseira com búzio e a paleta da marca.
-   Eggshell #F4F1DE, Burnt Peach #E07A5F, Twilight Indigo #3D405B,
-   Muted Teal #81B29A e Apricot Cream #F2CC8F.
-   Escuro: a noite em índigo, com o damasco e o pêssego acesos.
+   Eggshell #F4F1DE, salmão #EAB69F, Burnt Peach #E07A5F, rosa-terra #8F5D5D,
+   Twilight Indigo #3D405B, verde-ardósia #5F797B e Muted Teal #81B29A. Sem amarelo:
+   o destaque é o salmão (só a gravura dourada da arte continua dourada).
+   Escuro: a noite em índigo, com o salmão aceso.
    Claro: o papel casca de ovo, com o texto em índigo.
    Carregado depois de style.css em todas as telas: só troca cores e a marca.
    ===================================================================== */
@@ -13,11 +14,13 @@
     --burnt-peach: #E07A5F;
     --twilight-indigo: #3D405B;
     --muted-teal: #81B29A;
-    --apricot-cream: #F2CC8F;
+    --salmao: #EAB69F;
+    --rosa-terra: #8F5D5D;
+    --verde-ardosia: #5F797B;
 
     /* nomes antigos dos detalhes, agora na paleta */
     --casario-azul: #3D405B;
-    --casario-amarelo: #F2CC8F;
+    --casario-amarelo: #EAB69F;
     --casario-rosa: #E07A5F;
     --casario-verde: #81B29A;
     --casario-terracota: #E07A5F;
@@ -31,10 +34,10 @@
     --superficie-hover: #3D405B;
     --superficie-elevada: #383B55;
     --azul-menu: #81B29A;
-    --dourado: #F2CC8F;
-    --dourado-hover: #EAB971;
-    --sobre-dourado: #2A2D42;
-    --destaque: #F2CC8F;
+    --dourado: #E07A5F;
+    --dourado-hover: #EA8E75;
+    --sobre-dourado: #232537;
+    --destaque: #EAB69F;
     --creme: #F4F1DE;
     --texto-forte: #F4F1DE;
     --texto: #E3E0CC;
@@ -45,7 +48,7 @@
     --coral: #E07A5F;
     --verde: #81B29A;
     --sucesso-texto: #93C4AC;
-    --rosa: #E8907A;
+    --rosa: #EAB69F;
     --vermelho: #EA846B;
     --perigo-texto: #F19D87;
     --sobre-vermelho: #2A2D42;
@@ -53,14 +56,14 @@
     --perigo-fundo: rgba(234, 132, 107, 0.15);
     --perigo-fundo-suave: rgba(234, 132, 107, 0.07);
     --sucesso-fundo: rgba(129, 178, 154, 0.15);
-    --destaque-fundo: rgba(242, 204, 143, 0.10);
-    --alerta-fundo: rgba(242, 204, 143, 0.15);
+    --destaque-fundo: rgba(234, 182, 159, 0.10);
+    --alerta-fundo: rgba(224, 122, 95, 0.15);
     --info-fundo: rgba(169, 182, 226, 0.14);
     --fundo-modal: rgba(20, 21, 33, 0.7);
 
-    --barra-vendidas: #F2CC8F;
+    --barra-vendidas: #E07A5F;
     --barra-disponiveis: #81B29A;
-    --barra-perdidas: #E07A5F;
+    --barra-perdidas: #EAB69F;
 }
 
 /* ---- tema claro: o papel Eggshell, o texto em índigo ---- */
@@ -68,24 +71,24 @@ html[data-tema="claro"] {
     --cabecalho: #F4F1DE;
     --fundo: #F4F1DE;
     --superficie: #FFFDF5;
-    --superficie-hover: #ECE7CE;
+    --superficie-hover: #F3E5DB;
     --superficie-elevada: #FFFFFF;
     --azul-menu: #3D405B;
-    --dourado: #F2CC8F;
-    --dourado-hover: #EBBA6C;
+    --dourado: #EAB69F;
+    --dourado-hover: #E4A288;
     --sobre-dourado: #3D405B;
     --destaque: #A9492E;
     --creme: #F4F1DE;
     --texto-forte: #3D405B;
     --texto: #4A4D66;
     --texto-suave: #63657B;
-    --borda: #E0DAC0;
-    --campo-borda: #A0997C;
+    --borda: #E6D8CC;
+    --campo-borda: #5F797B;
     --placeholder: #74768A;
     --coral: #BD563B;
     --verde: #4A866A;
     --sucesso-texto: #36694F;
-    --rosa: #BD563B;
+    --rosa: #8F5D5D;
     --vermelho: #B4432B;
     --perigo-texto: #99361F;
     --sobre-vermelho: #FFFFFF;
@@ -93,16 +96,16 @@ html[data-tema="claro"] {
     --perigo-fundo: rgba(180, 67, 43, 0.10);
     --perigo-fundo-suave: rgba(180, 67, 43, 0.05);
     --sucesso-fundo: rgba(74, 134, 106, 0.12);
-    --destaque-fundo: rgba(242, 204, 143, 0.22);
-    --alerta-fundo: rgba(242, 204, 143, 0.30);
+    --destaque-fundo: rgba(234, 182, 159, 0.22);
+    --alerta-fundo: rgba(234, 182, 159, 0.32);
     --info-fundo: rgba(61, 64, 91, 0.07);
     --fundo-modal: rgba(61, 64, 91, 0.4);
     --sombra: 0 22px 60px rgba(61, 64, 91, 0.18);
     --sombra-leve: 0 8px 24px rgba(61, 64, 91, 0.10);
 
-    --barra-vendidas: #3D405B;
+    --barra-vendidas: #E07A5F;
     --barra-disponiveis: #81B29A;
-    --barra-perdidas: #E07A5F;
+    --barra-perdidas: #8F5D5D;
 }
 
 /* --- a onda do logo no lugar do 〜〜〜 sob os títulos ----------------- */
@@ -238,7 +241,7 @@ html[data-tema="claro"] .login-logo {
 
 /* --- painel: o fio nas cores do casario ------------------ */
 .painel-novo {
-    --ouro-claro: #FFD66B;
+    --ouro-claro: #EAB69F;
 }
 
 .fio-parte--receber {
@@ -326,7 +329,7 @@ header {
 }
 
 .login-marca-lema {
-    color: #F2CC8F;
+    color: #EAB69F;
 }
 
 .login-marca-onda {
