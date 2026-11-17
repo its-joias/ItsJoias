@@ -1,5 +1,5 @@
 /* =====================================================================
-   Identidade Leide Farias: o logo (sol de raios ondulados, o nome em letra
+   Identidade Leide Farias: o logo (monograma LF com hibisco, o nome em letra
    cursiva, a onda e "joias com alma baiana") nas cores do Pelourinho.
    Escuro: o azul colonial das noites no Pelô. Claro: a cal dos casarões.
    Os destaques são as fachadas: amarelo, azul, rosa, verde e terracota.
@@ -109,36 +109,35 @@ main > h2::after {
     mask: url("../img/onda.svg") center / 100% 100% no-repeat;
 }
 
-/* --- a marca no cabeçalho: o sol do logo (img/sol.png, recortado do logo), o nome e o lema --- */
+/* --- a marca: o monograma LF com o hibisco, recortado da logo da Leide (img/monograma.webp),
+   no cabeçalho e ao lado de "Its Joias" no formulário; a logo inteira fica sobre a arte do login --- */
 .marca-selo,
 .login-selo {
     display: inline-block;
     border: 0;
     border-radius: 0;
-    background: var(--dourado);
+    background: url("../img/monograma.webp") center / contain no-repeat;
     box-shadow: none;
-    -webkit-mask: url("../img/sol.png") center / contain no-repeat;
-    mask: url("../img/sol.png") center / contain no-repeat;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    -webkit-mask: none;
+    mask: none;
 }
 
-/* o sol gira devagar, uma volta a cada 40 segundos, sempre: a Leide pediu que ele gire mesmo
-   com "menos animações" ligado no sistema (é um giro lento, sem piscar nem mudar de lugar) */
-.marca-selo,
-.login-selo {
-    animation: sol-girar 40s linear infinite;
+/* no claro, a versão em ouro mais escuro, que aparece no papel */
+html[data-tema="claro"] .marca-selo,
+html[data-tema="claro"] .login-selo {
+    background-image: url("../img/monograma-clara.webp");
+    filter: none;
 }
 
-@keyframes sol-girar {
-    to { transform: rotate(360deg); }
+/* a marca entra quando a tela carrega e cresce de leve no hover */
+.marca-selo {
+    animation: flor-abrir 0.7s var(--transicao, ease) backwards;
+    transition: transform 0.4s var(--transicao, ease);
 }
 
-/* style.css encurta todas as animações quando o sistema pede menos movimento; o sol fica de fora */
-@media (prefers-reduced-motion: reduce) {
-    .marca-selo,
-    .login-selo {
-        animation-duration: 40s !important;
-        animation-iteration-count: infinite !important;
-    }
+header h1.marca:hover .marca-selo {
+    transform: scale(1.06);
 }
 
 header h1.marca {
@@ -147,8 +146,8 @@ header h1.marca {
 }
 
 .marca-selo {
-    width: 46px;
-    height: 46px;
+    width: 62px;
+    height: 44px;
 }
 
 header .marca-nome {
@@ -174,29 +173,37 @@ nav a[aria-current="page"]::after {
     background: var(--dourado);
 }
 
-/* --- login: a marca sobre a foto e o sol no lugar do selo ------------- */
+/* --- login: a marca sobre a foto e a flor no lugar do selo ------------ */
 .login-selo {
-    width: 26px;
-    height: 26px;
+    width: 45px;
+    height: 32px;
 }
 
 .login-marca {
     align-items: flex-start;
 }
 
-/* na arte do login, a marca é o hibisco de ouro recortado da própria gravura (img/flor-marca.webp) */
-.login-marca-flor {
+/* na arte do login, a logo inteira da Leide: monograma, hibisco, nome e lema (img/logo-leide.webp) */
+.login-logo {
     display: block;
-    width: 84px;
-    height: 84px;
-    margin: 0 0 2px -6px;
-    background: url("../img/flor-marca.webp") center / contain no-repeat;
-    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
-    animation: flor-abrir 1.2s var(--transicao, ease) 0.15s backwards;
+    width: clamp(230px, 21vw, 300px);
+    aspect-ratio: 249 / 156;
+    background: url("../img/logo-leide.webp") left bottom / contain no-repeat;
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+    animation: logo-entrar 1.2s var(--transicao, ease) 0.15s backwards;
+}
+
+html[data-tema="claro"] .login-logo {
+    background-image: url("../img/logo-leide-clara.webp");
+    filter: none;
+}
+
+@keyframes logo-entrar {
+    from { opacity: 0; transform: translateY(10px); }
 }
 
 @keyframes flor-abrir {
-    from { opacity: 0; transform: scale(0.82) rotate(-12deg); }
+    from { opacity: 0; transform: scale(0.85); }
 }
 
 .login-marca-nome {
@@ -246,8 +253,8 @@ nav a[aria-current="page"]::after {
 
 @media (max-width: 768px) {
     .marca-selo {
-        width: 38px;
-        height: 38px;
+        width: 52px;
+        height: 37px;
     }
 
     header .marca-nome {
@@ -258,9 +265,8 @@ nav a[aria-current="page"]::after {
         font-size: 9px;
     }
 
-    .login-marca-flor {
-        width: 56px;
-        height: 56px;
+    .login-logo {
+        width: 170px;
     }
 
     .login-marca-nome {
@@ -362,10 +368,6 @@ html[data-tema="claro"] .login-marca-nome {
 
 html[data-tema="claro"] .login-marca-lema {
     color: #8F5E00;
-}
-
-html[data-tema="claro"] .login-marca-flor {
-    filter: drop-shadow(0 4px 10px rgba(120, 80, 10, 0.18));
 }
 
 html[data-tema="claro"] .login-marca-onda {
