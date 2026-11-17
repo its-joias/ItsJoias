@@ -86,7 +86,7 @@
         const tbody = criar("tbody");
         o.categorias.forEach((c, i) => {
             const tr = criar("tr");
-            tr.append(criar("td", null, c));
+            tr.append(o.detalhar ? celulaQueAbre(c, i, tr, o) : criar("td", null, c));
             let total = 0;
             o.series.forEach((s) => { total += s.valores[i]; tr.append(criar("td", "numero", o.formatar(s.valores[i]))); });
             if (o.series.length > 1 && o.empilhar !== false) tr.append(criar("td", "numero", o.formatar(total)));
@@ -99,6 +99,53 @@
         });
         caixa.append(botao, tabela);
         return { area, balao };
+    }
+
+    /**
+     * Com opcoes.detalhar(i), a linha da tabela abre: um botão na primeira célula busca o detalhe
+     * (uma lista de { rotulo, valores, vazio }) e mostra as linhas logo abaixo; outro clique fecha.
+     */
+    function celulaQueAbre(rotulo, i, tr, o) {
+        const td = criar("td");
+        const botao = criar("button", "grafico-abrir-linha");
+        botao.type = "button";
+        botao.setAttribute("aria-expanded", "false");
+        botao.append(criar("span", "grafico-seta", "▸"), document.createTextNode(" " + rotulo));
+        botao.title = o.dicaDetalhe || "Ver o detalhe";
+        let linhas = null;
+        botao.addEventListener("click", async () => {
+            const abrir = botao.getAttribute("aria-expanded") !== "true";
+            botao.setAttribute("aria-expanded", String(abrir));
+            if (!abrir) {
+                (linhas || []).forEach((l) => { l.hidden = true; });
+                return;
+            }
+            if (linhas) {
+                linhas.forEach((l) => { l.hidden = false; });
+                return;
+            }
+            const carregando = criar("tr", "grafico-linha-detalhe");
+            const celula = criar("td", "carregando-texto", "Carregando…");
+            celula.colSpan = tr.children.length;
+            carregando.append(celula);
+            tr.after(carregando);
+            try {
+                const detalhe = await o.detalhar(i);
+                linhas = detalhe.map((d) => {
+                    const l = criar("tr", "grafico-linha-detalhe" + (d.vazio ? " grafico-linha-vazia" : ""));
+                    l.append(criar("td", null, d.rotulo));
+                    d.valores.forEach((v) => l.append(criar("td", "numero", o.formatar(v))));
+                    return l;
+                });
+                carregando.replaceWith(...linhas);
+            } catch (e) {
+                celula.className = "texto-alerta";
+                celula.textContent = "Não foi possível abrir o detalhe. " + e.message;
+                linhas = [carregando];
+            }
+        });
+        td.append(botao);
+        return td;
     }
 
     function mostrarBalao(area, balao, o, i, x, y) {

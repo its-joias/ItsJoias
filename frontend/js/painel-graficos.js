@@ -20,10 +20,45 @@
                 series: [{ nome: "Vendido", cor: "var(--barra-vendidas)", valores }],
                 destacar: [maior, valores.length - 1], // o maior mês e o mês atual
                 extraBalao: (i) => [meses[i].vendas === 1 ? "1 venda" : `${meses[i].vendas} vendas`],
+                // na tabela, cada mês abre os dias dele com o total vendido em cada um
+                dicaDetalhe: "Ver quanto foi vendido em cada dia do mês",
+                detalhar: (i) => diasDoMes(meses[i].mes),
             });
         } catch (e) {
             erro(caixa, e.message);
         }
+    }
+
+    const SEMANA = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+
+    /** "2026-11-03" -> "03/11 · ter" (sem new Date() no fuso local, que trocaria o dia) */
+    function rotuloDoDia(iso) {
+        const [ano, mes, dia] = iso.split("-").map(Number);
+        const semana = SEMANA[new Date(Date.UTC(ano, mes - 1, dia)).getUTCDay()];
+        return `${String(dia).padStart(2, "0")}/${String(mes).padStart(2, "0")} · ${semana}`;
+    }
+
+    /** Os dias de um mês ("2026-11") com o total vendido em cada um (GET /api/graficos/vendas-por-dia). */
+    async function diasDoMes(mes) {
+        let dias;
+        try {
+            dias = await api("/api/graficos/vendas-por-dia?mes=" + mes);
+        } catch (e) {
+            if (e.status === 401 || e.status === 403 || e.status === 400) throw e;
+            dias = await diasPelasVendas(mes); // servidor de antes do detalhe por dia
+        }
+        return dias.map((d) => ({ rotulo: rotuloDoDia(d.dia), valores: [Number(d.vendido)], vazio: Number(d.vendido) === 0 }));
+    }
+
+    /** Sem o endpoint por dia: soma as vendas finalizadas do mês pela lista de vendas (as 200 mais recentes). */
+    async function diasPelasVendas(mes) {
+        const vendas = await api("/api/vendas?limite=200");
+        const [ano, m] = mes.split("-").map(Number);
+        const total = new Date(Date.UTC(ano, m, 0)).getUTCDate();
+        const dias = Array.from({ length: total }, (_, k) => ({ dia: `${mes}-${String(k + 1).padStart(2, "0")}`, vendido: 0 }));
+        vendas.filter((v) => v.status === "FINALIZADA" && v.dataVenda.startsWith(mes))
+            .forEach((v) => { dias[Number(v.dataVenda.slice(8, 10)) - 1].vendido += Number(v.valorTotal); });
+        return dias;
     }
 
     async function recebimentos() {
