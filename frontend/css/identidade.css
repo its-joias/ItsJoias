@@ -1,100 +1,108 @@
 /* =====================================================================
-   Identidade Leide Farias: o logo (monograma LF com hibisco, o nome em letra
-   cursiva, a onda e "joias com alma baiana") nas cores do Pelourinho.
-   Escuro: o azul colonial das noites no Pelô. Claro: a cal dos casarões.
-   Os destaques são as fachadas: amarelo, azul, rosa, verde e terracota.
-   Carregado por último em todas as telas: só troca cores e a marca.
+   Identidade Leide Farias: a pulseira com búzio e a paleta da marca.
+   Eggshell #F4F1DE, Burnt Peach #E07A5F, Twilight Indigo #3D405B,
+   Muted Teal #81B29A e Apricot Cream #F2CC8F.
+   Escuro: a noite em índigo, com o damasco e o pêssego acesos.
+   Claro: o papel casca de ovo, com o texto em índigo.
+   Carregado depois de style.css em todas as telas: só troca cores e a marca.
    ===================================================================== */
 
 :root {
-    /* as fachadas do casario, para os detalhes */
-    --casario-azul: #2456B8;
-    --casario-amarelo: #F2B21B;
-    --casario-rosa: #E0457B;
-    --casario-verde: #2E9E6A;
-    --casario-terracota: #D9692F;
-    --casario-celeste: #4FA3D9;
+    /* a paleta da marca */
+    --eggshell: #F4F1DE;
+    --burnt-peach: #E07A5F;
+    --twilight-indigo: #3D405B;
+    --muted-teal: #81B29A;
+    --apricot-cream: #F2CC8F;
 
-    /* ---- tema escuro (padrão): azul colonial ---- */
-    /* noite: a página num azul bem escuro e o cabeçalho no azul colonial, um pouco mais claro que ela */
-    --cabecalho: #0E1F45;
-    --fundo: #0A1632;
-    --superficie: #12224A;
-    --superficie-hover: #182A57;
-    --superficie-elevada: #152650;
-    --azul-menu: #2456B8;
-    --dourado: #F4B41A;
-    --dourado-hover: #E0A20C;
-    --sobre-dourado: #10224A;
-    --destaque: #F7C443;
-    --creme: #FBF3E4;
-    --texto-forte: #FBF3E4;
-    --texto: #DDE4F4;
-    --texto-suave: #A9B6D6;
-    --borda: #24386B;
-    --campo-borda: #5B70A6;
-    --placeholder: #8695BD;
-    --coral: #E8735A;
-    --verde: #4FB98A;
-    --sucesso-texto: #5CC79A;
-    --rosa: #EE6F9C;
-    --vermelho: #F0716B;
-    --perigo-texto: #F48A84;
-    --sobre-vermelho: #10224A;
-    --info: #7FA8F0;
-    --perigo-fundo: rgba(240, 113, 107, 0.14);
-    --perigo-fundo-suave: rgba(240, 113, 107, 0.07);
-    --sucesso-fundo: rgba(79, 185, 138, 0.13);
-    --destaque-fundo: rgba(244, 180, 26, 0.10);
-    --alerta-fundo: rgba(244, 180, 26, 0.14);
-    --info-fundo: rgba(127, 168, 240, 0.14);
-    --fundo-modal: rgba(5, 12, 30, 0.7);
+    /* nomes antigos dos detalhes, agora na paleta */
+    --casario-azul: #3D405B;
+    --casario-amarelo: #F2CC8F;
+    --casario-rosa: #E07A5F;
+    --casario-verde: #81B29A;
+    --casario-terracota: #E07A5F;
+    --casario-celeste: #81B29A;
 
-    --barra-vendidas: #F4B41A;
-    --barra-disponiveis: #5E8FE6;
-    --barra-perdidas: #EE6F9C;
+    /* ---- tema escuro (padrão): índigo ---- */
+    /* a página num índigo mais fundo e o cabeçalho no Twilight Indigo da paleta */
+    --cabecalho: #3D405B;
+    --fundo: #2A2D42;
+    --superficie: #33364F;
+    --superficie-hover: #3D405B;
+    --superficie-elevada: #383B55;
+    --azul-menu: #81B29A;
+    --dourado: #F2CC8F;
+    --dourado-hover: #EAB971;
+    --sobre-dourado: #2A2D42;
+    --destaque: #F2CC8F;
+    --creme: #F4F1DE;
+    --texto-forte: #F4F1DE;
+    --texto: #E3E0CC;
+    --texto-suave: #ADAFC4;
+    --borda: #4A4E6C;
+    --campo-borda: #7C80A0;
+    --placeholder: #9598B2;
+    --coral: #E07A5F;
+    --verde: #81B29A;
+    --sucesso-texto: #93C4AC;
+    --rosa: #E8907A;
+    --vermelho: #EA846B;
+    --perigo-texto: #F19D87;
+    --sobre-vermelho: #2A2D42;
+    --info: #A9B6E2;
+    --perigo-fundo: rgba(234, 132, 107, 0.15);
+    --perigo-fundo-suave: rgba(234, 132, 107, 0.07);
+    --sucesso-fundo: rgba(129, 178, 154, 0.15);
+    --destaque-fundo: rgba(242, 204, 143, 0.10);
+    --alerta-fundo: rgba(242, 204, 143, 0.15);
+    --info-fundo: rgba(169, 182, 226, 0.14);
+    --fundo-modal: rgba(20, 21, 33, 0.7);
+
+    --barra-vendidas: #F2CC8F;
+    --barra-disponiveis: #81B29A;
+    --barra-perdidas: #E07A5F;
 }
 
-/* ---- tema claro: a cal dos casarões, o texto no azul do logo ---- */
+/* ---- tema claro: o papel Eggshell, o texto em índigo ---- */
 html[data-tema="claro"] {
-    --cabecalho: #FBF5EA;
-    --fundo: #FBF5EA;
-    --superficie: #FFFFFF;
-    --superficie-hover: #F4EBDB;
+    --cabecalho: #F4F1DE;
+    --fundo: #F4F1DE;
+    --superficie: #FFFDF5;
+    --superficie-hover: #ECE7CE;
     --superficie-elevada: #FFFFFF;
-    --azul-menu: #1D4FA8;
-    --dourado: #F2B21B;
-    --dourado-hover: #DC9C0A;
-    --sobre-dourado: #14254D;
-    --destaque: #8F5E00;
-    --creme: #FBF5EA;
-    --texto-forte: #14254D;
-    --texto: #2B3A5E;
-    --texto-suave: #5A6684;
-    --borda: #E6D9C2;
-    --campo-borda: #A39478;
-    --placeholder: #6E7690;
-    --coral: #C4502F;
-    --verde: #24805A;
-    --sucesso-texto: #1D6B4B;
-    --rosa: #C2386C;
-    --vermelho: #C43D30;
-    --perigo-texto: #A52A1E;
+    --azul-menu: #3D405B;
+    --dourado: #F2CC8F;
+    --dourado-hover: #EBBA6C;
+    --sobre-dourado: #3D405B;
+    --destaque: #A9492E;
+    --creme: #F4F1DE;
+    --texto-forte: #3D405B;
+    --texto: #4A4D66;
+    --texto-suave: #63657B;
+    --borda: #E0DAC0;
+    --campo-borda: #A0997C;
+    --placeholder: #74768A;
+    --coral: #BD563B;
+    --verde: #4A866A;
+    --sucesso-texto: #36694F;
+    --rosa: #BD563B;
+    --vermelho: #B4432B;
+    --perigo-texto: #99361F;
     --sobre-vermelho: #FFFFFF;
-    --info: #2457A8;
-    --perigo-fundo: rgba(196, 61, 48, 0.10);
-    --perigo-fundo-suave: rgba(196, 61, 48, 0.05);
-    --sucesso-fundo: rgba(36, 128, 90, 0.10);
-    --destaque-fundo: rgba(242, 178, 27, 0.14);
-    --alerta-fundo: rgba(242, 178, 27, 0.18);
-    --info-fundo: rgba(36, 87, 168, 0.09);
-    --fundo-modal: rgba(20, 37, 77, 0.38);
-    --sombra: 0 22px 60px rgba(20, 37, 77, 0.18);
-    --sombra-leve: 0 8px 24px rgba(20, 37, 77, 0.10);
+    --info: #3D405B;
+    --perigo-fundo: rgba(180, 67, 43, 0.10);
+    --perigo-fundo-suave: rgba(180, 67, 43, 0.05);
+    --sucesso-fundo: rgba(74, 134, 106, 0.12);
+    --destaque-fundo: rgba(242, 204, 143, 0.22);
+    --alerta-fundo: rgba(242, 204, 143, 0.30);
+    --info-fundo: rgba(61, 64, 91, 0.07);
+    --fundo-modal: rgba(61, 64, 91, 0.4);
+    --sombra: 0 22px 60px rgba(61, 64, 91, 0.18);
+    --sombra-leve: 0 8px 24px rgba(61, 64, 91, 0.10);
 
-    --barra-vendidas: #E0A20C;
-    --barra-disponiveis: #2456B8;
-    --barra-perdidas: #C2386C;
+    --barra-vendidas: #3D405B;
+    --barra-disponiveis: #81B29A;
+    --barra-perdidas: #E07A5F;
 }
 
 /* --- a onda do logo no lugar do 〜〜〜 sob os títulos ----------------- */
@@ -109,24 +117,24 @@ main > h2::after {
     mask: url("../img/onda.svg") center / 100% 100% no-repeat;
 }
 
-/* --- a marca: o monograma LF com o hibisco, recortado da logo da Leide (img/monograma.webp),
-   no cabeçalho e ao lado de "Its Joias" no formulário; a logo inteira fica sobre a arte do login --- */
+/* --- a marca: a pulseira com búzio. No cabeçalho e ao lado de "Its Joias" vai o desenho
+   simplificado (img/pulseira-selo.svg), que aparece pequeno; sobre a arte do login, a pulseira inteira --- */
 .marca-selo,
 .login-selo {
     display: inline-block;
     border: 0;
     border-radius: 0;
-    background: url("../img/monograma.webp") center / contain no-repeat;
+    background: url("../img/pulseira-selo.svg") center / contain no-repeat;
     box-shadow: none;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
     -webkit-mask: none;
     mask: none;
 }
 
-/* no claro, a versão em ouro mais escuro, que aparece no papel */
+/* no claro, a corrente em índigo, que aparece no papel */
 html[data-tema="claro"] .marca-selo,
 html[data-tema="claro"] .login-selo {
-    background-image: url("../img/monograma-clara.webp");
+    background-image: url("../img/pulseira-selo-clara.svg");
     filter: none;
 }
 
@@ -146,7 +154,7 @@ header h1.marca {
 }
 
 .marca-selo {
-    width: 62px;
+    width: 44px;
     height: 44px;
 }
 
@@ -173,9 +181,9 @@ nav a[aria-current="page"]::after {
     background: var(--dourado);
 }
 
-/* --- login: a marca sobre a foto e a flor no lugar do selo ------------ */
+/* --- login: a marca sobre a arte e a pulseira no lugar do selo ------------ */
 .login-selo {
-    width: 45px;
+    width: 32px;
     height: 32px;
 }
 
@@ -183,18 +191,19 @@ nav a[aria-current="page"]::after {
     align-items: flex-start;
 }
 
-/* na arte do login, a logo inteira da Leide: monograma, hibisco, nome e lema (img/logo-leide.webp) */
+/* no login, a pulseira com búzio desenhada (img/pulseira.webp), acima de "Its Joias" */
 .login-logo {
     display: block;
-    width: clamp(230px, 21vw, 300px);
-    aspect-ratio: 249 / 156;
-    background: url("../img/logo-leide.webp") left bottom / contain no-repeat;
+    width: clamp(96px, 8vw, 118px);
+    aspect-ratio: 420 / 494;
+    margin-bottom: 20px;
+    background: url("../img/pulseira.webp") left center / contain no-repeat;
     filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
     animation: logo-entrar 1.2s var(--transicao, ease) 0.15s backwards;
 }
 
 html[data-tema="claro"] .login-logo {
-    background-image: url("../img/logo-leide-clara.webp");
+    background-image: url("../img/pulseira-clara.webp");
     filter: none;
 }
 
@@ -253,8 +262,8 @@ html[data-tema="claro"] .login-logo {
 
 @media (max-width: 768px) {
     .marca-selo {
-        width: 52px;
-        height: 37px;
+        width: 38px;
+        height: 38px;
     }
 
     header .marca-nome {
@@ -266,7 +275,7 @@ html[data-tema="claro"] .login-logo {
     }
 
     .login-logo {
-        width: 170px;
+        width: 80px;
     }
 
     .login-marca-nome {
@@ -283,11 +292,11 @@ header {
     background: var(--cabecalho);
 }
 
-/* --- login: a arte em gravura dourada sobre o azul da noite ------------------------
-   a arte e o formulário dividem o mesmo azul; a borda direita da arte se dissolve nele,
-   sem emenda. O nome fica em creme sobre o azul, como na imagem de referência. */
+/* --- login: a arte em gravura dourada sobre o índigo da noite ------------------------
+   a arte e o formulário dividem o mesmo índigo; a borda direita da arte se dissolve nele,
+   sem emenda. O nome fica em Eggshell sobre o índigo. */
 .login-foto {
-    background: #0B1732;
+    background: #282C40;
 }
 
 .login-foto img {
@@ -296,14 +305,14 @@ header {
     mask-image: linear-gradient(to right, #000 82%, transparent);
 }
 
-/* um véu azul embaixo, onde fica o nome */
+/* um véu índigo embaixo, onde fica o nome */
 .login-foto::after {
     position: absolute;
     right: 0;
     bottom: 0;
     left: 0;
     height: 34%;
-    background: linear-gradient(to bottom, rgba(11, 23, 50, 0), rgba(11, 23, 50, 0.85) 60%, #0B1732);
+    background: linear-gradient(to bottom, rgba(40, 44, 64, 0), rgba(40, 44, 64, 0.85) 60%, #282C40);
     content: "";
     pointer-events: none;
 }
@@ -313,20 +322,20 @@ header {
 }
 
 .login-marca-nome {
-    color: #F8F0DF;
+    color: #F4F1DE;
 }
 
 .login-marca-lema {
-    color: #F8F0DF;
+    color: #F2CC8F;
 }
 
 .login-marca-onda {
-    background: #F4B41A;
+    background: #E07A5F;
 }
 
-/* no escuro o lado do formulário é o mesmo azul da arte */
+/* no escuro o lado do formulário é o mesmo índigo da arte */
 html:not([data-tema="claro"]) .login-lado {
-    background: #0B1732;
+    background: #282C40;
 }
 
 @media (max-width: 900px) {
@@ -341,7 +350,7 @@ html:not([data-tema="claro"]) .login-lado {
     }
 }
 
-/* --- a arte segue o tema: azul no escuro, papel claro no claro ------------------- */
+/* --- a arte segue o tema: índigo no escuro, papel Eggshell no claro ------------------- */
 .login-foto .arte-clara {
     display: none;
 }
@@ -355,23 +364,23 @@ html[data-tema="claro"] .login-foto .arte-clara {
 }
 
 html[data-tema="claro"] .login-foto {
-    background: #FBF5EA;
+    background: #F4F1DE;
 }
 
 html[data-tema="claro"] .login-foto::after {
-    background: linear-gradient(to bottom, rgba(251, 245, 234, 0), rgba(251, 245, 234, 0.88) 60%, #FBF5EA);
+    background: linear-gradient(to bottom, rgba(244, 241, 222, 0), rgba(244, 241, 222, 0.88) 60%, #F4F1DE);
 }
 
 html[data-tema="claro"] .login-marca-nome {
-    color: #14254D;
+    color: #3D405B;
 }
 
 html[data-tema="claro"] .login-marca-lema {
-    color: #8F5E00;
+    color: #A9492E;
 }
 
 html[data-tema="claro"] .login-marca-onda {
-    background: #C8901A;
+    background: #E07A5F;
 }
 
 /* no claro o formulário fica solto no papel, sem a sombra de cartão do style.css */

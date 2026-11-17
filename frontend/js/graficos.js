@@ -327,13 +327,13 @@
     /** Texto dentro de uma fatia: branco ou quase-preto, conforme a cor da fatia (calculado na tela). */
     function corDoTextoSobre(elemento) {
         const m = getComputedStyle(elemento).fill.match(/\d+(\.\d+)?/g);
-        if (!m) return "#172A33";
+        if (!m) return "#2A2D42";
         const [r, g, b] = m.slice(0, 3).map(Number).map((c) => {
             const v = c / 255;
             return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
         });
         const luz = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-        return (1.05) / (luz + 0.05) >= (luz + 0.05) / 0.05 ? "#FFFFFF" : "#172A33";
+        return (1.05) / (luz + 0.05) >= (luz + 0.05) / 0.05 ? "#FFFFFF" : "#2A2D42";
     }
 
     function pizza(caixa, opcoes) {

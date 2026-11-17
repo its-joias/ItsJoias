@@ -201,7 +201,7 @@
 
 .corpo-login #botao-entrar:hover {
     transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(240, 183, 53, 0.22);
+    box-shadow: 0 8px 20px rgba(242, 204, 143, 0.22);
 }
 
 .corpo-login #botao-entrar:active {
