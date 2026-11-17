@@ -272,23 +272,27 @@ header {
     background: var(--cabecalho);
 }
 
-/* --- login: a marca sobre o rascunho (papel claro, então o nome vai em tinta escura) --- */
+/* --- login: a arte em gravura dourada sobre o azul da noite ------------------------
+   a arte e o formulário dividem o mesmo azul; a borda direita da arte se dissolve nele,
+   sem emenda. O nome fica em creme sobre o azul, como na imagem de referência. */
 .login-foto {
-    background: #F3EADA;
+    background: #0B1732;
 }
 
 .login-foto img {
-    object-position: 50% 0%;
+    object-position: 0% 50%;
+    -webkit-mask-image: linear-gradient(to right, #000 82%, transparent);
+    mask-image: linear-gradient(to right, #000 82%, transparent);
 }
 
-/* um véu de papel embaixo, para o nome ficar legível sobre o desenho */
+/* um véu azul embaixo, onde fica o nome */
 .login-foto::after {
     position: absolute;
     right: 0;
     bottom: 0;
     left: 0;
-    height: 42%;
-    background: linear-gradient(to bottom, rgba(243, 234, 218, 0), rgba(243, 234, 218, 0.92) 55%, #F3EADA);
+    height: 34%;
+    background: linear-gradient(to bottom, rgba(11, 23, 50, 0), rgba(11, 23, 50, 0.85) 60%, #0B1732);
     content: "";
     pointer-events: none;
 }
@@ -298,25 +302,30 @@ header {
 }
 
 .login-marca-nome {
-    color: #14254D;
+    color: #F8F0DF;
 }
 
 .login-marca-lema {
-    color: #A9481F;
+    color: #F8F0DF;
 }
 
-.login-marca-sol {
-    background: #C8901A;
+.login-marca-onda {
+    background: #F4B41A;
+}
+
+/* no escuro o lado do formulário é o mesmo azul da arte */
+html:not([data-tema="claro"]) .login-lado {
+    background: #0B1732;
 }
 
 @media (max-width: 900px) {
     .login-foto img {
-        object-position: 50% 4%;
+        object-position: 50% 40%;
+        -webkit-mask-image: none;
+        mask-image: none;
     }
 
-    /* na faixa do celular o nome ocupa metade da altura: o véu sobe e fica mais firme */
     .login-foto::after {
-        height: 72%;
-        background: linear-gradient(to bottom, rgba(243, 234, 218, 0), rgba(243, 234, 218, 0.96) 42%, #F3EADA);
+        height: 70%;
     }
 }
