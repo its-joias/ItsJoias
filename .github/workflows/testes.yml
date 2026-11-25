@@ -39,6 +39,11 @@ jobs:
           java-version: "21"
           cache: maven
 
+      - name: Instalar leitores de PDF (poppler e tesseract)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils tesseract-ocr tesseract-ocr-por
+
       - name: Criar o banco de teste
         run: |
           # o script completo já cria o banco inteiro; a pasta alteracoes/ é só para bancos antigos
