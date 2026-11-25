@@ -1,0 +1,56 @@
+name: Testes do back-end
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: its_joias_teste
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      TEST_DB_URL: jdbc:postgresql://localhost:5432/its_joias_teste
+      TEST_DB_USERNAME: postgres
+      TEST_DB_PASSWORD: postgres
+      PGPASSWORD: postgres
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Criar o banco de teste
+        run: |
+          # o script completo já cria o banco inteiro; a pasta alteracoes/ é só para bancos antigos
+          psql -h localhost -U postgres -d its_joias_teste -v ON_ERROR_STOP=1 -f database/its_joias_banco.sql
+
+      - name: Rodar os testes
+        working-directory: backend
+        run: ./mvnw -B test
+
+      - name: Publicar relatório dos testes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-testes
+          path: backend/target/surefire-reports/
