@@ -28,6 +28,10 @@ jobs:
       TEST_DB_URL: jdbc:postgresql://localhost:5432/its_joias_teste
       TEST_DB_USERNAME: postgres
       TEST_DB_PASSWORD: postgres
+      # o teste que sobe a aplicação inteira usa as variáveis normais do banco
+      DB_URL: jdbc:postgresql://localhost:5432/its_joias_teste
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
       PGPASSWORD: postgres
 
     steps:
